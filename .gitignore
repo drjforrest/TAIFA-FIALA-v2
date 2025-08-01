@@ -1,0 +1,8 @@
+# Python
+*.pyc *.pyd pycache/ *.egg-info/ dist/ build/ wheels/ venv/ env/ site-packages/
+# TypeScript
+node_modules/ dist/ *.tsbuildinfo
+# General
+.DS_Store *.swp *.log .env
+# Other
+.idea/
