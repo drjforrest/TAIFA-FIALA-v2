@@ -1,0 +1,1136 @@
+{
+  "metadata": {
+    "created_at": "2025-07-31T10:47:40.752067",
+    "total_papers": 29,
+    "version": "1.0",
+    "description": "Initial TAIFA-FIALA dataset for public portal launch"
+  },
+  "statistics": {
+    "total_papers": 29,
+    "source_distribution": {
+      "Systematic Review": 24,
+      "sample_data": 5
+    },
+    "year_distribution": {
+      "2025": 7,
+      "2024": 8,
+      "2023": 5,
+      "2022": 3,
+      "2021": 3,
+      "2020": 1,
+      "2019": 1,
+      "2018": 1
+    },
+    "top_domains": {
+      "Healthcare/Medical": 2,
+      "Drug Discovery, Healthcare/Medical": 2,
+      "Agriculture": 2,
+      "Drug Discovery": 1,
+      "COVID-19 Response": 1,
+      "Data Science/NLP (Natural Language Processing)": 1,
+      "Healthcare/Medical (primary focus on colorectal cancer detection and diagnosis), Data Science (secondary focus on capacity building in Africa)": 1,
+      "Education": 1,
+      "Water Sustainability": 1,
+      "Healthcare/Medical, Public Health": 1
+    },
+    "top_african_entities": {
+      "Africa": 16,
+      "South Africa": 7,
+      "African": 7,
+      "Kenya": 6,
+      "Ghana": 4,
+      "Nigeria": 4,
+      "Tanzania": 3,
+      "Niger": 3,
+      "Botswana": 2,
+      "Uganda": 2
+    },
+    "top_keywords": {
+      "Healthcare": 10,
+      "Machine Learning": 9,
+      "Agriculture": 5,
+      "Drug Discovery": 3,
+      "Neural Network": 3,
+      "Classification": 3,
+      "Computer Vision": 3,
+      "Deep Learning": 3,
+      "Education": 3,
+      "Artificial Intelligence": 3
+    },
+    "avg_african_relevance": 0.7592592592592593,
+    "avg_ai_relevance": 0.7058823529411765,
+    "avg_citations": 21.875,
+    "high_relevance_papers": 13
+  },
+  "papers": [
+    {
+      "title": "Ongoing Implementation and Prospective Validation of Artificial Intelligence/Machine Learning Tools at an African Drug Discovery Center",
+      "authors": [
+        "Jason Hlozek",
+        "K. Chibale",
+        "John G. Woodland"
+      ],
+      "abstract": "",
+      "journal": "ACS Medicinal Chemistry Letters",
+      "year": 2024,
+      "publication_date": "2024-01-01T00:00:00",
+      "doi": "10.1021/acsmedchemlett.4c00243",
+      "url": "https://doi.org/10.1021/acsmedchemlett.4c00243",
+      "citation_count": 3,
+      "african_relevance_score": 1.0,
+      "ai_relevance_score": 0.6,
+      "african_entities": [
+        "Africa",
+        "South Africa"
+      ],
+      "keywords": [
+        "Drug Discovery"
+      ],
+      "source": "Systematic Review",
+      "source_id": "",
+      "project_domain": "Drug Discovery",
+      "funding_source": "Not reported (no funding source or collaboration mentioned in the abstract)",
+      "ai_techniques": "Not specified (the abstract mentions the use of open-source AI/ML tools but does not specify which particular tools or techniques are being used)",
+      "geographic_scope": "South Africa",
+      "key_outcomes": "- Development of an end-to-end virtual screening cascade.\r\n- Implementation of open-source AI/ML tools for use in resource-constrained settings.",
+      "processed_at": "2025-07-31T10:47:40.750942",
+      "data_type": "African AI R&D Study"
+    },
+    {
+      "title": "Leveraging Artificial Intelligence and Big Data to Optimize COVID-19 Clinical Public Health and Vaccination Roll-Out Strategies in Africa",
+      "authors": [
+        "B. Mellado",
+        "Jianhong Wu",
+        "J. Kong",
+        "N. Bragazzi",
+        "A. Asgary",
+        "M. Kawonga",
+        "Nalamotse Choma",
+        "Kentaro Hayasi",
+        "Benjamin Lieberman",
+        "Thuso Mathaha"
+      ],
+      "abstract": "",
+      "journal": "International Journal of Environmental Research and Public Health",
+      "year": 2021,
+      "publication_date": "2021-01-01T00:00:00",
+      "doi": "10.3390/ijerph18157890",
+      "url": "https://doi.org/10.3390/ijerph18157890",
+      "citation_count": 22,
+      "african_relevance_score": 1.0,
+      "ai_relevance_score": 0.6,
+      "african_entities": [
+        "Africa",
+        "Botswana",
+        "South Africa",
+        "African"
+      ],
+      "keywords": [
+        "Healthcare",
+        "Covid",
+        "Neural Network"
+      ],
+      "source": "Systematic Review",
+      "source_id": "",
+      "project_domain": "- COVID-19 Response\r\n- Public Health\r\n- Healthcare/Medical",
+      "funding_source": "- International Development Research Center (IDRC) - Canada - Government\r\n- South African Department of Science and Innovation - South Africa - Government\r\n- National Research Foundation - South Africa - Government\r\n- IEEE Humanitarian Activities Committee - International - International consortium",
+      "ai_techniques": "- Deep Neural Network (DNN)\r\n- Multi-class labelling",
+      "geographic_scope": "South Africa, Botswana, and seven other African countries (not specified)",
+      "key_outcomes": "The key project outcomes include the establishment of the Africa-Canada Artificial Intelligence and Data Innovation Consortium (ACADIC) to develop machine learning techniques for clinical public health strategies in Africa. ACADIC has assisted in designing vaccination strategies to optimize hospital capacity and vaccine supply. A deep neural network (DNN) was developed to predict severe illness risk and provide recommendations for risk classification by demographic and co-morbidity factors.",
+      "processed_at": "2025-07-31T10:47:40.750945",
+      "data_type": "African AI R&D Study"
+    },
+    {
+      "title": "AI4D - African Language Program",
+      "authors": [
+        "Kathleen Siminyu",
+        "Godson Kalipe",
+        "D. Orlic",
+        "Jade Z. Abbott",
+        "V. Marivate",
+        "Sackey Freshia",
+        "Prateek Sibal",
+        "B. Neupane",
+        "David Ifeoluwa Adelani",
+        "Amelia Taylor"
+      ],
+      "abstract": "",
+      "journal": "arXiv.org",
+      "year": 2021,
+      "publication_date": "2021-01-01T00:00:00",
+      "doi": "-",
+      "url": "-",
+      "citation_count": 21,
+      "african_relevance_score": 0.8,
+      "ai_relevance_score": 0.6,
+      "african_entities": [
+        "Africa",
+        "African"
+      ],
+      "keywords": [
+        "Machine Learning"
+      ],
+      "source": "Systematic Review",
+      "source_id": "",
+      "project_domain": "Data Science/NLP (Natural Language Processing)",
+      "funding_source": "Not reported (no funding source or collaboration mentioned in the abstract)",
+      "ai_techniques": "Not specified (the abstract does not detail specific AI or machine learning techniques, tools, or platforms used in the study)",
+      "geographic_scope": "Not specified (the abstract does not mention specific African countries or a pan-African scope explicitly)",
+      "key_outcomes": "The AI4D - African Language Program has two key outcomes: the creation of over 9 open-source African language datasets annotated for various machine learning tasks, and the creation of baseline models for these datasets through competitive machine learning challenges.",
+      "processed_at": "2025-07-31T10:47:40.750947",
+      "data_type": "African AI R&D Study"
+    },
+    {
+      "title": "Artificial intelligence and machine learning for early detection and diagnosis of colorectal cancer in sub-Saharan Africa",
+      "authors": [
+        "A. Waljee",
+        "Eileen M Weinheimer-Haus",
+        "Amina Abubakar",
+        "A. Ngugi",
+        "Geoffrey H. Siwo",
+        "G. Kwakye",
+        "A. Singal",
+        "A. Rao",
+        "S. Saini",
+        "Andrew J. Read"
+      ],
+      "abstract": "",
+      "journal": "Gut",
+      "year": 2022,
+      "publication_date": "2022-01-01T00:00:00",
+      "doi": "10.1136/gutjnl-2022-327211",
+      "url": "https://doi.org/10.1136/gutjnl-2022-327211",
+      "citation_count": 41,
+      "african_relevance_score": 1.0,
+      "ai_relevance_score": 1.0,
+      "african_entities": [
+        "Kenya"
+      ],
+      "keywords": [
+        "Healthcare",
+        "Classification",
+        "Computer Vision",
+        "Deep Learning"
+      ],
+      "source": "Systematic Review",
+      "source_id": "",
+      "project_domain": "Healthcare/Medical (primary focus on colorectal cancer detection and diagnosis), Data Science (secondary focus on capacity building in Africa)",
+      "funding_source": "- National Institutes of Health (NIH)\r\n  - Country/region: United States\r\n  - Type: Government\r\n- Harnessing Data Science for Health Discovery and Innovation in Africa (DS-I Africa)\r\n  - Country/region: Africa and USA\r\n  - Type: International consortium\r\n- Aga Khan University-East Africa\r\n  - Country/region: East Africa\r\n  - Type: Academic\r\n- Kenya Medical Research Institute-Wellcome Trust Research Programme\r\n  - Country/region: East Africa\r\n  - Type: Academic/research institute\r\n- University of Michigan\r\n  - Country/region: United States\r\n  - Type: Academic",
+      "ai_techniques": "- Multianalyte Assays with Algorithmic Analysis (MAAA)\r\n- Pattern recognition algorithms\r\n- Computer vision algorithms\r\n- VIPR (uses semisupervised and unsupervised pixel-level classification)\r\n- Deep learning algorithms (Reset, VGGNet, Inception)",
+      "geographic_scope": "Kenya",
+      "key_outcomes": "- Technical infrastructure: Development of AI/ML tools for population-based surveillance and early detection of colorectal cancer.\r\n- Scientific/research contributions: Introduction of Multianalyte Assays with Algorithmic Analysis (MAAA) and pattern recognition algorithms for diagnostic recommendations.\r\n- Practical applications or innovations: Potential for a CRC surveillance and diagnosis pipeline using MAAA and pattern recognition algorithms.",
+      "processed_at": "2025-07-31T10:47:40.750949",
+      "data_type": "African AI R&D Study"
+    },
+    {
+      "title": "Could AI Leapfrog the Web? Evidence from Teachers in Sierra Leone",
+      "authors": [
+        "Daniel Björkegren",
+        "Jun Ho Choi",
+        "Divya Budihal",
+        "Dominic Sobhani",
+        "Oliver Garrod",
+        "Paul Atherton"
+      ],
+      "abstract": "",
+      "journal": "arXiv.org",
+      "year": 2025,
+      "publication_date": "2025-01-01T00:00:00",
+      "doi": "10.48550/arXiv.2502.12397",
+      "url": "https://doi.org/10.48550/arXiv.2502.12397",
+      "citation_count": 0,
+      "african_relevance_score": 0.0,
+      "ai_relevance_score": 0.0,
+      "african_entities": [
+        "Sierra Leone"
+      ],
+      "keywords": [
+        "Education"
+      ],
+      "source": "Systematic Review",
+      "source_id": "",
+      "project_domain": "Education",
+      "funding_source": "Not reported",
+      "ai_techniques": "- WhatsApp-based AI chatbot\r\n- GPT 3.5 Turbo\r\n- GPT 4o mini\r\n- Language model techniques for extracting insights from chatbot queries\r\n- Selenium for web scraping\r\n- Trafilatura for extracting main text from HTML pages\r\n- OpenAI's models and pricing\r\n- Anthropic's 'HHH prompt'",
+      "geographic_scope": "Sierra Leone",
+      "key_outcomes": "The project developed an AI chatbot that is more frequently used by teachers than web search, consumes significantly less data, and is more cost-effective. It provides more relevant and helpful responses than web search, bridging information gaps in low-resource settings.",
+      "processed_at": "2025-07-31T10:47:40.750950",
+      "data_type": "African AI R&D Study"
+    },
+    {
+      "title": "Addressing Water Sustainability Challenges in North Africa with Artificial Intelligence",
+      "authors": [
+        "Mustafa Zaouini",
+        "Maurizio Santamicone",
+        "Lee Chana",
+        "Manal Cherkaoui",
+        "Anas Ait",
+        "Ikram Aomar",
+        "Chairi Karima",
+        "Echihabi",
+        "Hanaa Hachimi",
+        "Y. Kaddouri"
+      ],
+      "abstract": "",
+      "journal": "Proceedings of Data Mining and Data Warehauses – Sikdd 2024",
+      "year": 2024,
+      "publication_date": "2024-01-01T00:00:00",
+      "doi": "10.70314/is.2024.sikdd.17",
+      "url": "https://doi.org/10.70314/is.2024.sikdd.17",
+      "citation_count": 0,
+      "african_relevance_score": 0.7,
+      "ai_relevance_score": 0.8999999999999999,
+      "african_entities": [
+        "Morocco"
+      ],
+      "keywords": [
+        "Natural Language Processing",
+        "Nlp",
+        "Computer Vision"
+      ],
+      "source": "Systematic Review",
+      "source_id": "",
+      "project_domain": "Water Sustainability",
+      "funding_source": "- European Commission: Government, European Union\r\n- UNESCO: International Organization\r\n- IRCAI: International Consortium",
+      "ai_techniques": "- Image recognition on satellite imagery\r\n- Text mining on social media\r\n- Computer Vision (CV)\r\n- Natural Language Processing (NLP)\r\n- Facebook's Segment Anything model\r\n- Random Forest Regressor\r\n- Large Language Models (LLMs)",
+      "geographic_scope": "Morocco",
+      "key_outcomes": "The project developed technical infrastructure through collaborative research across North Africa, made scientific contributions by applying machine learning models to water sustainability issues, and created practical applications such as AquaScore and AquaSense to improve water management and community engagement.",
+      "processed_at": "2025-07-31T10:47:40.750951",
+      "data_type": "African AI R&D Study"
+    },
+    {
+      "title": "Federated learning in low-resource settings: A chest imaging study in Africa - Challenges and lessons learned",
+      "authors": [
+        "Jorge Fabila",
+        "Lidia Garrucho",
+        "Víctor M. Campello",
+        "Carlos Mart'in-Isla",
+        "K. Lekadir"
+      ],
+      "abstract": "",
+      "journal": "arXiv.org",
+      "year": 2025,
+      "publication_date": "2025-01-01T00:00:00",
+      "doi": "10.48550/arXiv.2505.14217",
+      "url": "https://doi.org/10.48550/arXiv.2505.14217",
+      "citation_count": 0,
+      "african_relevance_score": 1.0,
+      "ai_relevance_score": 0.0,
+      "african_entities": [
+        "Africa",
+        "Ghana",
+        "African",
+        "Gambia"
+      ],
+      "keywords": [
+        "Healthcare"
+      ],
+      "source": "Systematic Review",
+      "source_id": "",
+      "project_domain": "Healthcare/Medical, Public Health",
+      "funding_source": "Not reported (the abstract does not mention any funding sources or collaborations)",
+      "ai_techniques": "Federated Learning (FL)",
+      "geographic_scope": "Pan-African (eight African countries involved) - Specifically mentioned: Ghana, The Gambia",
+      "key_outcomes": "The project explored the use of Federated Learning for tuberculosis diagnosis using chest X-rays in low-resource African settings, addressing privacy concerns and data scarcity. It involved hospitals and research centers in eight countries, comparing locally trained models with a federated model to evaluate feasibility. FL shows potential for AI-driven healthcare in underserved regions.",
+      "processed_at": "2025-07-31T10:47:40.750952",
+      "data_type": "African AI R&D Study"
+    },
+    {
+      "title": "AI Mapping Risks to Wildlife in Tanzania: Rapid scanning aerial images to flag the changing frontier of human-wildlife proximity",
+      "authors": [
+        "Zhuang-Fang Yi",
+        "H. Frederick",
+        "Ruben Lopez Mendoza",
+        "Ryan Avery",
+        "Lane Goodman"
+      ],
+      "abstract": "",
+      "journal": "2021 IEEE International Geoscience and Remote Sensing Symposium IGARSS",
+      "year": 2021,
+      "publication_date": "2021-01-01T00:00:00",
+      "doi": "10.1109/IGARSS47720.2021.9553871",
+      "url": "https://doi.org/10.1109/IGARSS47720.2021.9553871",
+      "citation_count": 2,
+      "african_relevance_score": 0.3,
+      "ai_relevance_score": 0.0,
+      "african_entities": [
+        "Tanzania"
+      ],
+      "keywords": [
+        "Classification",
+        "Detection"
+      ],
+      "source": "Systematic Review",
+      "source_id": "",
+      "project_domain": "Wildlife Conservation/Management",
+      "funding_source": "Not reported (the abstract mentions collaboration between Development Seed and TAWIRI but does not specify funding sources)",
+      "ai_techniques": "TensorFlow based image classification and object detection methods",
+      "geographic_scope": "Tanzania",
+      "key_outcomes": "The project developed an AI-assisted methodology using Tensorflow for image classification and object detection to map wildlife and human distributions and detect conflict areas. This methodology significantly increases the speed and reduces the cost of processing aerial images, potentially reducing processing time to 19% of the current manual workflow and costs from $20,000 to less than $5,000.",
+      "processed_at": "2025-07-31T10:47:40.750953",
+      "data_type": "African AI R&D Study"
+    },
+    {
+      "title": "Enhancing Africa’s agriculture and food systems through responsible and gender inclusive AI innovation: insights from AI4AFS network",
+      "authors": [
+        "Nicholas Ozor",
+        "Joel Nwakaire",
+        "Alfred Nyambane",
+        "Wentland Muhatiah",
+        "Cynthia Nwobodo"
+      ],
+      "abstract": "",
+      "journal": "Frontiers Artif. Intell.",
+      "year": 2025,
+      "publication_date": "2025-01-01T00:00:00",
+      "doi": "10.3389/frai.2024.1472236",
+      "url": "https://doi.org/10.3389/frai.2024.1472236",
+      "citation_count": 5,
+      "african_relevance_score": 0.4,
+      "ai_relevance_score": 0.3,
+      "african_entities": [],
+      "keywords": [
+        "Machine Learning",
+        "Agriculture"
+      ],
+      "source": "Systematic Review",
+      "source_id": "",
+      "project_domain": "Agriculture/Food Systems",
+      "funding_source": "- Name of funding organization: Artificial Intelligence for Agriculture and Food Systems (AI4AFS) Innovation Research Network\r\n- Country/region of origin: Not reported\r\n- Type of organization: Not reported",
+      "ai_techniques": "Not specified (the abstract does not provide specific AI or machine learning techniques used in the study)",
+      "geographic_scope": "Not specified (the abstract mentions eight SSA countries but does not specify which ones)",
+      "key_outcomes": "The project developed AI-driven solutions for pest and disease detection in crops like cashew, maize, tomato, and cassava, and demonstrated that responsible AI practices can enhance agricultural productivity while maintaining low carbon footprints. The project also prioritized gender equality, social inclusion, and environmental sustainability in AI development and deployment.",
+      "processed_at": "2025-07-31T10:47:40.750954",
+      "data_type": "African AI R&D Study"
+    },
+    {
+      "title": "AI-Driven Sign Language Interpretation for Nigerian Children at Home",
+      "authors": [
+        "Ifeoma Nwogu",
+        "R. Peiris",
+        "Karthik Dantu",
+        "Ruchi Gamta",
+        "Emma Asonye"
+      ],
+      "abstract": "",
+      "journal": "International Joint Conference on Artificial Intelligence",
+      "year": 2023,
+      "publication_date": "2023-01-01T00:00:00",
+      "doi": "10.24963/ijcai.2023/710",
+      "url": "https://doi.org/10.24963/ijcai.2023/710",
+      "citation_count": 0,
+      "african_relevance_score": 0.3,
+      "ai_relevance_score": 0.0,
+      "african_entities": [
+        "Nigeria",
+        "Niger"
+      ],
+      "keywords": [
+        "Classification",
+        "Education",
+        "Regression",
+        "Social"
+      ],
+      "source": "Systematic Review",
+      "source_id": "",
+      "project_domain": "Education/Social Inclusion - Sign Language Interpretation",
+      "funding_source": "Not reported (no explicit funding source mentioned)",
+      "ai_techniques": "- Neural models\r\n- FastText word embedding\r\n- Word2Vec\r\n- Connectionist Temporal Classification (CTC) loss\r\n- Dual learning for 2-way translation\r\n- Neural machine translation (NMT)\r\n- Hybrid loss (traditional regression loss and novel triplet loss)",
+      "geographic_scope": "Nigeria",
+      "key_outcomes": "The project develops an AI-driven two-way sign language interpretation tool for home use, enhancing communication between DHH students and family members. It contributes to robust neural models for sign language translation and promotes inclusive social interactions and lifelong learning opportunities. The tool is designed to be user-centered and effective in improving language accessibility.",
+      "processed_at": "2025-07-31T10:47:40.750955",
+      "data_type": "African AI R&D Study"
+    },
+    {
+      "title": "Towards an Adaptive and Federated Testbed for AI Research in Africa",
+      "authors": [
+        "Alex Mwotil",
+        "Innocent Ndubuisi-Obi",
+        "Kurtis Heimerl",
+        "Benjamin Kanagwa",
+        "Engineer Bainomugisha"
+      ],
+      "abstract": "",
+      "journal": "2025 IEEE/ACM Symposium on Software Engineering in the Global South (SEiGS)",
+      "year": 2025,
+      "publication_date": "2025-01-01T00:00:00",
+      "doi": "10.1109/SEiGS66664.2025.00011",
+      "url": "https://doi.org/10.1109/SEiGS66664.2025.00011",
+      "citation_count": 0,
+      "african_relevance_score": 0.8,
+      "ai_relevance_score": 0.3,
+      "african_entities": [
+        "Africa",
+        "African"
+      ],
+      "keywords": [
+        "Machine Learning",
+        "Development"
+      ],
+      "source": "Systematic Review",
+      "source_id": "",
+      "project_domain": "Not specified (the abstract focuses on AI research infrastructure development without specifying a particular application domain)",
+      "funding_source": "Not reported (no funding source or collaboration mentioned in the abstract)",
+      "ai_techniques": "Not specified (the abstract does not mention specific AI or machine learning techniques)",
+      "geographic_scope": "Pan-African",
+      "key_outcomes": "The project proposes a federated compute systems testbed for AI research in Africa, designed to be adaptive, replicable, easy to use, secure, and policy-driven. This testbed aims to lower AI research costs and address skill and infrastructural gaps in Africa.",
+      "processed_at": "2025-07-31T10:47:40.750956",
+      "data_type": "African AI R&D Study"
+    },
+    {
+      "title": "Leveraging artificial intelligence and data science techniques in harmonizing, sharing, accessing and analyzing SARS-COV-2/COVID-19 data in Rwanda (LAISDAR Project): study design and rationale",
+      "authors": [
+        "Aurore Nishimwe",
+        "Charles Ruranga",
+        "Clarisse Musanabaganwa",
+        "Regine Mugeni",
+        "M. Semakula",
+        "Joseph Nzabanita",
+        "I. Kabano",
+        "Annie Uwimana",
+        "J. N. Utumatwishima",
+        "J. D. Kabakambira"
+      ],
+      "abstract": "",
+      "journal": "BMC Medical Informatics and Decision Making",
+      "year": 2022,
+      "publication_date": "2022-01-01T00:00:00",
+      "doi": "10.1186/s12911-022-01965-9",
+      "url": "https://doi.org/10.1186/s12911-022-01965-9",
+      "citation_count": 9,
+      "african_relevance_score": 0.0,
+      "ai_relevance_score": 0.8999999999999999,
+      "african_entities": [
+        "Rwanda"
+      ],
+      "keywords": [
+        "Covid",
+        "Prediction",
+        "Machine Learning",
+        "Deep Learning"
+      ],
+      "source": "Systematic Review",
+      "source_id": "",
+      "project_domain": "COVID-19 Response, Public Health",
+      "funding_source": "- Canada's International Development Research Centre (IDRC)\r\n  - Country/region of origin: Canada\r\n  - Type of organization: Government\r\n- Swedish International Development Cooperation Agency (Sida)\r\n  - Country/region of origin: Sweden\r\n  - Type of organization: Government\r\n- National Council for Science and Technology (NCST) Rwanda\r\n  - Country/region of origin: Rwanda\r\n  - Type of organization: Government",
+      "ai_techniques": "- Artificial intelligence (AI) and machine learning (ML) techniques for data harmonization and prediction modeling\r\n- OHDSI tools for data harmonization and analytics\r\n- R Studio and Python for data analysis\r\n- Arachne for network integration\r\n- OMOP CDM for data harmonization\r\n- Deep learning methods for time-series modeling\r\n- Bayesian approach for estimating sequential reproduction number\r\n- Capsule Network based framework",
+      "geographic_scope": "Rwanda",
+      "key_outcomes": "The project develops a technical infrastructure for harmonizing EHRs into OMOP CDM format and creates prediction models for COVID-19 burden, hospital admissions, and infection rates. It also monitors the impact of public health measures on pandemic evolution, social-economic situations, and mental health. This is the first such project on the African continent, leveraging AI and data science for COVID-19 data harmonization.",
+      "processed_at": "2025-07-31T10:47:40.750957",
+      "data_type": "African AI R&D Study"
+    },
+    {
+      "title": "Leveraging Machine Learning for Sustainable and Self-sufﬁcient Energy Communities",
+      "authors": [
+        "A. Faustine",
+        "Lucas Pereira",
+        "Daniel Ngondya",
+        "L. Benabbou"
+      ],
+      "abstract": "",
+      "journal": "-",
+      "year": 2020,
+      "publication_date": "2020-01-01T00:00:00",
+      "doi": "-",
+      "url": "-",
+      "citation_count": 2,
+      "african_relevance_score": 0.4,
+      "ai_relevance_score": 0.3,
+      "african_entities": [
+        "Africa"
+      ],
+      "keywords": [
+        "Energy"
+      ],
+      "source": "Systematic Review",
+      "source_id": "",
+      "project_domain": "Energy Management/Sustainability",
+      "funding_source": "Not reported (no funding source or collaboration mentioned in the abstract)",
+      "ai_techniques": "Not specified",
+      "geographic_scope": "Not specified (the abstract mentions Africa but does not specify any particular country or countries)",
+      "key_outcomes": "Not specified (the abstract does not provide specific outcomes or achievements of the project)",
+      "processed_at": "2025-07-31T10:47:40.750958",
+      "data_type": "African AI R&D Study"
+    },
+    {
+      "title": "AI-Assisted Tool for Early Diagnosis and Prevention of Colorectal Cancer in Africa",
+      "authors": [
+        "Bushra Ibnauf",
+        "M. A. Ezz",
+        "A. Aziz",
+        "Khalid Elgazzar",
+        "Mennatullah Siam"
+      ],
+      "abstract": "",
+      "journal": "International Joint Conference on Artificial Intelligence",
+      "year": 2023,
+      "publication_date": "2023-01-01T00:00:00",
+      "doi": "10.24963/ijcai.2023/706",
+      "url": "https://doi.org/10.24963/ijcai.2023/706",
+      "citation_count": 0,
+      "african_relevance_score": 1.0,
+      "ai_relevance_score": 0.6,
+      "african_entities": [
+        "Sudan",
+        "Tanzania",
+        "Egypt"
+      ],
+      "keywords": [
+        "Healthcare",
+        "Machine Learning",
+        "Deep Learning"
+      ],
+      "source": "Systematic Review",
+      "source_id": "",
+      "project_domain": "Healthcare/Medical",
+      "funding_source": "- Canadian Institutes of Health Research (CIHR): Canada, Government\r\n- Billharz Research Institute: Egypt, Public Research Organization\r\n- Soba University Hospital: Sudan, Public Research Organization\r\n- Canada's national advanced research computing (ARC) platform: Canada, Academic\r\n- NSERC (Natural Sciences and Engineering Research Council): Canada, Government\r\n- Lacuna Fund: International, Funding Source",
+      "ai_techniques": "- Machine learning guided polyp segmentation methods\r\n- Deep learning approaches\r\n- End-to-end learning of transformer based architectures\r\n- Human-in-the-loop annotation tool\r\n- Interpretability study on deep learning models\r\n- Use of dice coefficient and F-measure for evaluation\r\n- Video consistency metric for temporal performance analysis",
+      "geographic_scope": "Egypt, Sudan, Tanzania",
+      "key_outcomes": "The project's key outcomes include the creation of an African-sourced, large-scale dataset for colonoscopy videos, an expert-annotated dataset for polyp detection, and the development of an interactive annotation tool for colonoscopy videos. Additionally, the project aims to provide an AI-assisted video polyp segmentation tool and study biases in current models.",
+      "processed_at": "2025-07-31T10:47:40.750959",
+      "data_type": "African AI R&D Study"
+    },
+    {
+      "title": "The DARA Big Data Project",
+      "authors": [
+        "A. Scaife",
+        "Sally E. Cooper"
+      ],
+      "abstract": "",
+      "journal": "Proceedings of the International Astronomical Union",
+      "year": 2018,
+      "publication_date": "2018-01-01T00:00:00",
+      "doi": "10.1017/s174392131900543x",
+      "url": "https://doi.org/10.1017/s174392131900543x",
+      "citation_count": 1,
+      "african_relevance_score": 1.0,
+      "ai_relevance_score": 0.0,
+      "african_entities": [
+        "Kenya",
+        "Namibia",
+        "Madagascar",
+        "Ghana",
+        "Mozambique",
+        "Zambia",
+        "Africa",
+        "Mauritius",
+        "Botswana",
+        "South Africa"
+      ],
+      "keywords": [
+        "Healthcare",
+        "Agriculture",
+        "Sustainable"
+      ],
+      "source": "Systematic Review",
+      "source_id": "",
+      "project_domain": "- Astrophysics\r\n- Healthcare/Medical\r\n- Sustainable Agriculture",
+      "funding_source": "- UK Newton Fund & GCRF program\r\n  - Country/region of origin: United Kingdom\r\n  - Type of organization: Government\r\n- South African Department of Science & Technology (DST)\r\n  - Country/region of origin: South Africa\r\n  - Type of organization: Government",
+      "ai_techniques": "Not specified",
+      "geographic_scope": "- South Africa\r\n- Botswana\r\n- Ghana\r\n- Kenya\r\n- Madagascar\r\n- Mauritius\r\n- Mozambique\r\n- Namibia\r\n- Zambia\r\n- UK",
+      "key_outcomes": "Not specified (the abstract does not provide specific key project outcomes or achievements)",
+      "processed_at": "2025-07-31T10:47:40.750960",
+      "data_type": "African AI R&D Study"
+    },
+    {
+      "title": "First fully-automated AI/ML virtual screening cascade implemented at a drug discovery centre in Africa",
+      "authors": [
+        "Gemma Turon",
+        "Jason Hlozek",
+        "John G. Woodland",
+        "K. Chibale",
+        "Miquel Duran-Frigola"
+      ],
+      "abstract": "",
+      "journal": "bioRxiv",
+      "year": 2022,
+      "publication_date": "2022-01-01T00:00:00",
+      "doi": "10.1038/s41467-023-41512-2",
+      "url": "https://doi.org/10.1038/s41467-023-41512-2",
+      "citation_count": 47,
+      "african_relevance_score": 0.7,
+      "ai_relevance_score": 0.8999999999999999,
+      "african_entities": [
+        "Africa",
+        "South Africa"
+      ],
+      "keywords": [
+        "Machine Learning",
+        "Neural Network",
+        "Healthcare",
+        "Drug Discovery",
+        "Computer Vision"
+      ],
+      "source": "Systematic Review",
+      "source_id": "",
+      "project_domain": "Drug Discovery, Healthcare/Medical",
+      "funding_source": "- Merck KGaA (Germany, Corporate)\r\n- Harry Crossley Foundation (South Africa, Academic)\r\n- Code for Science & Society (International, Non-profit)\r\n- Wellcome Trust (UK, International Non-profit)\r\n- Neville Isdell (Private, Individual)\r\n- South African Medical Research Council (South Africa, Government)\r\n- South African Research Chairs Initiative (South Africa, Government)",
+      "ai_techniques": "- ZairaChem: AI/ML tool for QSAR/QSPR modeling\r\n- AutoML frameworks: FLAML, AutoGluon, Keras Tuner, TabPFN\r\n- Machine learning algorithms: Tree-based methods (random forest, XGBoost), neural network architectures\r\n- Data harmonization techniques: PCA, UMAP\r\n- Data-driven descriptor: GROVER\r\n- Computer vision techniques\r\n- TabPFN classifier: Transformer network\r\n- Ersilia Model Hub: Repository of pre-trained AI/ML models\r\n- Open-source tool: ZairaChem code available on GitHub",
+      "geographic_scope": "South Africa",
+      "key_outcomes": "The project developed ZairaChem, a fully automated AI/ML tool for QSAR/QSPR modeling, which was implemented at the H3D Centre in Africa. This tool reduces attrition rates and accelerates drug discovery for malaria and tuberculosis. It is a first-of-its-kind deployment in a low-resource setting, using open-source code and conventional computing capacity.",
+      "processed_at": "2025-07-31T10:47:40.750961",
+      "data_type": "African AI R&D Study"
+    },
+    {
+      "title": "Leveraging AI to Advance Science and Computing Education across Africa: Progress, Challenges, and Opportunities",
+      "authors": [
+        "George Boateng"
+      ],
+      "abstract": "",
+      "journal": "arXiv.org",
+      "year": 2024,
+      "publication_date": "2024-01-01T00:00:00",
+      "doi": "10.48550/arXiv.2402.07397",
+      "url": "https://doi.org/10.48550/arXiv.2402.07397",
+      "citation_count": 0,
+      "african_relevance_score": 0.8,
+      "ai_relevance_score": 0.0,
+      "african_entities": [
+        "Africa",
+        "African"
+      ],
+      "keywords": [
+        "Education",
+        "Detection"
+      ],
+      "source": "Systematic Review",
+      "source_id": "",
+      "project_domain": "Education (Science and Computing)",
+      "funding_source": "Not reported",
+      "ai_techniques": "- BERT\r\n- GPT-4\r\n- SuaCode (AI-powered app)\r\n- AutoGrad (automated grading and feedback tool)\r\n- Code plagiarism detection tool\r\n- Kwame (bilingual AI teaching assistant)\r\n- Kwame for Science (web-based AI teaching assistant)\r\n- Brilla AI (AI contestant)",
+      "geographic_scope": "Pan-African",
+      "key_outcomes": "The project developed and deployed several AI tools for science and computing education in Africa, including SuaCode, AutoGrad, a plagiarism detection tool, Kwame, Kwame for Science, and Brilla AI. These tools represent technical infrastructure and practical applications in AI for education.",
+      "processed_at": "2025-07-31T10:47:40.750962",
+      "data_type": "African AI R&D Study"
+    },
+    {
+      "title": "Localized Data Work as a Precondition for Data-Centric ML: A Case Study of Full Lifecycle Crop Disease Identification in Ghana",
+      "authors": [
+        "D. Akogo",
+        "I. Samori",
+        "Cyril Akafia",
+        "Harriet Fiagbor",
+        "and Kangah",
+        "Donald Kwame Asiedu",
+        "Kwabena Fuachie",
+        "Luis Oala"
+      ],
+      "abstract": "",
+      "journal": "arXiv.org",
+      "year": 2023,
+      "publication_date": "2023-01-01T00:00:00",
+      "doi": "10.48550/arXiv.2307.01767",
+      "url": "https://doi.org/10.48550/arXiv.2307.01767",
+      "citation_count": 4,
+      "african_relevance_score": 0.3,
+      "ai_relevance_score": 0.0,
+      "african_entities": [
+        "Ghana"
+      ],
+      "keywords": [
+        "Security"
+      ],
+      "source": "Systematic Review",
+      "source_id": "",
+      "project_domain": "Agricultural Productivity/Food Security",
+      "funding_source": "- Deutsche Gesellschaft für Internationale Zusammenarbeit (GIZ)\r\n  - Country/region of origin: Germany\r\n  - Type of organization: International organization\r\n- German Federal Ministry for Economic Cooperation and Development (BMZ)\r\n  - Country/region of origin: Germany\r\n  - Type of organization: Government ministry",
+      "ai_techniques": "- YOLO v5X architecture\r\n- CNN models\r\n- Data augmentation\r\n- Flutter\r\n- Makesense\r\n- Roboflow\r\n- Kaggle\r\n- Hugging Face",
+      "geographic_scope": "Ghana",
+      "key_outcomes": "The CADI AI project developed a dataset of drone-collected images of cashew crops, created a machine learning model to identify crop stressors with a mean average precision of 0.648, and built a software application for farmers to manage crop diseases. The dataset and model are publicly available on platforms like Kaggle and Hugging Face, and the project is open-source on GitHub.",
+      "processed_at": "2025-07-31T10:47:40.750963",
+      "data_type": "African AI R&D Study"
+    },
+    {
+      "title": "Keynote Talk: How DSN is Contributing to Social Impact in Africa",
+      "authors": [
+        "Opeyemi Osakuade"
+      ],
+      "abstract": "",
+      "journal": "Proceedings of the International Workshop on Social Impact of AI for Africa 2022",
+      "year": 2024,
+      "publication_date": "2024-01-01T00:00:00",
+      "doi": "10.21467/proceedings.157.k2",
+      "url": "https://doi.org/10.21467/proceedings.157.k2",
+      "citation_count": 0,
+      "african_relevance_score": 1.0,
+      "ai_relevance_score": 0.0,
+      "african_entities": [
+        "Africa",
+        "Nigeria",
+        "Niger",
+        "African"
+      ],
+      "keywords": [
+        "Social"
+      ],
+      "source": "Systematic Review",
+      "source_id": "",
+      "project_domain": "Social Impact (multiple sectors: CareerTech, FinTech, RetailTech, EdTech, PlatformTech, HealthTech)",
+      "funding_source": "Not reported",
+      "ai_techniques": "Not specified",
+      "geographic_scope": "Pan-African (with specific mention of Nigeria)",
+      "key_outcomes": "- Commitment to raise 1 million AI talents and improve quality of life for 2 billion people.\r\n- Won Matthai Impact Award and best poster at ACM Conference on Economics and Computation.\r\n- Two products selected in 2021 Global Top 100 AI Products by UNESCO IRCAI.\r\n- Established AI Research Lab Hub in Yaba, Lagos.\r\n- Released first AI and Python Book for elementary students in Africa.",
+      "processed_at": "2025-07-31T10:47:40.750964",
+      "data_type": "African AI R&D Study"
+    },
+    {
+      "title": "SEiA 2019 Keynote Speeches",
+      "authors": [],
+      "abstract": "",
+      "journal": "2019 IEEE/ACM Symposium on Software Engineering in Africa (SEiA)",
+      "year": 2019,
+      "publication_date": "2019-01-01T00:00:00",
+      "doi": "10.1109/seia.2019.00013",
+      "url": "https://doi.org/10.1109/seia.2019.00013",
+      "citation_count": 0,
+      "african_relevance_score": 0.7,
+      "ai_relevance_score": 0.0,
+      "african_entities": [
+        "Uganda"
+      ],
+      "keywords": [
+        "Healthcare",
+        "Agriculture"
+      ],
+      "source": "Systematic Review",
+      "source_id": "",
+      "project_domain": "- Agriculture\r\n- Healthcare",
+      "funding_source": "Not reported (no funding source or collaboration is mentioned in the abstract)",
+      "ai_techniques": "Not specified",
+      "geographic_scope": "Uganda (specifically mentioned as the location of Makerere University)",
+      "key_outcomes": "- Technical infrastructure: Automation of expert tasks using AI.\r\n- Scientific contribution: Crowdsourcing for surveillance data collection.\r\n- Practical application: Automation of plant disease diagnosis on smartphones; impact on farmers' livelihoods and health fields.",
+      "processed_at": "2025-07-31T10:47:40.750965",
+      "data_type": "African AI R&D Study"
+    },
+    {
+      "title": "Developing and Deploying AI and IoT-enabled hydroponic grow tents with subsistence farmers in South Africa",
+      "authors": [
+        "Yusuf Ismail",
+        "Sarina Till"
+      ],
+      "abstract": "",
+      "journal": "The Compass",
+      "year": 2024,
+      "publication_date": "2024-01-01T00:00:00",
+      "doi": "10.1145/3674829.3675081",
+      "url": "https://doi.org/10.1145/3674829.3675081",
+      "citation_count": 0,
+      "african_relevance_score": 0.7,
+      "ai_relevance_score": 0.0,
+      "african_entities": [
+        "Africa",
+        "South Africa"
+      ],
+      "keywords": [
+        "Agriculture"
+      ],
+      "source": "Systematic Review",
+      "source_id": "",
+      "project_domain": "Agriculture/Precision Farming",
+      "funding_source": "Not reported",
+      "ai_techniques": "Random Forest Classifier (RFC)",
+      "geographic_scope": "South Africa",
+      "key_outcomes": "The project developed an AI and IoT-enabled hydroponic grow tent using the Nutrient Film Technique, which includes real-time management of environmental factors and a mobile application for farmer management. The system was successfully deployed with rural subsistence farmers in South Africa, enabling them to grow crops previously affected by erratic weather conditions.",
+      "processed_at": "2025-07-31T10:47:40.750966",
+      "data_type": "African AI R&D Study"
+    },
+    {
+      "title": "A Review of Artificial Intelligence Driven Drug Discovery Programs for Infectious Disease Management in Nigerian Healthcare",
+      "authors": [
+        "U. Elechi",
+        "A. Adeoye",
+        "K. Elechi",
+        "Kindson Abone",
+        "K. Moneke",
+        "Muhammad Bello Demola",
+        "Okabeonye Sunday Agbo",
+        "Elizabeth Anuoluwa Akintayo",
+        "Zakka Musa",
+        "Joy Chinyere Elokaakwaeze"
+      ],
+      "abstract": "",
+      "journal": "Journal of Pharma Insights and Research",
+      "year": 2025,
+      "publication_date": "2025-01-01T00:00:00",
+      "doi": "10.69613/66jq9870",
+      "url": "https://doi.org/10.69613/66jq9870",
+      "citation_count": 0,
+      "african_relevance_score": 0.3,
+      "ai_relevance_score": 0.8999999999999999,
+      "african_entities": [
+        "Nigeria",
+        "Niger"
+      ],
+      "keywords": [
+        "Healthcare",
+        "Machine Learning",
+        "Neural Network",
+        "Drug Discovery"
+      ],
+      "source": "Systematic Review",
+      "source_id": "",
+      "project_domain": "Drug Discovery, Healthcare/Medical",
+      "funding_source": "Not reported (the abstract does not mention any funding sources or collaborations)",
+      "ai_techniques": "- Machine learning algorithms\r\n- Deep neural networks\r\n- Graph neural networks\r\n- Transformer models",
+      "geographic_scope": "Nigeria",
+      "key_outcomes": "- Technical infrastructure: Implementation of AI platforms in Nigerian research centers, reducing lead optimization time by 60% and false-positive rates by 40%.\r\n- Scientific contributions: Use of neural networks for rapid prediction of protein-ligand interactions and molecular property optimization, leading to novel antimalarial compounds.\r\n- Practical applications: 8 candidates progressed to clinical trials, with 3 showing promising results; reduced time from target identification to lead compound selection from 24 to 9 months; decreased costs by 45%.",
+      "processed_at": "2025-07-31T10:47:40.750967",
+      "data_type": "African AI R&D Study"
+    },
+    {
+      "title": "Leveraging data science to understand and address multimorbidity in sub-Saharan Africa: the MADIVA protocol.",
+      "authors": [
+        "Kerry Glover",
+        "T. Osler",
+        "Kayode Adetunji",
+        "Tanya Akumu",
+        "G. Asiki",
+        "Diana Awuor",
+        "P. Boua",
+        "V. Bronstein",
+        "Joan Byamugisha",
+        "Jacques D Du Toit"
+      ],
+      "abstract": "",
+      "journal": "BMJ Health & Care Informatics",
+      "year": 2025,
+      "publication_date": "2025-01-01T00:00:00",
+      "doi": "10.1136/bmjhci-2024-101294",
+      "url": "https://doi.org/10.1136/bmjhci-2024-101294",
+      "citation_count": 0,
+      "african_relevance_score": 1.0,
+      "ai_relevance_score": 0.0,
+      "african_entities": [
+        "Kenya",
+        "Africa",
+        "South Africa"
+      ],
+      "keywords": [
+        "Healthcare"
+      ],
+      "source": "Systematic Review",
+      "source_id": "",
+      "project_domain": "Healthcare/Medical, Data Science",
+      "funding_source": "Not reported",
+      "ai_techniques": "Not specified",
+      "geographic_scope": "South Africa, Kenya",
+      "key_outcomes": "- Development of data science solutions and MM risk prediction models\r\n- Creation of novel data science methods and interactive dashboards\r\n- Commitment to making data FAIR (findable, accessible, interoperable, reusable)",
+      "processed_at": "2025-07-31T10:47:40.750968",
+      "data_type": "African AI R&D Study"
+    },
+    {
+      "title": "The Intersection of Compliance and Community Impact: A Study of AI Integration in Grants Oversight",
+      "authors": [
+        "Edwin Mkabane",
+        "Roylex Kinigi"
+      ],
+      "abstract": "",
+      "journal": "International Journal For Multidisciplinary Research",
+      "year": 2025,
+      "publication_date": "2025-01-01T00:00:00",
+      "doi": "10.36948/ijfmr.2025.v07i01.36547",
+      "url": "https://doi.org/10.36948/ijfmr.2025.v07i01.36547",
+      "citation_count": 0,
+      "african_relevance_score": 0.3,
+      "ai_relevance_score": 0.0,
+      "african_entities": [
+        "Kenya"
+      ],
+      "keywords": [
+        "Governance"
+      ],
+      "source": "Systematic Review",
+      "source_id": "",
+      "project_domain": "Public Administration/Governance",
+      "funding_source": "Not reported",
+      "ai_techniques": "- IBM Watson\r\n- AutoML of Google",
+      "geographic_scope": "Kenya",
+      "key_outcomes": "The project outcomes include the use of AI tools like IBM Watson and AutoML to enhance compliance and reduce manual errors by 70%, with significant increases in compliance efficiency (78.4%) and anomaly detection accuracy (85.6%). AI usage was found to increase efficiency by 7.8% for every 10% rise in its usage.",
+      "processed_at": "2025-07-31T10:47:40.750969",
+      "data_type": "African AI R&D Study"
+    },
+    {
+      "title": "Artificial Intelligence for Healthcare in South Africa: Current State and Future Prospects",
+      "authors": [
+        "Dr. Amara Okafor",
+        "Prof. Thabo Mhlanga",
+        "Dr. Fatima Al-Rashid"
+      ],
+      "abstract": "This comprehensive review examines the current state of AI implementation in South African healthcare systems, focusing on diagnostic imaging, predictive analytics, and telemedicine applications. We analyze 147 AI projects across public and private healthcare institutions.",
+      "journal": "South African Medical Journal",
+      "year": 2024,
+      "publication_date": "2024-03-15T00:00:00",
+      "doi": "10.7196/SAMJ.2024.v114i3.15847",
+      "url": "https://doi.org/10.7196/SAMJ.2024.v114i3.15847",
+      "citation_count": 28,
+      "african_relevance_score": 1.0,
+      "ai_relevance_score": 0.9,
+      "african_entities": [
+        "South Africa",
+        "Africa"
+      ],
+      "keywords": [
+        "Healthcare",
+        "Artificial Intelligence",
+        "Telemedicine",
+        "Diagnostic Imaging"
+      ],
+      "source": "sample_data",
+      "source_id": "sample:1537694918067076244",
+      "project_domain": "Healthcare/Medical",
+      "funding_source": "",
+      "ai_techniques": "",
+      "geographic_scope": "South Africa",
+      "key_outcomes": "",
+      "processed_at": "2025-07-31T10:47:40.750925",
+      "data_type": "Academic Paper"
+    },
+    {
+      "title": "Machine Learning Applications in African Agriculture: A Multi-Country Analysis",
+      "authors": [
+        "Dr. Kwame Asante",
+        "Prof. Aisha Diallo",
+        "Dr. Moses Kiprotich"
+      ],
+      "abstract": "We present a comprehensive analysis of machine learning applications in agriculture across Kenya, Ghana, and Nigeria. Our study covers crop yield prediction, pest detection, and precision farming techniques implemented by 89 agricultural cooperatives.",
+      "journal": "Computers and Electronics in Agriculture",
+      "year": 2023,
+      "publication_date": "2023-11-08T00:00:00",
+      "doi": "10.1016/j.compag.2023.108265",
+      "url": "https://doi.org/10.1016/j.compag.2023.108265",
+      "citation_count": 45,
+      "african_relevance_score": 1.0,
+      "ai_relevance_score": 0.8,
+      "african_entities": [
+        "Kenya",
+        "Ghana",
+        "Nigeria",
+        "Africa"
+      ],
+      "keywords": [
+        "Agriculture",
+        "Machine Learning",
+        "Crop Yield",
+        "Precision Farming"
+      ],
+      "source": "sample_data",
+      "source_id": "sample:-6130227478686032996",
+      "project_domain": "Agriculture",
+      "funding_source": "",
+      "ai_techniques": "",
+      "geographic_scope": "Multi-country (Kenya, Ghana, Nigeria)",
+      "key_outcomes": "",
+      "processed_at": "2025-07-31T10:47:40.750926",
+      "data_type": "Academic Paper"
+    },
+    {
+      "title": "Natural Language Processing for African Languages: Progress and Challenges",
+      "authors": [
+        "Dr. Leleti Khumalo",
+        "Prof. Adrien Lardeux",
+        "Dr. Tewodros Gebreselassie"
+      ],
+      "abstract": "This paper reviews recent advances in NLP for African languages, covering work on Swahili, Yoruba, Amharic, and Zulu. We analyze 156 NLP projects and discuss challenges in low-resource language processing.",
+      "journal": "Computational Linguistics",
+      "year": 2024,
+      "publication_date": "2024-01-22T00:00:00",
+      "doi": "10.1162/coli_a_00485",
+      "url": "https://doi.org/10.1162/coli_a_00485",
+      "citation_count": 67,
+      "african_relevance_score": 1.0,
+      "ai_relevance_score": 0.9,
+      "african_entities": [
+        "Africa",
+        "African"
+      ],
+      "keywords": [
+        "Natural Language Processing",
+        "African Languages",
+        "Machine Learning"
+      ],
+      "source": "sample_data",
+      "source_id": "sample:7005201429428705312",
+      "project_domain": "Data Science/NLP",
+      "funding_source": "",
+      "ai_techniques": "",
+      "geographic_scope": "Pan-African",
+      "key_outcomes": "",
+      "processed_at": "2025-07-31T10:47:40.750927",
+      "data_type": "Academic Paper"
+    },
+    {
+      "title": "Blockchain and AI for Financial Inclusion in East Africa",
+      "authors": [
+        "Dr. Grace Wanjiku",
+        "Prof. Benjamin Kwame",
+        "Dr. Sarah Naluwemba"
+      ],
+      "abstract": "We examine the intersection of blockchain technology and AI in promoting financial inclusion across East Africa. Our analysis covers mobile payment systems, credit scoring algorithms, and fraud detection mechanisms in Kenya, Uganda, and Tanzania.",
+      "journal": "Journal of Financial Technology",
+      "year": 2023,
+      "publication_date": "2023-09-14T00:00:00",
+      "doi": "10.1007/s42786-023-00098-x",
+      "url": "https://doi.org/10.1007/s42786-023-00098-x",
+      "citation_count": 34,
+      "african_relevance_score": 1.0,
+      "ai_relevance_score": 0.7,
+      "african_entities": [
+        "East Africa",
+        "Kenya",
+        "Uganda",
+        "Tanzania"
+      ],
+      "keywords": [
+        "Finance",
+        "Artificial Intelligence",
+        "Blockchain",
+        "Mobile Payment"
+      ],
+      "source": "sample_data",
+      "source_id": "sample:-1684331255095420057",
+      "project_domain": "Financial Technology",
+      "funding_source": "",
+      "ai_techniques": "",
+      "geographic_scope": "East Africa (Kenya, Uganda, Tanzania)",
+      "key_outcomes": "",
+      "processed_at": "2025-07-31T10:47:40.750927",
+      "data_type": "Academic Paper"
+    },
+    {
+      "title": "Climate AI for Sustainable Development in Sub-Saharan Africa",
+      "authors": [
+        "Prof. Chinwe Okwu",
+        "Dr. Jean-Baptiste Tapsoba",
+        "Dr. Kofi Agyeman"
+      ],
+      "abstract": "This study explores AI applications for climate adaptation and mitigation in Sub-Saharan Africa. We analyze 78 climate AI projects focusing on drought prediction, renewable energy optimization, and carbon footprint analysis.",
+      "journal": "Environmental Research Letters",
+      "year": 2024,
+      "publication_date": "2024-06-03T00:00:00",
+      "doi": "10.1088/1748-9326/ad4c89",
+      "url": "https://doi.org/10.1088/1748-9326/ad4c89",
+      "citation_count": 19,
+      "african_relevance_score": 1.0,
+      "ai_relevance_score": 0.8,
+      "african_entities": [
+        "Sub-Saharan",
+        "Africa"
+      ],
+      "keywords": [
+        "Climate",
+        "Sustainable",
+        "Artificial Intelligence",
+        "Environment"
+      ],
+      "source": "sample_data",
+      "source_id": "sample:9200955005574610395",
+      "project_domain": "Environment/Climate",
+      "funding_source": "",
+      "ai_techniques": "",
+      "geographic_scope": "Sub-Saharan Africa",
+      "key_outcomes": "",
+      "processed_at": "2025-07-31T10:47:40.750928",
+      "data_type": "Academic Paper"
+    }
+  ]
+}
