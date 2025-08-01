@@ -1,8 +1,202 @@
+# Environment files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.env.*
+!.env.example
+
+# API Keys and secrets
+*.key
+*.pem
+*.p12
+*.pfx
+secrets/
+config/secrets.json
+config/keys.json
+
 # Python
-*.pyc *.pyd pycache/ *.egg-info/ dist/ build/ wheels/ venv/ env/ site-packages/
-# TypeScript
-node_modules/ dist/ *.tsbuildinfo
-# General
-.DS_Store *.swp *.log .env
-# Other
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+*.pyc
+*.pyo
+*.pyd
+.pyre/
+.pytype/
+cov.xml
+htmlcov/
+.tox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Virtual environments
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+.venv/
+
+# Node.js / TypeScript / React
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+.pnpm-debug.log*
+report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
+pids
+*.pid
+*.seed
+*.pid.lock
+lib-cov/
+coverage/
+.nyc_output
+.grunt
+bower_components
+.lock-wscript
+build/Release
+dist/
+.next/
+out/
+.nuxt/
+.vuepress/dist
+.serverless/
+.fusebox/
+.dynamodb/
+.tern-port
+.vscode-test
+.yarn/cache
+.yarn/unplugged
+.yarn/build-state.yml
+.yarn/install-state.gz
+.pnp.*
+*.tsbuildinfo
+.eslintcache
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+db.sqlite3
+database.sqlite
+*.mdb
+*.accdb
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+.pnpm-debug.log*
+log/
+*.log.*
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+*.swp
+*.swo
+*~
+
+# IDEs and editors
+.vscode/
 .idea/
+*.swp
+*.swo
+*~
+.project
+.metadata
+bin/
+tmp/
+*.tmp
+*.bak
+*.swp
+*~.nib
+local.properties
+.settings/
+.loadpath
+.recommenders
+.target
+.tern-project
+.texlipse
+.cache-main
+.scala_dependencies
+.worksheet
+
+# Temporary files
+*.tmp
+*.temp
+tmp/
+temp/
+
+# Docker
+.dockerignore
+Dockerfile.prod
+
+# Backup files
+*.bak
+*.backup
+*.old
+*.orig
+
+# Archives
+*.7z
+*.dmg
+*.gz
+*.iso
+*.jar
+*.rar
+*.tar
+*.zip
+
+# Cloud and deployment
+.serverless/
+.terraform/
+*.tfstate
+*.tfstate.*
+.terraform.lock.hcl
+
+# MacOS specific
+.AppleDouble
+.LSOverride
+Icon
