@@ -5,6 +5,10 @@ Configuration settings for TAIFA-FIALA backend
 import os
 from typing import List, Optional
 from pydantic_settings import BaseSettings
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 
 class Settings(BaseSettings):
@@ -50,14 +54,13 @@ class Settings(BaseSettings):
     PUBMED_BASE_URL: str = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils"
     CROSSREF_BASE_URL: str = "https://api.crossref.org/works"
     
-    # RSS Feeds for Community Monitoring
-    RSS_FEEDS: List[str] = [
-        "https://techcabal.com/feed/",
-        "https://ventureburn.com/feed/",
-        "https://disrupt-africa.com/feed/",
-        "https://africanbusinesscentral.com/feed/",
-        "https://www.itnewsafrica.com/feed/"
-    ]
+    # RSS Feeds for Community Monitoring  
+    RSS_FEEDS: str = "https://techcabal.com/feed/,https://ventureburn.com/feed/,https://disrupt-africa.com/feed/"
+    
+    @property
+    def rss_feeds_list(self) -> List[str]:
+        """Convert RSS_FEEDS string to list"""
+        return [url.strip() for url in self.RSS_FEEDS.split(',') if url.strip()]
     
     # File Storage
     UPLOAD_DIR: str = "./uploads"
@@ -75,6 +78,14 @@ class Settings(BaseSettings):
     # Security
     SECRET_KEY: str
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
+    
+    # Email Configuration (optional)
+    ANTHROPIC_API_KEY: Optional[str] = None
+    SMTP_TLS: Optional[str] = None
+    SMTP_PORT: Optional[str] = None
+    SMTP_HOST: Optional[str] = None
+    SMTP_USER: Optional[str] = None
+    SMTP_PASSWORD: Optional[str] = None
     
     # CORS Settings
     ALLOWED_ORIGINS: List[str] = [
@@ -168,7 +179,7 @@ class DevelopmentSettings(Settings):
     LOG_LEVEL: str = "DEBUG"
     
     class Config:
-        env_file = ".env.development"
+        env_file = ".env"
 
 
 class ProductionSettings(Settings):

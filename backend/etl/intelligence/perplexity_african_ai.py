@@ -1,4 +1,266 @@
-value} synthesis",
+"""
+TAIFA-FIALA Perplexity African AI Intelligence Module
+====================================================
+
+Advanced AI-powered intelligence synthesis for African AI innovation discovery.
+Uses Perplexity AI to generate comprehensive intelligence reports on African AI ecosystem.
+"""
+
+import asyncio
+import logging
+from typing import Dict, List, Optional, Any, Set
+from dataclasses import dataclass, asdict
+from enum import Enum
+from datetime import datetime, timedelta
+import json
+import aiohttp
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+
+class IntelligenceType(Enum):
+    INNOVATION_DISCOVERY = "innovation_discovery"
+    FUNDING_LANDSCAPE = "funding_landscape"
+    RESEARCH_BREAKTHROUGH = "research_breakthrough"
+    POLICY_DEVELOPMENT = "policy_development"
+    TALENT_ECOSYSTEM = "talent_ecosystem"
+    MARKET_ANALYSIS = "market_analysis"
+
+
+@dataclass
+class IntelligenceReport:
+    """Comprehensive intelligence report from Perplexity AI"""
+    report_id: str
+    report_type: IntelligenceType
+    title: str
+    summary: str
+    key_findings: List[str]
+    innovations_mentioned: List[Dict[str, Any]]
+    funding_updates: List[Dict[str, Any]]
+    policy_developments: List[Dict[str, Any]]
+    validation_flags: List[str]
+    confidence_score: float
+    sources: List[str]
+    geographic_focus: List[str]
+    follow_up_actions: List[str]
+    generation_timestamp: datetime
+    time_period_analyzed: str
+
+    def to_json(self) -> str:
+        """Convert report to JSON string"""
+        data = asdict(self)
+        data['generation_timestamp'] = self.generation_timestamp.isoformat()
+        data['report_type'] = self.report_type.value
+        return json.dumps(data, indent=2)
+
+    def save_report(self, filepath: str):
+        """Save report to file"""
+        with open(filepath, 'w') as f:
+            f.write(self.to_json())
+
+
+class PerplexityAfricanAIModule:
+    """Advanced AI intelligence synthesis using Perplexity API"""
+
+    def __init__(self, api_key: str):
+        self.api_key = api_key
+        self.base_url = "https://api.perplexity.ai"
+        self.session: Optional[aiohttp.ClientSession] = None
+
+    async def __aenter__(self):
+        self.session = aiohttp.ClientSession(
+            headers={
+                "Authorization": f"Bearer {self.api_key}",
+                "Content-Type": "application/json"
+            }
+        )
+        return self
+
+    async def __aexit__(self, exc_type, exc_val, exc_tb):
+        if self.session:
+            await self.session.close()
+
+    async def synthesize_intelligence(self,
+                                    intelligence_types: List[IntelligenceType],
+                                    time_period: str = "last_7_days",
+                                    geographic_focus: List[str] = None) -> List[IntelligenceReport]:
+        """Generate comprehensive intelligence reports"""
+
+        if geographic_focus is None:
+            geographic_focus = ["Nigeria", "Kenya", "South Africa", "Ghana", "Egypt", "Morocco", "Rwanda", "Uganda"]
+
+        reports = []
+
+        for intel_type in intelligence_types:
+            try:
+                report = await self._generate_intelligence_report(intel_type, time_period, geographic_focus)
+                reports.append(report)
+                logger.info(f"Generated {intel_type.value} report: {report.confidence_score:.2f} confidence")
+
+            except Exception as e:
+                logger.error(f"Failed to generate {intel_type.value} report: {e}")
+
+        return reports
+
+    async def _generate_intelligence_report(self,
+                                          intel_type: IntelligenceType,
+                                          time_period: str,
+                                          geographic_focus: List[str]) -> IntelligenceReport:
+        """Generate a specific type of intelligence report"""
+
+        prompt = self._create_intelligence_prompt(intel_type, time_period, geographic_focus)
+
+        # Make API call to Perplexity
+        response_data = await self._call_perplexity_api(prompt)
+
+        # Parse and structure the response
+        report = await self._parse_intelligence_response(response_data, intel_type, time_period, geographic_focus)
+
+        return report
+
+    def _create_intelligence_prompt(self,
+                                  intel_type: IntelligenceType,
+                                  time_period: str,
+                                  geographic_focus: List[str]) -> str:
+        """Create targeted prompts for different intelligence types"""
+
+        base_context = f"""
+        You are an expert AI researcher specializing in African artificial intelligence innovation.
+        Focus on developments in: {', '.join(geographic_focus)}
+        Time period: {time_period}
+
+        Provide comprehensive, factual information with specific company names, funding amounts,
+        research breakthroughs, and policy developments. Include source URLs when possible.
+        """
+
+        if intel_type == IntelligenceType.INNOVATION_DISCOVERY:
+            return base_context + """
+            MISSION: Discover and analyze recent AI innovations, startups, and breakthrough technologies
+            emerging from African countries.
+
+            Please provide:
+            1. New AI startups launched or gaining traction
+            2. Innovative AI applications and use cases
+            3. Technology breakthroughs and product launches
+            4. Key founders, researchers, and team information
+            5. Technical details about innovations when available
+            6. Market traction and early adoption signals
+
+            Format your response with clear sections and specific, verifiable details.
+            """
+
+        elif intel_type == IntelligenceType.FUNDING_LANDSCAPE:
+            return base_context + """
+            MISSION: Analyze investment flows, funding rounds, and financial developments in African AI.
+
+            Please provide:
+            1. Recent funding rounds with specific amounts and investors
+            2. New venture capital firms or investment initiatives
+            3. Government funding programs and grants
+            4. International investment in African AI
+            5. Valuation trends and market dynamics
+            6. Notable acquisitions or partnerships
+
+            Include exact funding amounts, investor names, and deal structures when available.
+            """
+
+        elif intel_type == IntelligenceType.RESEARCH_BREAKTHROUGH:
+            return base_context + """
+            MISSION: Identify cutting-edge AI research, academic publications, and scientific breakthroughs.
+
+            Please provide:
+            1. Notable research papers and publications
+            2. University research initiatives and labs
+            3. International research collaborations
+            4. Conference presentations and academic recognition
+            5. Open source projects and technical contributions
+            6. Research-to-industry translation efforts
+
+            Focus on high-impact research with practical applications.
+            """
+
+        elif intel_type == IntelligenceType.POLICY_DEVELOPMENT:
+            return base_context + """
+            MISSION: Track policy developments, regulatory changes, and government initiatives in AI.
+
+            Please provide:
+            1. New AI policies and regulatory frameworks
+            2. Government AI strategy announcements
+            3. Digital transformation initiatives
+            4. International AI cooperation agreements
+            5. Data protection and AI ethics developments
+            6. Public-private partnership announcements
+
+            Include specific policy details and implementation timelines.
+            """
+
+        else:
+            return base_context + f"""
+            MISSION: Analyze developments related to {intel_type.value} in African AI ecosystem.
+
+            Provide comprehensive analysis with specific examples, key players, and measurable impacts.
+            """
+
+    async def _call_perplexity_api(self, prompt: str) -> Dict[str, Any]:
+        """Make API call to Perplexity"""
+
+        payload = {
+            "model": "llama-3.1-sonar-large-128k-online",
+            "messages": [
+                {
+                    "role": "system",
+                    "content": "You are a precise AI research analyst. Provide factual, well-sourced information with specific details."
+                },
+                {
+                    "role": "user",
+                    "content": prompt
+                }
+            ],
+            "temperature": 0.2,
+            "max_tokens": 4000
+        }
+
+        async with self.session.post(f"{self.base_url}/chat/completions", json=payload) as response:
+            if response.status == 200:
+                return await response.json()
+            else:
+                raise Exception(f"Perplexity API error: {response.status}")
+
+    async def _parse_intelligence_response(self,
+                                         response_data: Dict[str, Any],
+                                         intel_type: IntelligenceType,
+                                         time_period: str,
+                                         geographic_focus: List[str]) -> IntelligenceReport:
+        """Parse Perplexity response into structured intelligence report"""
+
+        content = response_data.get('choices', [{}])[0].get('message', {}).get('content', '')
+
+        # Extract structured data from the response
+        findings = await self._extract_structured_findings(content, intel_type)
+
+        # Generate summary and key findings
+        summary = self._generate_summary(content, intel_type)
+        key_findings = self._extract_key_findings(content)
+
+        # Extract specific entity types
+        innovations = self._extract_innovations(findings)
+        funding_updates = self._extract_funding_updates(findings)
+        policy_developments = self._extract_policy_developments(findings)
+
+        # Extract sources
+        sources = self._extract_sources(content)
+
+        # Calculate confidence score
+        confidence_score = self._calculate_confidence_score(content, findings)
+
+        # Generate follow-up actions
+        follow_up_actions = self._generate_follow_up_actions(intel_type, findings)
+
+        return IntelligenceReport(
+            report_id=f"{intel_type.value}_{datetime.now().strftime('%Y%m%d_%H%M%S')}",
+            report_type=intel_type,
+            title=f"African AI {intel_type.value} synthesis",
             summary=summary,
             key_findings=key_findings,
             innovations_mentioned=innovations,
@@ -8,735 +270,502 @@ value} synthesis",
             confidence_score=confidence_score,
             sources=list(set(sources)),  # Deduplicate sources
             geographic_focus=geographic_focus,
-            follow_up_actions=follow_up_actions
+            follow_up_actions=follow_up_actions,
+            generation_timestamp=datetime.now(),
+            time_period_analyzed=time_period
         )
-    
+
     def _generate_follow_up_actions(self, intel_type: IntelligenceType, findings: List[Dict[str, Any]]) -> List[str]:
         """Generate actionable follow-up items based on findings"""
-        
+
         actions = []
-        
+
         if intel_type == IntelligenceType.INNOVATION_DISCOVERY:
             for innovation in [f for f in findings if f.get('type') == 'innovation_discovery']:
                 if 'company_name' in innovation:
                     actions.append(f"Deep crawl {innovation['company_name']} for technical details and team information")
                     actions.append(f"Cross-reference {innovation['company_name']} against GitHub and LinkedIn for validation")
-        
+
         elif intel_type == IntelligenceType.FUNDING_LANDSCAPE:
             actions.append("Verify funding amounts through multiple sources")
             actions.append("Contact startups directly for validation of funding claims")
             actions.append("Track funding impact on innovation development milestones")
-        
+
         elif intel_type == IntelligenceType.RESEARCH_BREAKTHROUGH:
             actions.append("Extract full paper details for academic validation")
             actions.append("Map research collaboration networks")
-            actions.append("Identify commercialization potential of research findings")
-        
-        return actions[:5]  # Limit to top 5 actions
-    
-    def _generate_validation_flags(self, findings: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
-        """Generate validation flags for claims requiring verification"""
-        
+            actions.append("Track citation patterns and research impact")
+
+        return actions
+
+    def _generate_validation_flags(self, findings: List[Dict[str, Any]]) -> List[str]:
+        """Generate validation flags for quality assurance"""
+
         flags = []
-        
+
+        # Check for unverified claims
         for finding in findings:
-            # Flag funding claims for verification
-            if 'funding_mention' in finding:
-                flags.append({
-                    'type': 'funding_verification_needed',
-                    'claim': finding['funding_mention'],
-                    'source_finding': finding,
-                    'priority': 'high'
-                })
-            
-            # Flag new company mentions for validation
-            if finding.get('type') == 'innovation_discovery' and 'company_name' in finding:
-                flags.append({
-                    'type': 'company_validation_needed',
-                    'claim': f"New innovation by {finding['company_name']}",
-                    'source_finding': finding,
-                    'priority': 'medium'
-                })
-        
+            if 'funding_amount' in finding and not finding.get('source_verified'):
+                flags.append(f"Unverified funding claim: {finding.get('funding_amount')}")
+
+            if 'company_name' in finding and not finding.get('website_verified'):
+                flags.append(f"Company website needs verification: {finding.get('company_name')}")
+
+        # Check for missing critical information
+        innovation_count = len([f for f in findings if f.get('type') == 'innovation_discovery'])
+        if innovation_count == 0:
+            flags.append("No innovation discoveries found - may need broader search")
+
         return flags
-    
-    async def cross_validate_with_sources(self, innovation_claim: Dict[str, Any]) -> Dict[str, Any]:
-        """
-        Cross-validate innovation claims against multiple sources
-        """
-        validation_result = {
-            'claim': innovation_claim,
-            'validation_status': 'pending',
-            'confidence_score': 0.0,
-            'supporting_sources': [],
-            'conflicting_information': [],
-            'verification_timestamp': datetime.now()
-        }
-        
-        if 'company_name' in innovation_claim:
-            company_name = innovation_claim['company_name']
-            
-            # Query multiple sources for validation
-            validation_queries = [
-                f"{company_name} African AI startup company details",
-                f"{company_name} artificial intelligence platform technology",
-                f"{company_name} founders team location Africa"
-            ]
-            
-            supporting_evidence = 0
-            total_checks = len(validation_queries)
-            
-            for query in validation_queries:
-                try:
-                    response = await self._query_perplexity(query)
-                    content = response.get('choices', [{}])[0].get('message', {}).get('content', '')
-                    
-                    if company_name.lower() in content.lower():
-                        supporting_evidence += 1
-                        validation_result['supporting_sources'].append({
-                            'query': query,
-                            'evidence': content[:200],
-                            'sources': response.get('sources', [])
-                        })
-                    
-                    await asyncio.sleep(1)  # Rate limiting
-                    
-                except Exception as e:
-                    logger.warning(f"Validation query failed: {e}")
-                    continue
-            
-            # Calculate validation confidence
-            validation_result['confidence_score'] = supporting_evidence / total_checks
-            
-            if validation_result['confidence_score'] >= 0.6:
-                validation_result['validation_status'] = 'validated'
-            elif validation_result['confidence_score'] >= 0.3:
-                validation_result['validation_status'] = 'partially_validated'
-            else:
-                validation_result['validation_status'] = 'unvalidated'
-        
-        return validation_result
-    
+
+    async def cross_validate_with_sources(self, report: IntelligenceReport) -> IntelligenceReport:
+        """Cross-validate report findings with additional sources"""
+
+        validated_innovations = []
+
+        for innovation in report.innovations_mentioned:
+            if 'company_name' in innovation:
+                # Try to validate company existence and details
+                validation_result = await self._validate_company_info(innovation['company_name'])
+                innovation['validation_result'] = validation_result
+                validated_innovations.append(innovation)
+
+        # Update report with validation results
+        report.innovations_mentioned = validated_innovations
+
+        # Recalculate confidence score based on validation
+        validated_count = sum(1 for inv in validated_innovations
+                            if inv.get('validation_result', {}).get('validated', False))
+        if validated_innovations:
+            validation_boost = (validated_count / len(validated_innovations)) * 0.2
+            report.confidence_score = min(1.0, report.confidence_score + validation_boost)
+
+        return report
+
+    async def _validate_company_info(self, company_name: str) -> Dict[str, Any]:
+        """Validate company information through web search"""
+
+        try:
+            # Simple validation through search
+            search_prompt = f"Verify the existence of AI company '{company_name}' in Africa. Provide website, location, and key details."
+
+            response_data = await self._call_perplexity_api(search_prompt)
+            content = response_data.get('choices', [{}])[0].get('message', {}).get('content', '')
+
+            return {
+                'validated': len(content) > 100,  # Basic validation
+                'details': content[:200],
+                'validation_timestamp': datetime.now()
+            }
+
+        except Exception as e:
+            return {
+                'validated': False,
+                'error': str(e),
+                'validation_timestamp': datetime.now()
+            }
+
     async def generate_trend_analysis(self, reports: List[IntelligenceReport]) -> Dict[str, Any]:
-        """
-        Analyze trends across multiple intelligence reports
-        """
+        """Generate trend analysis across multiple intelligence reports"""
+
         trend_analysis = {
             'analysis_timestamp': datetime.now(),
             'reports_analyzed': len(reports),
             'time_span': self._calculate_time_span(reports),
-            'emerging_patterns': [],
-            'funding_trends': {},
-            'geographic_trends': {},
-            'technology_trends': {},
-            'collaboration_patterns': [],
-            'recommendations': []
+            'geographic_coverage': list(set().union(*[r.geographic_focus for r in reports])),
+            'funding_trends': self._analyze_funding_trends(reports),
+            'innovation_hotspots': self._analyze_geographic_trends(reports),
+            'emerging_themes': self._extract_emerging_themes(reports),
+            'recommendations': self._generate_trend_recommendations(reports)
         }
-        
-        # Analyze funding trends
-        all_funding_updates = []
-        for report in reports:
-            all_funding_updates.extend(report.funding_updates)
-        
-        if all_funding_updates:
-            trend_analysis['funding_trends'] = self._analyze_funding_trends(all_funding_updates)
-        
-        # Analyze geographic distribution
-        all_geographic_mentions = []
-        for report in reports:
-            all_geographic_mentions.extend(report.geographic_focus)
-        
-        trend_analysis['geographic_trends'] = self._analyze_geographic_trends(all_geographic_mentions)
-        
-        # Generate recommendations
-        trend_analysis['recommendations'] = self._generate_trend_recommendations(reports)
-        
+
         return trend_analysis
-    
-    def _calculate_time_span(self, reports: List[IntelligenceReport]) -> str:
+
+    def _calculate_time_span(self, reports: List[IntelligenceReport]) -> Dict[str, Any]:
         """Calculate time span covered by reports"""
-        if not reports:
-            return "No reports"
-        
-        timestamps = [report.timestamp for report in reports]
-        earliest = min(timestamps)
-        latest = max(timestamps)
-        
-        span = latest - earliest
-        return f"{span.days} days"
-    
-    def _analyze_funding_trends(self, funding_updates: List[Dict[str, Any]]) -> Dict[str, Any]:
-        """Analyze funding trends from collected updates"""
+
+        timestamps = [r.generation_timestamp for r in reports]
+
         return {
-            'total_updates': len(funding_updates),
-            'trend_direction': 'increasing',  # Placeholder - implement actual analysis
-            'average_funding_size': 'TBD',
-            'most_active_sectors': ['fintech', 'healthtech', 'agritech']
+            'earliest_report': min(timestamps),
+            'latest_report': max(timestamps),
+            'total_days': (max(timestamps) - min(timestamps)).days
         }
-    
-    def _analyze_geographic_trends(self, geographic_mentions: List[str]) -> Dict[str, Any]:
-        """Analyze geographic distribution trends"""
-        from collections import Counter
-        
-        location_counts = Counter(geographic_mentions)
-        
+
+    def _analyze_funding_trends(self, reports: List[IntelligenceReport]) -> Dict[str, Any]:
+        """Analyze funding patterns across reports"""
+
+        # This would implement more sophisticated funding analysis
         return {
-            'most_mentioned_locations': dict(location_counts.most_common(5)),
-            'geographic_diversity_score': len(set(geographic_mentions)),
-            'emerging_hubs': list(location_counts.keys())[:3]
+            'total_funding_mentioned': 0,  # Would calculate from actual data
+            'average_deal_size': 0,
+            'most_active_investors': []
         }
-    
+
+    def _analyze_geographic_trends(self, reports: List[IntelligenceReport]) -> Dict[str, Any]:
+        """Analyze geographic distribution of innovations"""
+
+        country_mentions = {}
+        for report in reports:
+            for country in report.geographic_focus:
+                country_mentions[country] = country_mentions.get(country, 0) + 1
+
+        return {
+            'most_active_countries': sorted(country_mentions.items(),
+                                          key=lambda x: x[1], reverse=True)[:5],
+            'geographic_distribution': country_mentions
+        }
+
     def _generate_trend_recommendations(self, reports: List[IntelligenceReport]) -> List[str]:
-        """Generate actionable recommendations based on trend analysis"""
-        
+        """Generate strategic recommendations based on trends"""
+
         recommendations = [
-            "Increase monitoring frequency for emerging innovation hubs",
-            "Deep dive into cross-border collaboration patterns",
-            "Validate high-impact innovation claims with direct outreach",
-            "Expand data collection to underrepresented geographic regions",
-            "Implement automated tracking for identified high-potential innovations"
+            "Focus data collection on emerging innovation hotspots",
+            "Increase monitoring frequency for high-activity regions",
+            "Develop deeper validation pipelines for funding claims"
         ]
-        
+
         return recommendations
-    
-    def to_json(self, report: IntelligenceReport) -> str:
-        """Convert intelligence report to JSON format"""
-        return json.dumps(asdict(report), default=str, indent=2)
-    
-    def save_report(self, report: IntelligenceReport, filepath: str) -> None:
-        """Save intelligence report to file"""
+
+    def to_json(self) -> str:
+        """Convert trend analysis to JSON"""
+        return json.dumps(self, indent=2, default=str)
+
+    def save_report(self, filepath: str):
+        """Save trend analysis to file"""
         with open(filepath, 'w') as f:
-            f.write(self.to_json(report))
-        
-        logger.info(f"Intelligence report saved to {filepath}")
+            f.write(self.to_json())
 
 
-# Usage example and testing
 async def main():
-    """Example usage of Perplexity African AI Intelligence Module"""
-    
-    # Initialize with API key (replace with actual key)
-    api_key = "your_perplexity_api_key_here"
-    
-    async with PerplexityAfricanAIModule(api_key) as intelligence_module:
-        
-        # Generate comprehensive intelligence reports
-        logger.info("Starting African AI intelligence synthesis...")
-        
-        reports = await intelligence_module.synthesize_intelligence(
+    """Test the Perplexity African AI module"""
+
+    import os
+
+    api_key = os.getenv('PERPLEXITY_API_KEY')
+    if not api_key:
+        print("Please set PERPLEXITY_API_KEY environment variable")
+        return
+
+    print("🤖 Testing Perplexity African AI Intelligence Module")
+
+    async with PerplexityAfricanAIModule(api_key) as intel_module:
+
+        # Generate intelligence reports
+        reports = await intel_module.synthesize_intelligence(
             intelligence_types=[
                 IntelligenceType.INNOVATION_DISCOVERY,
                 IntelligenceType.FUNDING_LANDSCAPE
             ],
-            time_period='last_30_days'
+            time_period='last_7_days',
+            geographic_focus=['Nigeria', 'Kenya', 'South Africa']
         )
-        
-        # Process and display results
+
+        print(f"\n📊 Generated {len(reports)} intelligence reports")
+
         for report in reports:
-            logger.info(f"\n--- {report.report_type.value.upper()} REPORT ---")
-            logger.info(f"Summary: {report.summary}")
-            logger.info(f"Key Findings: {len(report.key_findings)} items")
-            logger.info(f"Confidence Score: {report.confidence_score:.2f}")
-            logger.info(f"Follow-up Actions: {len(report.follow_up_actions)} items")
-            
-            # Save report
-            filename = f"intelligence_report_{report.report_type.value}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
-            intelligence_module.save_report(report, filename)
-        
+            print(f"\n📋 Report: {report.report_type.value}")
+            print(f"   Title: {report.title}")
+            print(f"   Confidence: {report.confidence_score:.2f}")
+            print(f"   Key findings: {len(report.key_findings)}")
+            print(f"   Innovations: {len(report.innovations_mentioned)}")
+            print(f"   Sources: {len(report.sources)}")
+
+            # Cross-validate
+            validated_report = await intel_module.cross_validate_with_sources(report)
+            print(f"   Post-validation confidence: {validated_report.confidence_score:.2f}")
+
         # Generate trend analysis
-        if len(reports) > 1:
-            logger.info("\nGenerating trend analysis...")
-            trend_analysis = await intelligence_module.generate_trend_analysis(reports)
-            logger.info(f"Trend Analysis: {json.dumps(trend_analysis, default=str, indent=2)}")
-        
-        logger.info("African AI intelligence synthesis completed!")
+        if reports:
+            trends = await intel_module.generate_trend_analysis(reports)
+            print(f"\n📈 Trend Analysis:")
+            print(f"   Time span: {trends['time_span']['total_days']} days")
+            print(f"   Geographic coverage: {len(trends['geographic_coverage'])} countries")
+            print(f"   Recommendations: {len(trends['recommendations'])}")
 
 
 if __name__ == "__main__":
     asyncio.run(main())
-_to_result(extracted_json, extraction_result)
-            except json.JSONDecodeError:
-                logger.warning(f"Failed to parse extracted JSON for {url}")
-        
-        # Fallback to pattern-based extraction from raw content
-        if hasattr(result, 'markdown_content') and result.markdown_content:
-            pattern_extracted = self._pattern_based_extraction(result.markdown_content, content_type)
-            extraction_result = self._merge_pattern_data(extraction_result, pattern_extracted)
-        
-        # Extract links and metadata
-        if hasattr(result, 'links'):
-            extraction_result.source_links = [link.get('href') for link in result.links if link.get('href')]
-        
-        return extraction_result
-    
-    def _map_json_to_result(self, extracted_json: Dict[str, Any], result: InnovationExtractionResult) -> InnovationExtractionResult:
-        """Map extracted JSON data to InnovationExtractionResult fields"""
-        
-        # Map basic innovation info
-        if 'innovation_basic_info' in extracted_json:
-            basic_info = extracted_json['innovation_basic_info']
-            result.title = basic_info.get('title')
-            result.description = basic_info.get('description')
-            result.innovation_type = basic_info.get('innovation_type')
-        
-        # Map problem and solution
-        if 'problem_and_solution' in extracted_json:
-            problem_solution = extracted_json['problem_and_solution']
-            result.problem_solved = problem_solution.get('problem_solved')
-        
-        # Map technical details
-        if 'technical_details' in extracted_json:
-            tech_details = extracted_json['technical_details']
-            result.technical_approach = tech_details.get('technical_approach')
-            result.development_stage = tech_details.get('development_stage')
-            
-            # Handle arrays and objects
-            if tech_details.get('technical_stack'):
-                if isinstance(tech_details['technical_stack'], str):
-                    result.technical_stack = [tech_details['technical_stack']]
-                else:
-                    result.technical_stack = tech_details['technical_stack']
-            
-            if tech_details.get('computational_requirements'):
-                result.computational_requirements = tech_details['computational_requirements']
-            
-            if tech_details.get('datasets_used'):
-                if isinstance(tech_details['datasets_used'], str):
-                    result.datasets_used = [tech_details['datasets_used']]
-                else:
-                    result.datasets_used = tech_details['datasets_used']
-            
-            if tech_details.get('performance_metrics'):
-                result.performance_metrics = tech_details['performance_metrics']
-        
-        # Map team and organization
-        if 'team_and_organization' in extracted_json:
-            team_org = extracted_json['team_and_organization']
-            result.organization_affiliation = team_org.get('organization_name')
-            result.location = team_org.get('location')
-            
-            # Handle creators/founders
-            if team_org.get('founders'):
-                founders_data = team_org['founders']
-                if isinstance(founders_data, str):
-                    result.creators = [{'name': founders_data, 'role': 'founder'}]
-                elif isinstance(founders_data, list):
-                    result.creators = [{'name': founder, 'role': 'founder'} for founder in founders_data]
-        
-        # Map contact information
-        if 'contact_and_social' in extracted_json:
-            contact_info = extracted_json['contact_and_social']
-            result.contact_information = {
-                'email': contact_info.get('email_contacts'),
-                'linkedin': contact_info.get('linkedin_profiles'),
-                'twitter': contact_info.get('twitter_handles'),
-                'github': contact_info.get('github_repositories'),
-                'contact_form': contact_info.get('contact_form_url')
-            }
-        
-        # Map impact and adoption
-        if 'impact_and_adoption' in extracted_json:
-            impact = extracted_json['impact_and_adoption']
-            if impact.get('use_cases'):
-                if isinstance(impact['use_cases'], str):
-                    result.use_cases = [impact['use_cases']]
-                else:
-                    result.use_cases = impact['use_cases']
-            
-            if impact.get('user_statistics'):
-                result.user_adoption_metrics = impact['user_statistics']
-        
-        # Map recognition
-        if 'recognition_and_validation' in extracted_json:
-            recognition = extracted_json['recognition_and_validation']
-            result.recognition = []
-            
-            if recognition.get('awards'):
-                result.recognition.extend(recognition['awards'] if isinstance(recognition['awards'], list) else [recognition['awards']])
-            if recognition.get('media_coverage'):
-                result.media_coverage = recognition['media_coverage'] if isinstance(recognition['media_coverage'], list) else [recognition['media_coverage']]
-        
-        # Map funding information
-        if 'funding_and_business' in extracted_json:
-            funding = extracted_json['funding_and_business']
-            
-            if funding.get('funding_sources'):
-                sources = funding['funding_sources']
-                if isinstance(sources, str):
-                    result.funding_sources = [{'name': sources}]
-                elif isinstance(sources, list):
-                    result.funding_sources = [{'name': source} if isinstance(source, str) else source for source in sources]
-            
-            if funding.get('funding_amounts'):
-                amounts = funding['funding_amounts']
-                result.funding_amounts = amounts if isinstance(amounts, list) else [amounts]
-        
-        return result
-    
-    def _pattern_based_extraction(self, content: str, content_type: ContentType) -> Dict[str, Any]:
-        """Fallback pattern-based extraction when LLM extraction fails"""
-        
-        extracted = {}
-        
-        # Extract emails
-        emails = re.findall(self.validation_patterns['email'], content)
-        if emails:
-            extracted['emails'] = list(set(emails))
-        
-        # Extract URLs
-        urls = re.findall(self.validation_patterns['url'], content)
-        if urls:
-            extracted['urls'] = list(set(urls))
-        
-        # Extract funding amounts
-        funding_amounts = re.findall(self.validation_patterns['funding_amount'], content)
-        if funding_amounts:
-            extracted['funding_amounts'] = funding_amounts
-        
-        # Extract GitHub repositories
-        github_repos = re.findall(self.validation_patterns['github_repo'], content)
-        if github_repos:
-            extracted['github_repos'] = list(set(github_repos))
-        
-        # Extract LinkedIn profiles
-        linkedin_profiles = re.findall(self.validation_patterns['linkedin_profile'], content)
-        if linkedin_profiles:
-            extracted['linkedin_profiles'] = list(set(linkedin_profiles))
-        
-        # Extract African locations
-        african_locations = re.findall(self.validation_patterns['african_location'], content, re.IGNORECASE)
-        if african_locations:
-            extracted['african_locations'] = list(set(african_locations))
-        
-        # Content type specific patterns
-        if content_type == ContentType.GITHUB_REPOSITORY:
-            extracted.update(self._extract_github_patterns(content))
-        elif content_type == ContentType.RESEARCH_PAPER:
-            extracted.update(self._extract_research_patterns(content))
-        elif content_type == ContentType.STARTUP_PROFILE:
-            extracted.update(self._extract_startup_patterns(content))
-        
-        return extracted
-    
-    def _extract_github_patterns(self, content: str) -> Dict[str, Any]:
-        """Extract GitHub-specific patterns"""
-        github_data = {}
-        
-        # Extract star count
-        star_pattern = r'(\d+(?:,\d{3})*)\s*stars?'
-        star_match = re.search(star_pattern, content, re.IGNORECASE)
-        if star_match:
-            github_data['stars'] = star_match.group(1)
-        
-        # Extract programming language
-        language_pattern = r'(?:written in|primary language|mainly)\s+(\w+)'
-        language_match = re.search(language_pattern, content, re.IGNORECASE)
-        if language_match:
-            github_data['primary_language'] = language_match.group(1)
-        
-        # Extract license
-        license_pattern = r'license[:\s]+([A-Z]+(?:\s+[A-Z]+)*)'
-        license_match = re.search(license_pattern, content, re.IGNORECASE)
-        if license_match:
-            github_data['license'] = license_match.group(1)
-        
-        return github_data
-    
-    def _extract_research_patterns(self, content: str) -> Dict[str, Any]:
-        """Extract research paper-specific patterns"""
-        research_data = {}
-        
-        # Extract DOI
-        doi_pattern = r'doi[:\s]*(10\.\d+/[^\s]+)'
-        doi_match = re.search(doi_pattern, content, re.IGNORECASE)
-        if doi_match:
-            research_data['doi'] = doi_match.group(1)
-        
-        # Extract arXiv ID
-        arxiv_pattern = r'arxiv[:\s]*(\d+\.\d+)'
-        arxiv_match = re.search(arxiv_pattern, content, re.IGNORECASE)
-        if arxiv_match:
-            research_data['arxiv_id'] = arxiv_match.group(1)
-        
-        # Extract publication year
-        year_pattern = r'\b(20\d{2})\b'
-        years = re.findall(year_pattern, content)
-        if years:
-            research_data['publication_years'] = list(set(years))
-        
-        return research_data
-    
-    def _extract_startup_patterns(self, content: str) -> Dict[str, Any]:
-        """Extract startup-specific patterns"""
-        startup_data = {}
-        
-        # Extract team size
-        team_pattern = r'(?:team of|employs?|staff of)\s+(\d+)\s+(?:people|employees|members)'
-        team_match = re.search(team_pattern, content, re.IGNORECASE)
-        if team_match:
-            startup_data['team_size'] = team_match.group(1)
-        
-        # Extract founding year
-        founded_pattern = r'(?:founded|established|started)\s+in\s+(20\d{2})'
-        founded_match = re.search(founded_pattern, content, re.IGNORECASE)
-        if founded_match:
-            startup_data['founded_year'] = founded_match.group(1)
-        
-        # Extract valuation
-        valuation_pattern = r'valued\s+at\s+\$?(\d+(?:\.\d+)?)\s*(?:million|billion|M|B)'
-        valuation_match = re.search(valuation_pattern, content, re.IGNORECASE)
-        if valuation_match:
-            startup_data['valuation'] = valuation_match.group(0)
-        
-        return startup_data
-    
-    def _merge_pattern_data(self, result: InnovationExtractionResult, pattern_data: Dict[str, Any]) -> InnovationExtractionResult:
-        """Merge pattern-extracted data into result"""
-        
-        # Merge contact information
-        if not result.contact_information:
-            result.contact_information = {}
-        
-        if 'emails' in pattern_data:
-            result.contact_information['email'] = pattern_data['emails'][0] if pattern_data['emails'] else None
-        
-        if 'github_repos' in pattern_data:
-            result.contact_information['github'] = pattern_data['github_repos']
-        
-        if 'linkedin_profiles' in pattern_data:
-            result.contact_information['linkedin'] = pattern_data['linkedin_profiles']
-        
-        # Merge funding information
-        if 'funding_amounts' in pattern_data and not result.funding_amounts:
-            result.funding_amounts = pattern_data['funding_amounts']
-        
-        # Merge location information
-        if 'african_locations' in pattern_data and not result.location:
-            result.location = pattern_data['african_locations'][0] if pattern_data['african_locations'] else None
-        
-        # Merge additional URLs
-        if 'urls' in pattern_data:
-            if not result.source_links:
-                result.source_links = []
-            result.source_links.extend(pattern_data['urls'])
-        
-        return result
-    
-    async def _follow_related_links(self, 
-                                  result: Any, 
-                                  content_type: ContentType, 
-                                  max_depth: int) -> Dict[str, Any]:
-        """Follow related links for additional context"""
-        
-        if max_depth <= 0:
-            return {}
-        
-        additional_data = {}
-        
-        # Identify high-value links to follow
-        priority_links = []
-        
-        if hasattr(result, 'links'):
-            for link in result.links[:5]:  # Limit to top 5 links
-                href = link.get('href', '')
-                text = link.get('text', '').lower()
-                
-                # Prioritize certain types of links
-                if any(keyword in text for keyword in ['about', 'team', 'product', 'demo', 'github', 'paper']):
-                    priority_links.append(href)
-                
-                # For GitHub repos, follow documentation links
-                if content_type == ContentType.GITHUB_REPOSITORY and any(keyword in text for keyword in ['docs', 'wiki', 'readme']):
-                    priority_links.append(href)
-        
-        # Extract data from priority links
-        for link_url in priority_links[:3]:  # Maximum 3 additional links
-            try:
-                link_result = await self.crawler.arun(
-                    url=link_url,
-                    bypass_cache=True,
-                    magic=True
-                )
-                
-                if hasattr(link_result, 'markdown_content'):
-                    link_patterns = self._pattern_based_extraction(link_result.markdown_content, content_type)
-                    additional_data[link_url] = link_patterns
-                
-                await asyncio.sleep(1)  # Rate limiting
-                
-            except Exception as e:
-                logger.warning(f"Failed to extract from link {link_url}: {e}")
-                continue
-        
-        return additional_data
-    
-    def _merge_extraction_data(self, 
-                             primary: InnovationExtractionResult, 
-                             additional: Dict[str, Any]) -> InnovationExtractionResult:
-        """Merge additional extraction data into primary result"""
-        
-        for url, data in additional.items():
-            # Add to source links
-            if not primary.source_links:
-                primary.source_links = []
-            if url not in primary.source_links:
-                primary.source_links.append(url)
-            
-            # Enhance contact information
-            if 'emails' in data and primary.contact_information:
-                if not primary.contact_information.get('email'):
-                    primary.contact_information['email'] = data['emails'][0]
-            
-            # Enhance technical stack
-            if 'primary_language' in data and not primary.technical_stack:
-                primary.technical_stack = [data['primary_language']]
-        
-        return primary
-    
-    def _calculate_completeness_score(self, result: InnovationExtractionResult) -> float:
-        """Calculate data completeness score based on filled fields"""
-        
-        total_fields = 0
-        filled_fields = 0
-        
-        # Core fields (weighted more heavily)
-        core_fields = ['title', 'description', 'innovation_type', 'problem_solved']
-        for field in core_fields:
-            total_fields += 2  # Weight core fields double
-            if getattr(result, field):
-                filled_fields += 2
-        
-        # Standard fields
-        standard_fields = [
-            'technical_approach', 'development_stage', 'technical_stack',
-            'creators', 'organization_affiliation', 'location', 'contact_information',
-            'use_cases', 'funding_sources'
+
+
+# Additional helper methods that were in the corrupted portion
+
+def _map_json_to_result(data: Dict[str, Any]) -> Dict[str, Any]:
+    """Map JSON response to structured result"""
+
+    mapped_result = {
+        'type': 'intelligence_synthesis',
+        'timestamp': datetime.now(),
+        'raw_data': data
+    }
+
+    # Extract structured information
+    if 'content' in data:
+        content = data['content']
+
+        # Look for funding information
+        if any(keyword in content.lower() for keyword in ['funding', 'investment', 'raised', 'million', 'series']):
+            mapped_result['funding_signals'] = True
+
+        # Look for innovation signals
+        if any(keyword in content.lower() for keyword in ['ai', 'artificial intelligence', 'machine learning', 'startup']):
+            mapped_result['innovation_signals'] = True
+
+        # Look for research signals
+        if any(keyword in content.lower() for keyword in ['research', 'university', 'paper', 'study']):
+            mapped_result['research_signals'] = True
+
+    return mapped_result
+
+
+def _pattern_based_extraction(content: str, extraction_type: str) -> Dict[str, Any]:
+    """Extract information using pattern matching"""
+
+    import re
+
+    extracted = {
+        'extraction_type': extraction_type,
+        'patterns_found': [],
+        'entities': []
+    }
+
+    if extraction_type == 'funding':
+        # Look for funding patterns
+        funding_patterns = [
+            r'\$(\d+(?:\.\d+)?)\s*(million|billion|M|B)',
+            r'raised\s+\$?(\d+(?:\.\d+)?)\s*(million|billion|M|B)',
+            r'funding\s+of\s+\$?(\d+(?:\.\d+)?)\s*(million|billion|M|B)'
         ]
-        
-        for field in standard_fields:
-            total_fields += 1
-            field_value = getattr(result, field)
-            if field_value:
-                # Check if it's a meaningful value (not empty list/dict)
-                if isinstance(field_value, (list, dict)):
-                    if field_value:
-                        filled_fields += 1
-                else:
-                    filled_fields += 1
-        
-        return filled_fields / total_fields if total_fields > 0 else 0.0
-    
-    def _calculate_confidence_score(self, result: InnovationExtractionResult, crawl_result: Any) -> float:
-        """Calculate confidence score based on extraction quality indicators"""
-        
-        confidence = 0.5  # Base confidence
-        
-        # Boost confidence for successful LLM extraction
-        if hasattr(crawl_result, 'extracted_content') and crawl_result.extracted_content:
-            confidence += 0.2
-        
-        # Boost confidence for pattern matches
-        if result.contact_information and any(result.contact_information.values()):
-            confidence += 0.1
-        
-        # Boost confidence for African relevance
-        if result.location and any(country in result.location for country in ['South Africa', 'Nigeria', 'Kenya', 'Ghana']):
-            confidence += 0.15
-        
-        # Boost confidence for technical depth
-        if result.technical_stack and len(result.technical_stack) > 1:
-            confidence += 0.1
-        
-        # Boost confidence for funding information
-        if result.funding_sources or result.funding_amounts:
-            confidence += 0.1
-        
-        return min(1.0, confidence)  # Cap at 1.0
-    
-    def _generate_validation_flags(self, result: InnovationExtractionResult) -> List[str]:
-        """Generate validation flags for manual review"""
-        
-        flags = []
-        
-        # Flag missing core information
-        if not result.title:
-            flags.append("Missing title - manual verification needed")
-        
-        if not result.description:
-            flags.append("Missing description - may need additional sources")
-        
-        if not result.location:
-            flags.append("No African location identified - verify geographic relevance")
-        
-        # Flag incomplete contact information
-        if not result.contact_information or not any(result.contact_information.values()):
-            flags.append("No contact information found - outreach may be difficult")
-        
-        # Flag unverified funding claims
-        if result.funding_amounts but not result.funding_sources:
-            flags.append("Funding amounts mentioned without sources - verify claims")
-        
-        # Flag technical depth concerns
-        if not result.technical_approach and not result.technical_stack:
-            flags.append("Limited technical details - may need deeper investigation")
-        
-        return flags
-    
-    def to_json(self, result: InnovationExtractionResult) -> str:
-        """Convert extraction result to JSON"""
-        return json.dumps(asdict(result), default=str, indent=2)
-    
-    def save_extraction(self, result: InnovationExtractionResult, filepath: str) -> None:
-        """Save extraction result to file"""
-        with open(filepath, 'w') as f:
-            f.write(self.to_json(result))
-        
-        logger.info(f"Extraction result saved to {filepath}")
+
+        for pattern in funding_patterns:
+            matches = re.finditer(pattern, content, re.IGNORECASE)
+            for match in matches:
+                extracted['patterns_found'].append({
+                    'pattern': pattern,
+                    'match': match.group(),
+                    'amount': match.group(1),
+                    'unit': match.group(2)
+                })
+
+    return extracted
 
 
-# Example usage and testing
+def _extract_github_patterns(content: str) -> List[Dict[str, Any]]:
+    """Extract GitHub-related patterns"""
+
+    import re
+
+    github_patterns = [
+        r'github\.com/([^/\s]+/[^/\s]+)',
+        r'open[- ]?source',
+        r'repository',
+        r'code[- ]?base'
+    ]
+
+    github_findings = []
+
+    for pattern in github_patterns:
+        matches = re.finditer(pattern, content, re.IGNORECASE)
+        for match in matches:
+            github_findings.append({
+                'pattern': pattern,
+                'match': match.group(),
+                'context': content[max(0, match.start()-50):match.end()+50]
+            })
+
+    return github_findings
+
+
+def _extract_research_patterns(content: str) -> List[Dict[str, Any]]:
+    """Extract research-related patterns"""
+
+    import re
+
+    research_patterns = [
+        r'university\s+of\s+\w+',
+        r'research\s+paper',
+        r'published\s+in',
+        r'conference\s+on',
+        r'journal\s+of'
+    ]
+
+    research_findings = []
+
+    for pattern in research_patterns:
+        matches = re.finditer(pattern, content, re.IGNORECASE)
+        for match in matches:
+            research_findings.append({
+                'pattern': pattern,
+                'match': match.group(),
+                'context': content[max(0, match.start()-50):match.end()+50]
+            })
+
+    return research_findings
+
+
+def _extract_startup_patterns(content: str) -> List[Dict[str, Any]]:
+    """Extract startup-related patterns"""
+
+    import re
+
+    startup_patterns = [
+        r'startup\s+\w+',
+        r'founded\s+by',
+        r'co-?founder',
+        r'entrepreneur',
+        r'launched\s+in\s+\d{4}'
+    ]
+
+    startup_findings = []
+
+    for pattern in startup_patterns:
+        matches = re.finditer(pattern, content, re.IGNORECASE)
+        for match in matches:
+            startup_findings.append({
+                'pattern': pattern,
+                'match': match.group(),
+                'context': content[max(0, match.start()-50):match.end()+50]
+            })
+
+    return startup_findings
+
+
+def _merge_pattern_data(github_data: List[Dict], research_data: List[Dict],
+                       startup_data: List[Dict]) -> Dict[str, Any]:
+    """Merge different pattern extraction results"""
+
+    merged = {
+        'github_signals': len(github_data),
+        'research_signals': len(research_data),
+        'startup_signals': len(startup_data),
+        'total_signals': len(github_data) + len(research_data) + len(startup_data),
+        'detailed_findings': {
+            'github': github_data,
+            'research': research_data,
+            'startup': startup_data
+        }
+    }
+
+    return merged
+
+
+async def _follow_related_links(result: Any, content_type: Any, max_depth: int) -> Dict[str, Any]:
+    """Follow related links for additional context"""
+
+    additional_data = {
+        'followed_links': [],
+        'additional_context': [],
+        'extraction_depth': max_depth
+    }
+
+    # This would implement actual link following logic
+    # For now, return placeholder data
+
+    return additional_data
+
+
+def _merge_extraction_data(primary_data: Any, additional_data: Dict[str, Any]) -> Any:
+    """Merge primary extraction data with additional context"""
+
+    # This would implement sophisticated data merging
+    # For now, just return the primary data
+
+    if hasattr(primary_data, 'additional_context'):
+        primary_data.additional_context = additional_data.get('additional_context', [])
+
+    return primary_data
+
+
+def _calculate_completeness_score(extracted_data: Any) -> float:
+    """Calculate data completeness score"""
+
+    score = 0.0
+    max_score = 1.0
+
+    # Check for required fields
+    if hasattr(extracted_data, 'url') and extracted_data.url:
+        score += 0.2
+
+    if hasattr(extracted_data, 'content_type') and extracted_data.content_type:
+        score += 0.2
+
+    if hasattr(extracted_data, 'success') and extracted_data.success:
+        score += 0.3
+
+    if hasattr(extracted_data, 'structured_data') and extracted_data.structured_data:
+        score += 0.3
+
+    return min(score, max_score)
+
+
+def _calculate_confidence_score(extracted_data: Any, result: Any) -> float:
+    """Calculate confidence score for extraction"""
+
+    base_score = 0.5
+
+    # Boost score based on successful extraction
+    if hasattr(extracted_data, 'success') and extracted_data.success:
+        base_score += 0.3
+
+    # Boost score based on data richness
+    if hasattr(extracted_data, 'structured_data') and extracted_data.structured_data:
+        data_richness = len(str(extracted_data.structured_data)) / 1000  # Normalize
+        base_score += min(0.2, data_richness)
+
+    return min(1.0, base_score)
+
+
+def _generate_validation_flags(extracted_data: Any) -> List[str]:
+    """Generate validation flags for extracted data"""
+
+    flags = []
+
+    if not hasattr(extracted_data, 'success') or not extracted_data.success:
+        flags.append("Extraction failed")
+
+    if hasattr(extracted_data, 'url') and not extracted_data.url:
+        flags.append("Missing URL")
+
+    if hasattr(extracted_data, 'structured_data') and not extracted_data.structured_data:
+        flags.append("No structured data extracted")
+
+    return flags
+
+
+def to_json(obj: Any) -> str:
+    """Convert object to JSON string"""
+    if hasattr(obj, '__dict__'):
+        return json.dumps(obj.__dict__, indent=2, default=str)
+    else:
+        return json.dumps(obj, indent=2, default=str)
+
+
+def save_extraction(obj: Any, filepath: str):
+    """Save extraction to file"""
+    with open(filepath, 'w') as f:
+        f.write(to_json(obj))
+
+
 async def main():
-    """Example usage of Enhanced Crawl4AI Integration"""
-    
-    # Initialize with OpenAI API key for LLM extraction
-    openai_api_key = "your_openai_api_key_here"
-    
-    async with IntelligentCrawl4AIOrchestrator(llm_api_key=openai_api_key) as orchestrator:
-        
-        # Test URLs for different content types
-        test_urls = [
-            ("https://github.com/instadeepai", ContentType.GITHUB_REPOSITORY),
-            ("https://zindi.africa", ContentType.STARTUP_PROFILE),
-            ("https://arxiv.org/abs/2301.00001", ContentType.RESEARCH_PAPER)  # Example arXiv URL
-        ]
-        
-        for url, content_type in test_urls:
-            logger.info(f"\n--- Testing {content_type.value} extraction ---")
-            
-            try:
-                result = await orchestrator.extract_innovation_data(
-                    url=url,
-                    content_type=content_type,
-                    follow_links=True,
-                    max_depth=1
-                )
-                
-                logger.info(f"Extraction successful: {result.success}")
-                logger.info(f"Completeness score: {result.data_completeness_score:.2f}")
-                logger.info(f"Confidence score: {result.confidence_score:.2f}")
-                logger.info(f"Title: {result.title}")
-                logger.info(f"Location: {result.location}")
-                logger.info(f"Validation flags: {len(result.validation_flags) if result.validation_flags else 0}")
-                
-                # Save result
-                filename = f"extraction_{content_type.value}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
-                orchestrator.save_extraction(result, filename)
-                
-            except Exception as e:
-                logger.error(f"Extraction failed for {url}: {e}")
-        
-        logger.info("\nCrawl4AI integration testing completed!")
+    """Test main function"""
+    print("🧪 Testing perplexity_african_ai module")
 
+    # Test pattern extraction
+    test_content = """
+    Nigerian startup Flutterwave raised $250 million in Series C funding.
+    The company was founded by Olugbenga Agboola and is based in Lagos.
+    Their open source project is available on github.com/flutterwave/flutterwave.
+    Research from University of Lagos shows promising results.
+    """
 
-if __name__ == "__main__":
-    asyncio.run(main())
+    github_patterns = _extract_github_patterns(test_content)
+    research_patterns = _extract_research_patterns(test_content)
+    startup_patterns = _extract_startup_patterns(test_content)
+
+    merged_data = _merge_pattern_data(github_patterns, research_patterns, startup_patterns)
+
+    print(f"✅ Pattern extraction test completed")
+    print(f"   GitHub signals: {merged_data['github_signals']}")
+    print(f"   Research signals: {merged_data['research_signals']}")
+    print(f"   Startup signals: {merged_data['startup_signals']}")
+    print(f"   Total signals: {merged_data['total_signals']}")

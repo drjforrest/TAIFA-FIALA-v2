@@ -7,8 +7,8 @@ from datetime import datetime
 from typing import Optional, List
 from uuid import UUID, uuid4
 
-from sqlalchemy import Column, String, Text, DateTime, Boolean, Numeric, Date, ForeignKey, Table, JSONB
-from sqlalchemy.dialects.postgresql import UUID as PostgreSQLUUID
+from sqlalchemy import Column, String, Text, DateTime, Boolean, Numeric, Date, ForeignKey, Table
+from sqlalchemy.dialects.postgresql import UUID as PostgreSQLUUID, JSONB
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, Mapped, mapped_column
 from pydantic import BaseModel, Field
