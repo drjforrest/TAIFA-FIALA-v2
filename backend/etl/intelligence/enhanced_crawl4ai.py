@@ -777,7 +777,7 @@ class IntelligentCrawl4AIOrchestrator:
             flags.append("No contact information found - outreach may be difficult")
 
         # Flag unverified funding claims
-        if result.funding_amounts but not result.funding_sources:
+        if result.funding_amounts and not result.funding_sources:
             flags.append("Funding amounts mentioned without sources - verify claims")
 
         # Flag technical depth concerns

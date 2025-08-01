@@ -66,12 +66,20 @@ async def startup_event():
     """Initialize services on startup"""
     logger.info("Starting TAIFA-FIALA API...")
 
-    # Initialize vector service
-    try:
-        vector_service = await get_vector_service()
-        logger.info("Vector service initialized")
-    except Exception as e:
-        logger.error(f"Failed to initialize vector service: {e}")
+    # Initialize vector service asynchronously (non-blocking)
+    async def init_vector_service():
+        try:
+            import asyncio
+            vector_service = await asyncio.wait_for(get_vector_service(), timeout=10.0)
+            logger.info("Vector service initialized")
+        except asyncio.TimeoutError:
+            logger.warning("Vector service initialization timed out - will retry on first use")
+        except Exception as e:
+            logger.error(f"Failed to initialize vector service: {e}")
+
+    # Start initialization in background, don't wait for it
+    asyncio.create_task(init_vector_service())
+    logger.info("TAIFA-FIALA API startup complete - services initializing in background")
 
 
 @app.on_event("shutdown")

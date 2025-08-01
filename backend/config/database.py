@@ -12,8 +12,8 @@ from config.settings import settings
 
 # Supabase client for auth and real-time features
 supabase: Client = create_client(
-    supabase_url=settings.SUPABASE_URL,
-    supabase_key=settings.SUPABASE_SERVICE_ROLE_KEY
+    supabase_url=settings.NEXT_PUBLIC_SUPABASE_URL,
+    supabase_key=settings.SUPABASE_SECRET_KEY
 )
 
 # SQLAlchemy engine for direct database access

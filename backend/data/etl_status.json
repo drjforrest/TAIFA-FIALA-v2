@@ -1,0 +1,56 @@
+{
+  "arxiv_scraper": {
+    "last_run": "2025-08-01T12:39:43.290246",
+    "last_success": "2025-08-01T12:39:43.290248",
+    "last_error": null,
+    "success_count": 1,
+    "error_count": 0,
+    "avg_runtime": 6.416640996932983,
+    "items_processed": 0
+  },
+  "news_monitor": {
+    "last_run": null,
+    "last_success": null,
+    "last_error": null,
+    "success_count": 0,
+    "error_count": 0,
+    "avg_runtime": 0.0,
+    "items_processed": 0
+  },
+  "serper_search": {
+    "last_run": null,
+    "last_success": null,
+    "last_error": null,
+    "success_count": 0,
+    "error_count": 0,
+    "avg_runtime": 0.0,
+    "items_processed": 0
+  },
+  "crawl4ai": {
+    "last_run": null,
+    "last_success": null,
+    "last_error": null,
+    "success_count": 0,
+    "error_count": 0,
+    "avg_runtime": 0.0,
+    "items_processed": 0
+  },
+  "startup_tracker": {
+    "last_run": null,
+    "last_success": null,
+    "last_error": null,
+    "success_count": 0,
+    "error_count": 0,
+    "avg_runtime": 0.0,
+    "items_processed": 0
+  },
+  "funding_tracker": {
+    "last_run": null,
+    "last_success": null,
+    "last_error": null,
+    "success_count": 0,
+    "error_count": 0,
+    "avg_runtime": 0.0,
+    "items_processed": 0
+  }
+}
