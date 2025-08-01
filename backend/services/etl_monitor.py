@@ -159,7 +159,8 @@ class ETLMonitor:
             db_status = "healthy"
             try:
                 db = next(get_db())
-                db.execute("SELECT 1")
+                from sqlalchemy import text
+                db.execute(text("SELECT 1"))
                 db.close()
             except Exception as e:
                 db_status = f"error: {str(e)[:50]}"

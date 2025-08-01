@@ -43,7 +43,7 @@ class RSSMonitor:
     """RSS feed monitor for African tech news"""
     
     def __init__(self):
-        self.rss_feeds = settings.RSS_FEEDS
+        self.rss_feeds = settings.rss_feeds
         self.session = None
         self.african_countries = set(settings.AFRICAN_COUNTRIES)
         self.innovation_types = {
@@ -408,7 +408,7 @@ class RSSMonitor:
         ]
         
         funding_mentions = []
-        for pattern in patterns:
+        for pattern in funding_patterns:
             matches = re.finditer(pattern, text, re.IGNORECASE)
             for match in matches:
                 try:

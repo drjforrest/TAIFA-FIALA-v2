@@ -20,6 +20,9 @@ class Settings(BaseSettings):
     LOG_LEVEL: str = "INFO"
 
     # Supabase Configuration
+    SUPABASE_URL: str
+    SUPABASE_ANON_KEY: str
+    SUPABASE_SERVICE_ROLE_KEY: str
     SUPABASE_PUBLISHABLE_KEY: str
     SUPABASE_SECRET_KEY: str
     NEXT_PUBLIC_SUPABASE_URL: str
@@ -32,15 +35,20 @@ class Settings(BaseSettings):
     port: str
     dbname: str
 
-    # Database URL for SQLAlchemy (constructed from components)
+    # Database URL (can be override or constructed from components)
+    DATABASE_URL: Optional[str] = None
+    
     @property
-    def DATABASE_URL(self) -> str:
+    def db_url(self) -> str:
+        if self.DATABASE_URL:
+            return self.DATABASE_URL
         return f"postgresql://{self.user}:{self.password}@{self.host}:{self.port}/{self.dbname}"
 
     # Pinecone Configuration
     PINECONE_API_KEY: str
     PINECONE_HOST: str
     PINECONE_INDEX: str
+    PINECONE_INDEX_NAME: str
     PINECONE_INTEGRATED_EMBEDDING: bool
     PINECONE_ENVIRONMENT: str
 
@@ -82,8 +90,18 @@ class Settings(BaseSettings):
     PUBMED_BASE_URL: str = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils"
     CROSSREF_BASE_URL: str = "https://api.crossref.org/works"
 
-    # RSS Feeds
-    RSS_FEEDS: str = "https://techcabal.com/feed/"
+    # RSS Feeds  
+    RSS_FEEDS: Optional[List[str]] = None
+
+    @property
+    def rss_feeds(self) -> List[str]:
+        """Get RSS feeds with default values"""
+        return self.RSS_FEEDS or [
+            "https://techcabal.com/feed/",
+            "https://ventureburn.com/feed/",
+            "https://disrupt-africa.com/feed/",
+            "https://itnewsafrica.com/feed/"
+        ]
 
     # File Storage
     UPLOAD_DIR: str = "./uploads"
@@ -103,10 +121,41 @@ class Settings(BaseSettings):
         "https://taifa-fiala.vercel.app"
     ]
 
-    class Config:
-        env_file = ".env"
-        env_file_encoding = 'utf-8'
-        case_sensitive = True
+    # African Countries for ETL filtering
+    AFRICAN_COUNTRIES: List[str] = [
+        "Algeria", "Angola", "Benin", "Botswana", "Burkina Faso", "Burundi",
+        "Cameroon", "Cape Verde", "Central African Republic", "Chad", "Comoros",
+        "Congo", "Democratic Republic of Congo", "Djibouti", "Egypt",
+        "Equatorial Guinea", "Eritrea", "Eswatini", "Ethiopia", "Gabon",
+        "Gambia", "Ghana", "Guinea", "Guinea-Bissau", "Ivory Coast", "Kenya",
+        "Lesotho", "Liberia", "Libya", "Madagascar", "Malawi", "Mali",
+        "Mauritania", "Mauritius", "Morocco", "Mozambique", "Namibia", "Niger",
+        "Nigeria", "Rwanda", "Sao Tome and Principe", "Senegal", "Seychelles",
+        "Sierra Leone", "Somalia", "South Africa", "South Sudan", "Sudan",
+        "Tanzania", "Togo", "Tunisia", "Uganda", "Zambia", "Zimbabwe"
+    ]
+
+    # African institutions for research filtering
+    AFRICAN_INSTITUTIONS: List[str] = [
+        "University of Cape Town", "University of the Witwatersrand", "Stellenbosch University",
+        "Cairo University", "American University in Cairo", "University of Nairobi",
+        "Makerere University", "University of Ghana", "University of Lagos",
+        "Addis Ababa University", "Mohammed V University", "University of Tunis"
+    ]
+
+    # AI keywords for academic search
+    AFRICAN_AI_KEYWORDS: List[str] = [
+        "artificial intelligence", "machine learning", "deep learning",
+        "neural networks", "computer vision", "natural language processing",
+        "data science", "automation", "robotics"
+    ]
+
+    model_config = {
+        "env_file": ".env",
+        "env_file_encoding": "utf-8",
+        "case_sensitive": True,
+        "extra": "ignore"  # Ignore extra fields from environment
+    }
 
 
 class DevelopmentSettings(Settings):
