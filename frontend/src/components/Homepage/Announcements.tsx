@@ -179,59 +179,6 @@ const Announcements: React.FC = () => {
           <AnnouncementCard key={announcement.id} announcement={announcement} />
         ))}
       </div>
-
-      {/* Summary Stats */}
-      <div 
-        className="p-6 rounded-xl border"
-        style={{
-          backgroundColor: "var(--color-muted)",
-          borderColor: "var(--color-border)"
-        }}
-      >
-        <div className="grid md:grid-cols-3 gap-6 text-center">
-          <div>
-            <div className="text-2xl font-bold mb-1" style={{ color: "var(--color-primary)" }}>
-              ${(totalConfirmed/1000).toFixed(1)}B
-            </div>
-            <div className="text-sm" style={{ color: "var(--color-muted-foreground)" }}>
-              Confirmed Commitments
-            </div>
-          </div>
-          <div>
-            <div className="text-2xl font-bold mb-1" style={{ color: "var(--color-info)" }}>
-              4
-            </div>
-            <div className="text-sm" style={{ color: "var(--color-muted-foreground)" }}>
-              Major Announcements
-            </div>
-          </div>
-          <div>
-            <div className="text-2xl font-bold mb-1" style={{ color: "var(--color-success)" }}>
-              75%
-            </div>
-            <div className="text-sm" style={{ color: "var(--color-muted-foreground)" }}>
-              Infrastructure Focus
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Research Note */}
-      <div 
-        className="p-4 rounded-lg border-l-4"
-        style={{
-          backgroundColor: "var(--color-muted)",
-          borderLeftColor: "var(--color-info)"
-        }}
-      >
-        <Section3Text as="h4" className="font-medium mb-2" style={{ color: "var(--color-info)" }}>
-          Research Methodology
-        </Section3Text>
-        <Section3Text as="p" className="text-sm" style={{ color: "var(--color-muted-foreground)" }}>
-          All announcements verified through official press releases, government statements, and corporate filings. 
-          TAIFA-FIALA tracks implementation progress and actual disbursements separately from initial commitments.
-        </Section3Text>
-      </div>
     </div>
   );
 };

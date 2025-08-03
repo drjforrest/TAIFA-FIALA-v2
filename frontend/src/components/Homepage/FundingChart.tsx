@@ -437,23 +437,7 @@ const InteractiveAnalyticsPanel = () => {
         fontFamily: "system-ui, -apple-system, sans-serif",
       }}
     >
-      {/* Subtitle only - main title is handled by page header */}
-      <div style={{ textAlign: "center", marginBottom: "32px" }}>
-        <p
-          style={{
-            color: "var(--color-muted-foreground)",
-            fontSize: "14px",
-            marginTop: 0,
-            marginBottom: 0,
-            marginLeft: "auto",
-            marginRight: "auto",
-            maxWidth: "600px",
-          }}
-        >
-          Verified investment analysis across 159 companies • Last updated:
-          August 2025
-        </p>
-      </div>
+      {/* Main title is handled by page header */}
 
       {/* Key Stats Row */}
       <div
@@ -473,9 +457,9 @@ const InteractiveAnalyticsPanel = () => {
           trend="+127% since 2023"
         />
         <StatCard
-          title="Active Startups"
+          title="Active Invested Startups"
           value="159"
-          subtitle="$5.0M average funding"
+          subtitle="$5.0M average funding each"
           icon={Building2}
           trend="22 countries represented"
         />
@@ -487,7 +471,19 @@ const InteractiveAnalyticsPanel = () => {
           trend="High concentration risk"
         />
       </div>
-
+      {/* Stat Cards Footer */}
+      <div
+        style={{
+          textAlign: "center",
+          marginTop: "-16px",
+          marginBottom: "24px",
+          color: "var(--color-muted-foreground)",
+          fontSize: "13px",
+          letterSpacing: 0.1,
+        }}
+      >
+        Verified investment analysis across 159 companies • Last updated: August 2025
+      </div>
       {/* Tabs */}
       <Tabs
         selectedIndex={selectedTab}
@@ -665,7 +661,8 @@ const InteractiveAnalyticsPanel = () => {
           style={{
             color: "var(--color-foreground)",
             marginBottom: "12px",
-            fontSize: "16px",
+            fontWeight: "600",
+            fontSize: "20px",
           }}
         >
           Data Quality & Verification
@@ -802,7 +799,7 @@ const InteractiveAnalyticsPanel = () => {
           </ul>
         </div>
       </div>
-    </div>
+      </div>
   );
 };
 

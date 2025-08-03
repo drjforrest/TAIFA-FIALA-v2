@@ -281,3 +281,22 @@ async def bulk_store_publications_with_dedup(publications: List[Dict[str, Any]])
     """Convenience function to bulk store publications with deduplication"""
     results = await etl_dedup_manager.bulk_process_publications_with_dedup(publications)
     return results['stored']
+
+async def check_and_handle_publication_duplicates(publication_data: Dict[str, Any]) -> Tuple[bool, Optional[Dict[str, Any]]]:
+    """
+    Legacy function name for backward compatibility
+    Check for duplicates and handle them according to deduplication rules
+    
+    Returns:
+        (should_store: bool, existing_record: Optional[Dict])
+    """
+    stored, record, duplicate_matches = await etl_dedup_manager.process_publication_with_dedup(publication_data)
+    
+    if stored:
+        return True, record
+    elif duplicate_matches:
+        # Return the best match if duplicates were found
+        best_match = max(duplicate_matches, key=lambda x: x.confidence)
+        return False, best_match.existing_record
+    else:
+        return False, None
