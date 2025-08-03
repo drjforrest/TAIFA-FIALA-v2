@@ -8,18 +8,16 @@ from datetime import datetime
 from typing import List, Optional
 from uuid import UUID, uuid4
 
-from fastapi import FastAPI, HTTPException, Depends, BackgroundTasks, Query
+from fastapi import FastAPI, HTTPException, Depends, BackgroundTasks, Query, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
 from slowapi.middleware import SlowAPIMiddleware
-from sqlalchemy.orm import Session
 from loguru import logger
 
 from config.settings import settings
-from config.database import get_db
 from models.database import *
 from models.schemas import *
 from services.vector_service import get_vector_service, VectorService
@@ -103,60 +101,118 @@ async def health_check():
     }
 
 
+# Database Test Endpoint
+@app.get("/test-db")
+async def test_database_connection():
+    """Test Supabase database connection"""
+    try:
+        from config.database import get_supabase
+        supabase = get_supabase()
+        
+        # Test connection by querying innovations table
+        response = supabase.table('innovations').select('id').limit(1).execute()
+        
+        return {
+            "status": "success",
+            "message": "Supabase connection working",
+            "sample_data_found": len(response.data) > 0 if response.data else False,
+            "timestamp": datetime.now()
+        }
+    except Exception as e:
+        logger.error(f"Database test failed: {e}")
+        return {
+            "status": "error",
+            "message": f"Supabase connection failed: {str(e)}",
+            "timestamp": datetime.now()
+        }
+
+
 # Innovation Endpoints
 @app.get("/api/innovations", response_model=InnovationSearchResponse)
 @limiter.limit("30/minute")
 async def get_innovations(
-    request,
-    params: InnovationSearchParams = Depends(),
-    db: Session = Depends(get_db)
+    request: Request,
+    params: InnovationSearchParams = Depends()
 ):
-    """Get innovations with search and filtering"""
+    """Get innovations with search and filtering using Supabase client"""
     try:
-        query = db.query(Innovation)
-
+        from config.database import get_supabase
+        supabase = get_supabase()
+        
+        # Build Supabase query
+        query = supabase.table('innovations').select('*')
+        
         # Apply filters
         if params.innovation_type:
-            query = query.filter(Innovation.innovation_type == params.innovation_type)
-
+            query = query.eq('innovation_type', params.innovation_type)
+            
         if params.verification_status:
-            query = query.filter(Innovation.verification_status == params.verification_status)
-
-        if params.min_funding or params.max_funding:
-            query = query.join(Funding)
-            if params.min_funding:
-                query = query.filter(Funding.amount >= params.min_funding)
-            if params.max_funding:
-                query = query.filter(Funding.amount <= params.max_funding)
-
+            query = query.eq('verification_status', params.verification_status)
+            
         if params.date_from:
-            query = query.filter(Innovation.created_at >= params.date_from)
-
+            query = query.gte('created_at', params.date_from.isoformat())
+            
         if params.date_to:
-            query = query.filter(Innovation.created_at <= params.date_to)
-
-        # Count total results
-        total = query.count()
-
+            query = query.lte('created_at', params.date_to.isoformat())
+        
         # Apply sorting
         if params.sort_by == "title":
-            query = query.order_by(Innovation.title.desc() if params.sort_order == "desc" else Innovation.title)
+            query = query.order('title', desc=(params.sort_order == "desc"))
         elif params.sort_by == "updated_at":
-            query = query.order_by(Innovation.updated_at.desc() if params.sort_order == "desc" else Innovation.updated_at)
+            query = query.order('updated_at', desc=(params.sort_order == "desc"))
         else:  # default: created_at
-            query = query.order_by(Innovation.created_at.desc() if params.sort_order == "desc" else Innovation.created_at)
-
+            query = query.order('created_at', desc=(params.sort_order == "desc"))
+        
+        # Get total count for pagination (separate query)
+        count_query = supabase.table('innovations').select('id', count='exact')
+        if params.innovation_type:
+            count_query = count_query.eq('innovation_type', params.innovation_type)
+        if params.verification_status:
+            count_query = count_query.eq('verification_status', params.verification_status)
+        if params.date_from:
+            count_query = count_query.gte('created_at', params.date_from.isoformat())
+        if params.date_to:
+            count_query = count_query.lte('created_at', params.date_to.isoformat())
+            
+        count_response = count_query.execute()
+        total = count_response.count if count_response.count is not None else 0
+        
         # Apply pagination
-        innovations = query.offset(params.offset).limit(params.limit).all()
-
+        query = query.range(params.offset, params.offset + params.limit - 1)
+        
+        # Execute query
+        response = query.execute()
+        innovations_data = response.data if response.data else []
+        
+        # Convert to response format
+        innovations = []
+        for innovation_data in innovations_data:
+            # Convert Supabase data to InnovationResponse format
+            innovations.append({
+                "id": innovation_data.get("id"),
+                "title": innovation_data.get("title"),
+                "description": innovation_data.get("description"),
+                "innovation_type": innovation_data.get("innovation_type"),
+                "verification_status": innovation_data.get("verification_status"),
+                "visibility": innovation_data.get("visibility"),
+                "country": innovation_data.get("country"),
+                "creation_date": innovation_data.get("creation_date"),
+                "organizations": innovation_data.get("organizations", []),
+                "individuals": innovation_data.get("individuals", []),
+                "fundings": innovation_data.get("fundings", []),
+                "publications": innovation_data.get("publications", []),
+                "tags": innovation_data.get("tags", []),
+                "impact_metrics": innovation_data.get("impact_metrics", {})
+            })
+        
         return InnovationSearchResponse(
-            innovations=[InnovationResponse.from_orm(inn) for inn in innovations],
+            innovations=innovations,
             total=total,
             limit=params.limit,
             offset=params.offset,
             has_more=params.offset + params.limit < total
         )
-
+        
     except Exception as e:
         logger.error(f"Error getting innovations: {e}")
         raise HTTPException(status_code=500, detail="Internal server error")
@@ -164,75 +220,129 @@ async def get_innovations(
 
 @app.get("/api/innovations/{innovation_id}", response_model=InnovationResponse)
 @limiter.limit("60/minute")
-async def get_innovation(request, innovation_id: UUID, db: Session = Depends(get_db)):
-    """Get single innovation by ID"""
-    innovation = db.query(Innovation).filter(Innovation.id == innovation_id).first()
-
-    if not innovation:
-        raise HTTPException(status_code=404, detail="Innovation not found")
-
-    return InnovationResponse.from_orm(innovation)
+async def get_innovation(request: Request, innovation_id: UUID):
+    """Get single innovation by ID using Supabase client"""
+    try:
+        from config.database import get_supabase
+        supabase = get_supabase()
+        
+        # Query single innovation by ID
+        response = supabase.table('innovations').select('*').eq('id', str(innovation_id)).execute()
+        
+        if not response.data or len(response.data) == 0:
+            raise HTTPException(status_code=404, detail="Innovation not found")
+        
+        innovation_data = response.data[0]
+        
+        # Convert to response format
+        return {
+            "id": innovation_data.get("id"),
+            "title": innovation_data.get("title"),
+            "description": innovation_data.get("description"),
+            "innovation_type": innovation_data.get("innovation_type"),
+            "verification_status": innovation_data.get("verification_status"),
+            "visibility": innovation_data.get("visibility"),
+            "country": innovation_data.get("country"),
+            "creation_date": innovation_data.get("creation_date"),
+            "organizations": innovation_data.get("organizations", []),
+            "individuals": innovation_data.get("individuals", []),
+            "fundings": innovation_data.get("fundings", []),
+            "publications": innovation_data.get("publications", []),
+            "tags": innovation_data.get("tags", []),
+            "impact_metrics": innovation_data.get("impact_metrics", {})
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error getting innovation {innovation_id}: {e}")
+        raise HTTPException(status_code=500, detail="Internal server error")
 
 
 @app.post("/api/innovations", response_model=InnovationResponse)
 @limiter.limit("10/minute")
 async def create_innovation(
-    request,
+    request: Request,
     innovation_data: InnovationCreate,
-    background_tasks: BackgroundTasks,
-    db: Session = Depends(get_db)
+    background_tasks: BackgroundTasks
 ):
-    """Create new innovation"""
+    """Create new innovation using Supabase client"""
     try:
-        # Create innovation
-        innovation = Innovation(
-            title=innovation_data.title,
-            description=innovation_data.description,
-            innovation_type=innovation_data.innovation_type,
-            creation_date=innovation_data.creation_date,
-            problem_solved=innovation_data.problem_solved,
-            solution_approach=innovation_data.solution_approach,
-            impact_metrics=innovation_data.impact_metrics,
-            tech_stack=innovation_data.tech_stack,
-            tags=innovation_data.tags,
-            website_url=str(innovation_data.website_url) if innovation_data.website_url else None,
-            github_url=str(innovation_data.github_url) if innovation_data.github_url else None,
-            demo_url=str(innovation_data.demo_url) if innovation_data.demo_url else None,
-            source_type="manual",
-            verification_status="pending"
-        )
-
-        db.add(innovation)
-        db.commit()
-        db.refresh(innovation)
-
+        from config.database import get_supabase
+        supabase = get_supabase()
+        
+        # Prepare innovation data for Supabase
+        innovation_record = {
+            "title": innovation_data.title,
+            "description": innovation_data.description,
+            "innovation_type": innovation_data.innovation_type,
+            "creation_date": innovation_data.creation_date.isoformat() if innovation_data.creation_date else None,
+            "problem_solved": innovation_data.problem_solved,
+            "solution_approach": innovation_data.solution_approach,
+            "impact_metrics": innovation_data.impact_metrics,
+            "tech_stack": innovation_data.tech_stack,
+            "tags": innovation_data.tags,
+            "website_url": str(innovation_data.website_url) if innovation_data.website_url else None,
+            "github_url": str(innovation_data.github_url) if innovation_data.github_url else None,
+            "demo_url": str(innovation_data.demo_url) if innovation_data.demo_url else None,
+            "source_type": "manual",
+            "verification_status": "pending",
+            "country": innovation_data.country
+        }
+        
+        # Create innovation in Supabase
+        innovation_response = supabase.table('innovations').insert(innovation_record).execute()
+        
+        if not innovation_response.data or len(innovation_response.data) == 0:
+            raise HTTPException(status_code=500, detail="Failed to create innovation")
+        
+        created_innovation = innovation_response.data[0]
+        innovation_id = created_innovation.get('id')
+        
         # Create community submission record
-        submission = CommunitySubmission(
-            innovation_id=innovation.id,
-            submitter_name=innovation_data.submitter_name,
-            submitter_email=innovation_data.submitter_email,
-            submission_status="pending"
-        )
-
-        db.add(submission)
-        db.commit()
-
+        submission_record = {
+            "innovation_id": innovation_id,
+            "submitter_name": innovation_data.submitter_name,
+            "submitter_email": innovation_data.submitter_email,
+            "submission_status": "pending"
+        }
+        
+        supabase.table('community_submissions').insert(submission_record).execute()
+        
         # Add to vector database in background
         background_tasks.add_task(
             add_innovation_to_vector_db,
-            innovation.id,
-            innovation.title,
-            innovation.description,
-            innovation.innovation_type,
+            innovation_id,
+            created_innovation.get('title'),
+            created_innovation.get('description'),
+            created_innovation.get('innovation_type'),
             innovation_data.country
         )
-
-        logger.info(f"Created innovation: {innovation.title}")
-        return InnovationResponse.from_orm(innovation)
-
+        
+        logger.info(f"Created innovation: {created_innovation.get('title')}")
+        
+        # Return response in expected format
+        return {
+            "id": created_innovation.get("id"),
+            "title": created_innovation.get("title"),
+            "description": created_innovation.get("description"),
+            "innovation_type": created_innovation.get("innovation_type"),
+            "verification_status": created_innovation.get("verification_status"),
+            "visibility": created_innovation.get("visibility"),
+            "country": created_innovation.get("country"),
+            "creation_date": created_innovation.get("creation_date"),
+            "organizations": created_innovation.get("organizations", []),
+            "individuals": created_innovation.get("individuals", []),
+            "fundings": created_innovation.get("fundings", []),
+            "publications": created_innovation.get("publications", []),
+            "tags": created_innovation.get("tags", []),
+            "impact_metrics": created_innovation.get("impact_metrics", {})
+        }
+        
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Error creating innovation: {e}")
-        db.rollback()
         raise HTTPException(status_code=500, detail="Failed to create innovation")
 
 
@@ -371,63 +481,140 @@ async def trigger_serper_search(
 @app.get("/api/community/submissions", response_model=List[CommunitySubmissionResponse])
 @limiter.limit("20/minute")
 async def get_community_submissions(
-    request,
+    request: Request,
     status: Optional[str] = None,
-    limit: int = Query(20, ge=1, le=100),
-    db: Session = Depends(get_db)
+    limit: int = Query(20, ge=1, le=100)
 ):
-    """Get community submissions for verification"""
-    query = db.query(CommunitySubmission)
-
-    if status:
-        query = query.filter(CommunitySubmission.submission_status == status)
-
-    submissions = query.limit(limit).all()
-
-    return [CommunitySubmissionResponse.from_orm(sub) for sub in submissions]
+    """Get community submissions for verification using Supabase client"""
+    try:
+        from config.database import get_supabase
+        supabase = get_supabase()
+        
+        # Build query
+        query = supabase.table('community_submissions').select('*')
+        
+        if status:
+            query = query.eq('submission_status', status)
+        
+        # Apply limit
+        query = query.limit(limit)
+        
+        # Execute query
+        response = query.execute()
+        submissions_data = response.data if response.data else []
+        
+        # Convert to response format
+        submissions = []
+        for submission_data in submissions_data:
+            submissions.append({
+                "id": submission_data.get("id"),
+                "innovation_id": submission_data.get("innovation_id"),
+                "submitter_name": submission_data.get("submitter_name"),
+                "submitter_email": submission_data.get("submitter_email"),
+                "submission_status": submission_data.get("submission_status"),
+                "created_at": submission_data.get("created_at"),
+                "updated_at": submission_data.get("updated_at")
+            })
+        
+        return submissions
+        
+    except Exception as e:
+        logger.error(f"Error getting community submissions: {e}")
+        raise HTTPException(status_code=500, detail="Failed to get community submissions")
 
 
 @app.post("/api/community/vote")
 @limiter.limit("50/minute")
 async def submit_community_vote(
-    request,
-    vote: CommunityVote,
-    db: Session = Depends(get_db)
+    request: Request,
+    vote: CommunityVote
 ):
-    """Submit community vote for innovation verification"""
-    # Implementation would update community_votes in submission
-    # This is a simplified version
-    return {"status": "vote_recorded", "message": "Thank you for your vote"}
+    """Submit community vote for innovation verification using Supabase client"""
+    try:
+        from config.database import get_supabase
+        supabase = get_supabase()
+        
+        # Create vote record in Supabase
+        vote_record = {
+            "innovation_id": str(vote.innovation_id),
+            "voter_id": vote.voter_id,
+            "vote_type": vote.vote_type,
+            "comment": vote.comment if hasattr(vote, 'comment') else None
+        }
+        
+        supabase.table('community_votes').insert(vote_record).execute()
+        
+        return {"status": "vote_recorded", "message": "Thank you for your vote"}
+        
+    except Exception as e:
+        logger.error(f"Error submitting community vote: {e}")
+        raise HTTPException(status_code=500, detail="Failed to submit vote")
 
 
 # Statistics Endpoints
 @app.get("/api/stats", response_model=InnovationStats)
 @limiter.limit("10/minute")
-async def get_statistics(request, db: Session = Depends(get_db)):
-    """Get platform statistics"""
+async def get_statistics(request: Request):
+    """Get platform statistics using Supabase client"""
     try:
-        total_innovations = db.query(Innovation).count()
-        verified_innovations = db.query(Innovation).filter(
-            Innovation.verification_status == "verified"
-        ).count()
-        pending_innovations = db.query(Innovation).filter(
-            Innovation.verification_status == "pending"
-        ).count()
-
-        # Additional stats would be calculated here
-
-        return InnovationStats(
-            total_innovations=total_innovations,
-            verified_innovations=verified_innovations,
-            pending_innovations=pending_innovations,
-            innovations_by_type={},  # Would be calculated
-            innovations_by_country={},  # Would be calculated
-            innovations_by_month={}  # Would be calculated
-        )
-
+        from config.database import get_supabase
+        supabase = get_supabase()
+        
+        # Start with basic response structure
+        result = {
+            "total_innovations": 0,
+            "verified_innovations": 0,
+            "pending_innovations": 0,
+            "innovations_by_type": {},
+            "innovations_by_country": {},
+            "innovations_by_month": {},
+            "total_funding": None,
+            "average_funding": None
+        }
+        
+        # Try to get basic count first
+        try:
+            total_response = supabase.table('innovations').select('*', count='exact').execute()
+            result["total_innovations"] = total_response.count if total_response.count is not None else 0
+            
+            # If we have data, process it
+            if total_response.data:
+                verified_count = 0
+                pending_count = 0
+                type_counts = {}
+                country_counts = {}
+                
+                for item in total_response.data:
+                    # Count by verification status
+                    status = item.get('verification_status', 'unknown')
+                    if status == 'verified':
+                        verified_count += 1
+                    elif status == 'pending':
+                        pending_count += 1
+                    
+                    # Count by type
+                    innovation_type = item.get('innovation_type', 'Unknown')
+                    type_counts[innovation_type] = type_counts.get(innovation_type, 0) + 1
+                    
+                    # Count by country
+                    country = item.get('country', 'Unknown')
+                    country_counts[country] = country_counts.get(country, 0) + 1
+                
+                result["verified_innovations"] = verified_count
+                result["pending_innovations"] = pending_count
+                result["innovations_by_type"] = type_counts
+                result["innovations_by_country"] = country_counts
+                
+        except Exception as query_error:
+            logger.error(f"Error in statistics query: {query_error}")
+            # Return basic structure even if query fails
+            pass
+        
+        return result
+        
     except Exception as e:
         logger.error(f"Error getting statistics: {e}")
-        raise HTTPException(status_code=500, detail="Failed to get statistics")
+        raise HTTPException(status_code=500, detail=f"Failed to get statistics: {str(e)}")
 
 
 # Background Task Functions
@@ -535,27 +722,38 @@ async def get_etl_health(request):
 
 @app.get("/api/validation/summary")
 @limiter.limit("20/minute")
-async def get_validation_summary(request):
-    """Get validation system summary for homepage"""
+async def get_validation_summary(request: Request):
+    """Get validation system summary for homepage using Supabase client"""
     try:
         from services.etl_monitor import etl_monitor
         summary = etl_monitor.get_validation_summary()
 
-        # Add database counts
-        db = next(get_db())
+        # Add database counts using Supabase
+        from config.database import get_supabase
+        supabase = get_supabase()
+        
         try:
-            total_innovations = db.query(Innovation).count()
-            verified_innovations = db.query(Innovation).filter(
-                Innovation.verification_status == "verified"
-            ).count()
+            # Get total innovations count
+            total_response = supabase.table('innovations').select('id', count='exact').execute()
+            total_innovations = total_response.count if total_response.count is not None else 0
+            
+            # Get verified innovations count
+            verified_response = supabase.table('innovations').select('id', count='exact').eq('verification_status', 'verified').execute()
+            verified_innovations = verified_response.count if verified_response.count is not None else 0
 
             summary.update({
                 "innovations_tracked": total_innovations,
                 "innovations_verified": verified_innovations,
                 "validation_rate": round((verified_innovations / max(1, total_innovations)) * 100, 1)
             })
-        finally:
-            db.close()
+        except Exception as db_error:
+            logger.error(f"Error getting database counts for validation summary: {db_error}")
+            # Continue with ETL summary even if database counts fail
+            summary.update({
+                "innovations_tracked": 0,
+                "innovations_verified": 0,
+                "validation_rate": 0.0
+            })
 
         return summary
 
