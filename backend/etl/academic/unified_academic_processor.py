@@ -11,11 +11,11 @@ from datetime import datetime
 from typing import List, Dict, Any, Optional
 from loguru import logger
 
-# Import our existing processors
-from test_arxiv_extended import ExtendedArxivScraper
-from test_pubmed_simple import PubMedScraper
-from test_scholar_simple import GoogleScholarScraper
-from process_systematic_review import SystematicReviewProcessor
+# Import our ETL processors
+from .arxiv_scraper import ArxivScraper
+from .pubmed_scraper import PubMedScraper
+from .systematic_review_processor import SystematicReviewProcessor
+# Note: Google Scholar scraper to be integrated when available
 
 
 class UnifiedAcademicProcessor:
@@ -106,12 +106,12 @@ class UnifiedAcademicProcessor:
     
     async def process_arxiv_papers(self, max_results: int) -> List[Dict[str, Any]]:
         """Process ArXiv papers"""
-        async with ExtendedArxivScraper() as scraper:
-            papers = await scraper.scrape_papers_extended(max_results)
+        async with ArxivScraper() as scraper:
+            papers = await scraper.search_african_ai_papers(max_results=max_results)
             
             standardized_papers = []
             for paper in papers:
-                standardized = self.standardize_paper_format(paper, 'arxiv')
+                standardized = self.standardize_paper_format(paper.__dict__, 'arxiv')
                 if standardized:
                     standardized_papers.append(standardized)
             
@@ -120,28 +120,20 @@ class UnifiedAcademicProcessor:
     async def process_pubmed_papers(self, max_results: int) -> List[Dict[str, Any]]:
         """Process PubMed papers"""
         async with PubMedScraper() as scraper:
-            papers = await scraper.scrape_medical_papers(max_results)
+            papers = await scraper.search_african_health_ai(max_results=max_results)
             
             standardized_papers = []
             for paper in papers:
-                standardized = self.standardize_paper_format(paper, 'pubmed')
+                standardized = self.standardize_paper_format(paper.__dict__, 'pubmed')
                 if standardized:
                     standardized_papers.append(standardized)
             
             return standardized_papers
     
     async def process_scholar_papers(self, max_results: int) -> List[Dict[str, Any]]:
-        """Process Google Scholar papers"""
-        scraper = GoogleScholarScraper()
-        papers = await scraper.scrape_scholar_papers(max_results)
-        
-        standardized_papers = []
-        for paper in papers:
-            standardized = self.standardize_paper_format(paper, 'google_scholar')
-            if standardized:
-                standardized_papers.append(standardized)
-        
-        return standardized_papers
+        """Process Google Scholar papers - temporarily disabled pending ETL integration"""
+        logger.info("Google Scholar processing temporarily disabled - awaiting ETL integration")
+        return []  # Return empty list until Google Scholar ETL module is integrated
     
     def standardize_paper_format(self, paper: Dict[str, Any], source: str) -> Dict[str, Any]:
         """Standardize paper format across all sources"""

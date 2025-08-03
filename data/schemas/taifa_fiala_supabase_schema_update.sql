@@ -1,3 +1,4 @@
+
 -- TAIFA-FIALA Database Schema UPDATE for Supabase
 -- Handles existing tables and adds RLS policies
 -- Safe to run multiple times

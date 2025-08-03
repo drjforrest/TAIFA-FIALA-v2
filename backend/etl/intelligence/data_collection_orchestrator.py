@@ -19,6 +19,9 @@ import json
 
 from .perplexity_african_ai import PerplexityAfricanAIModule, IntelligenceType
 from .enhanced_crawl4ai import IntelligentCrawl4AIOrchestrator, ContentType, InnovationExtractionResult
+from services.database_service import DatabaseService
+from services.deduplication_service import DeduplicationService
+from utils.etl_deduplication import check_and_handle_publication_duplicates, check_and_handle_innovation_duplicates
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -79,6 +82,10 @@ class DataCollectionOrchestrator:
         self.intelligence_module = None
         self.extraction_orchestrator = None
         
+        # Initialize database and deduplication services
+        self.db_service = DatabaseService()
+        self.dedup_service = DeduplicationService(self.db_service)
+        
         # Collection state
         self.active_targets: List[CollectionTarget] = []
         self.collection_history: List[CollectionCycleResult] = []
@@ -131,6 +138,10 @@ class DataCollectionOrchestrator:
             
             # Phase 4: Validate and Store
             validated_innovations = await self._validate_innovations(extraction_results)
+            
+            # Phase 5: Store in Database
+            stored_records = await self._store_innovations_in_database(validated_innovations)
+            logger.info(f"Stored {len(stored_records)} innovations in database")
             
             end_time = datetime.now()
             
@@ -343,6 +354,52 @@ class DataCollectionOrchestrator:
             recommendations.append("Enhance extraction schemas for better data capture")
         
         return recommendations
+    
+    async def _store_innovations_in_database(self, validated_innovations: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+        """Store validated innovations in Supabase database"""
+        
+        stored_records = []
+        
+        for innovation in validated_innovations:
+            try:
+                # Convert to database format
+                db_innovation = {
+                    'title': innovation.get('title', ''),
+                    'description': innovation.get('description', ''),
+                    'innovation_type': innovation.get('innovation_type', 'startup'),
+                    'creation_date': None,  # Will be inferred if possible
+                    'verification_status': 'pending',
+                    'visibility': 'public',
+                    'source_type': 'intelligence_synthesis',
+                    'source_url': innovation.get('source_url'),
+                    'extraction_metadata': {
+                        'completeness_score': innovation.get('completeness_score'),
+                        'confidence_score': innovation.get('confidence_score'),
+                        'extracted_at': innovation.get('extracted_at').isoformat() if innovation.get('extracted_at') else None,
+                        'location': innovation.get('location')
+                    }
+                }
+                
+                # Store in database with deduplication
+                success, stored_record, action = await check_and_handle_innovation_duplicates(
+                    db_innovation,
+                    self.db_service,
+                    self.dedup_service,
+                    action='reject'  # Can be configured: reject, merge, update, link
+                )
+                
+                if success and stored_record:
+                    stored_records.append(stored_record)
+                    logger.info(f"✅ Stored innovation ({action}): {innovation.get('title', 'Unknown')[:50]}...")
+                elif not success:
+                    logger.info(f"ℹ️ Innovation handling ({action}): {innovation.get('title', 'Unknown')[:50]}...")
+                    
+            except Exception as e:
+                logger.error(f"❌ Error storing innovation {innovation.get('title', 'Unknown')}: {e}")
+                continue
+        
+        logger.info(f"📊 Database storage complete: {len(stored_records)}/{len(validated_innovations)} innovations stored")
+        return stored_records
     
     def get_stats(self) -> Dict[str, Any]:
         """Get collection statistics"""

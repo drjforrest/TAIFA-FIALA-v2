@@ -15,6 +15,9 @@ from loguru import logger
 from pydantic import BaseModel
 
 from config.settings import settings
+from services.database_service import DatabaseService
+from services.deduplication_service import DeduplicationService
+from utils.etl_deduplication import check_and_handle_publication_duplicates
 
 
 class PubMedPaper(BaseModel):
@@ -40,6 +43,10 @@ class PubMedScraper:
     
     def __init__(self):
         self.session = None
+        
+        # Initialize database and deduplication services
+        self.db_service = DatabaseService()
+        self.dedup_service = DeduplicationService(self.db_service)
         
     async def __aenter__(self):
         self.session = aiohttp.ClientSession()
@@ -391,6 +398,53 @@ class PubMedScraper:
                     score += 0.1
                     
         return min(score, 1.0)
+    
+    async def _store_papers_in_database(self, papers: List[PubMedPaper]) -> List[Dict[str, Any]]:
+        """Store PubMed papers in Supabase database as publications"""
+        
+        stored_records = []
+        
+        for paper in papers:
+            try:
+                # Convert PubMed paper to publication format
+                publication_data = {
+                    'title': paper.title,
+                    'publication_type': 'journal_paper',
+                    'publication_date': paper.publication_date,
+                    'year': paper.publication_date.year if paper.publication_date else None,
+                    'doi': paper.doi,
+                    'url': paper.url,
+                    'journal': paper.journal,
+                    'abstract': paper.abstract,
+                    'keywords': paper.keywords,
+                    'source': 'pubmed',
+                    'source_id': paper.pubmed_id,
+                    'african_relevance_score': paper.african_relevance_score,
+                    'ai_relevance_score': paper.ai_relevance_score,
+                    'african_entities': paper.african_entities,
+                    'data_type': 'Academic Paper'
+                }
+                
+                # Store in database with deduplication
+                success, stored_record, action = await check_and_handle_publication_duplicates(
+                    publication_data,
+                    self.db_service,
+                    self.dedup_service,
+                    action='reject'  # Can be configured: reject, merge, update, link
+                )
+                
+                if success and stored_record:
+                    stored_records.append(stored_record)
+                    logger.info(f"✅ Stored PubMed paper ({action}): {paper.title[:50]}...")
+                elif not success:
+                    logger.info(f"ℹ️ PubMed paper handling ({action}): {paper.title[:50]}...")
+                    
+            except Exception as e:
+                logger.error(f"❌ Error storing PubMed paper {paper.title[:50]}: {e}")
+                continue
+        
+        logger.info(f"📊 PubMed database storage complete: {len(stored_records)}/{len(papers)} papers stored")
+        return stored_records
 
 
 # Main scraping function
@@ -398,6 +452,11 @@ async def scrape_pubmed_papers(days_back: int = 30, max_results: int = 50) -> Li
     """Main function to scrape PubMed for African health AI papers"""
     async with PubMedScraper() as scraper:
         papers = await scraper.search_african_health_ai(days_back, max_results)
+        
+        # Store papers in database with deduplication
+        if papers:
+            stored_papers = await scraper._store_papers_in_database(papers)
+            logger.info(f"📊 PubMed database storage complete: {len(stored_papers)}/{len(papers)} papers stored")
         
     logger.info(f"PubMed scraper found {len(papers)} relevant African health AI papers")
     return papers

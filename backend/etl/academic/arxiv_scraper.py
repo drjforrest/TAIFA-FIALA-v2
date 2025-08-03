@@ -14,6 +14,9 @@ from loguru import logger
 from pydantic import BaseModel
 
 from config.settings import settings
+from services.database_service import DatabaseService
+from services.deduplication_service import DeduplicationService
+from utils.etl_deduplication import check_and_handle_publication_duplicates
 
 
 class ArxivPaper(BaseModel):
@@ -41,6 +44,10 @@ class ArxivScraper:
         self.african_countries = set(settings.AFRICAN_COUNTRIES)
         self.african_institutions = set(settings.AFRICAN_INSTITUTIONS)
         self.ai_keywords = settings.AFRICAN_AI_KEYWORDS
+        
+        # Initialize database and deduplication services
+        self.db_service = DatabaseService()
+        self.dedup_service = DeduplicationService(self.db_service)
 
     async def __aenter__(self):
         self.session = aiohttp.ClientSession(
@@ -351,8 +358,59 @@ class ArxivScraper:
 
         result_papers = list(unique_papers.values())
         logger.info(f"Found {len(result_papers)} unique relevant papers")
+        
+        # Store papers in database
+        if result_papers:
+            stored_papers = await self._store_papers_in_database(result_papers)
+            logger.info(f"✅ Stored {len(stored_papers)} papers in database")
 
         return result_papers
+    
+    async def _store_papers_in_database(self, papers: List[ArxivPaper]) -> List[Dict[str, Any]]:
+        """Store ArXiv papers in Supabase database as publications"""
+        
+        stored_records = []
+        
+        for paper in papers:
+            try:
+                # Convert ArXiv paper to publication format
+                publication_data = {
+                    'title': paper.title,
+                    'publication_type': 'preprint',
+                    'publication_date': paper.published_date.date() if paper.published_date else None,
+                    'year': paper.published_date.year if paper.published_date else None,
+                    'url': paper.url,
+                    'venue': 'arXiv',
+                    'abstract': paper.abstract,
+                    'keywords': paper.keywords + paper.categories,
+                    'source': 'arxiv',
+                    'source_id': paper.arxiv_id,
+                    'african_relevance_score': paper.african_relevance_score,
+                    'ai_relevance_score': paper.ai_relevance_score,
+                    'african_entities': paper.african_entities,
+                    'data_type': 'Academic Paper'
+                }
+                
+                # Store in database with deduplication
+                success, stored_record, action = await check_and_handle_publication_duplicates(
+                    publication_data,
+                    self.db_service,
+                    self.dedup_service,
+                    action='reject'  # Can be configured: reject, merge, update, link
+                )
+                
+                if success and stored_record:
+                    stored_records.append(stored_record)
+                    logger.info(f"✅ Stored ArXiv paper ({action}): {paper.title[:50]}...")
+                elif not success:
+                    logger.info(f"ℹ️ ArXiv paper handling ({action}): {paper.title[:50]}...")
+                    
+            except Exception as e:
+                logger.error(f"❌ Error storing ArXiv paper {paper.title[:50]}: {e}")
+                continue
+        
+        logger.info(f"📊 ArXiv database storage complete: {len(stored_records)}/{len(papers)} papers stored")
+        return stored_records
 
 
 async def scrape_arxiv_papers(days_back: int = 7, max_results: int = 100) -> List[ArxivPaper]:

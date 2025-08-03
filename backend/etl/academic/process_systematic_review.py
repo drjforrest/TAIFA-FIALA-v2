@@ -6,9 +6,14 @@ Process existing systematic review of AI R&D in Africa from CSV data
 
 import pandas as pd
 import re
+import asyncio
 from datetime import datetime
 from typing import List, Dict, Any, Optional
 from loguru import logger
+
+from services.database_service import DatabaseService
+from services.deduplication_service import DeduplicationService
+from utils.etl_deduplication import check_and_handle_publication_duplicates
 
 
 class SystematicReviewProcessor:
@@ -17,6 +22,10 @@ class SystematicReviewProcessor:
     def __init__(self, csv_path: str):
         self.csv_path = csv_path
         self.data = None
+        
+        # Initialize database and deduplication services
+        self.db_service = DatabaseService()
+        self.dedup_service = DeduplicationService(self.db_service)
         
     def load_data(self) -> pd.DataFrame:
         """Load systematic review data from CSV"""
@@ -343,7 +352,7 @@ class SystematicReviewProcessor:
         }
 
 
-def main():
+async def main():
     """Main function to process systematic review data"""
     logger.info("🔬 Starting Systematic Review Data Processing...")
     
@@ -362,6 +371,65 @@ def main():
     
     if studies:
         logger.info(f"✅ Successfully processed {len(studies)} studies")
+        
+        # Store studies in database with deduplication
+        try:
+            logger.info("💾 Storing studies in Supabase database with deduplication...")
+            logger.info(f"📊 About to store {len(studies)} studies")
+            
+            stored_publications = []
+            for study in studies:
+                try:
+                    # Convert study to publication format
+                    publication_data = {
+                        'title': study.get('title', ''),
+                        'publication_type': 'journal_paper',
+                        'publication_date': study.get('publication_date'),
+                        'year': study.get('year'),
+                        'doi': study.get('doi', ''),
+                        'url': study.get('url', ''),
+                        'venue': study.get('venue', ''),
+                        'abstract': study.get('abstract', ''),
+                        'keywords': study.get('keywords', []),
+                        'source': 'systematic_review',
+                        'source_id': f"sr_{hash(study.get('title', ''))}_{study.get('year', 'unknown')}",
+                        'project_domain': study.get('project_domain', ''),
+                        'ai_techniques': study.get('ai_techniques', ''),
+                        'geographic_scope': study.get('geographic_scope', ''),
+                        'funding_source': study.get('funding_source', ''),
+                        'key_outcomes': study.get('key_outcomes', ''),
+                        'african_relevance_score': study.get('african_relevance_score', 0.0),
+                        'ai_relevance_score': study.get('ai_relevance_score', 0.0),
+                        'african_entities': study.get('african_entities', []),
+                        'data_type': 'Academic Paper'
+                    }
+                    
+                    # Store with deduplication
+                    success, stored_record, action = await check_and_handle_publication_duplicates(
+                        publication_data,
+                        processor.db_service,
+                        processor.dedup_service,
+                        action='reject'  # Can be configured: reject, merge, update, link
+                    )
+                    
+                    if success and stored_record:
+                        stored_publications.append(stored_record)
+                        logger.info(f"✅ Stored systematic review study ({action}): {study.get('title', 'Unknown')[:50]}...")
+                    elif not success:
+                        logger.info(f"ℹ️ Systematic review study handling ({action}): {study.get('title', 'Unknown')[:50]}...")
+                        
+                except Exception as study_error:
+                    logger.error(f"❌ Error storing individual study: {study_error}")
+                    continue
+            
+            logger.info(f"✅ Stored {len(stored_publications)}/{len(studies)} studies in database")
+            
+        except Exception as e:
+            logger.error(f"❌ Failed to store studies in database: {e}")
+            logger.error(f"❌ Error type: {type(e)}")
+            import traceback
+            logger.error(f"❌ Traceback: {traceback.format_exc()}")
+            stored_publications = []
         
         # Show sample studies
         logger.info("\n📚 Sample African AI R&D Studies:")
@@ -419,4 +487,4 @@ def main():
 
 
 if __name__ == "__main__":
-    studies = main()
+    studies = asyncio.run(main())
