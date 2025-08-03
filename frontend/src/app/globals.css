@@ -1,0 +1,450 @@
+@import "tailwindcss";
+
+:root {
+    /* Base Colors */
+    --color-white: #ffffff;
+    --color-black: #000000;
+
+    /* Gray Scale */
+    --color-gray-50: #f9fafb;
+    --color-gray-100: #f3f4f6;
+    --color-gray-200: #e5e7eb;
+    --color-gray-300: #d1d5db;
+    --color-gray-400: #9ca3af;
+    --color-gray-500: #6b7280;
+    --color-gray-600: #4b5563;
+    --color-gray-700: #374151;
+    --color-gray-800: #1f2937;
+    --color-gray-900: #111827;
+
+    /* Brand Colors - Cyan */
+    --color-cyan-50: #ecfeff;
+    --color-cyan-100: #cffafe;
+    --color-cyan-200: #a5f3fc;
+    --color-cyan-300: #67e8f9;
+    --color-cyan-400: #22d3ee;
+    --color-cyan-500: #06b6d4;
+    --color-cyan-600: #0891b2;
+    --color-cyan-700: #0e7490;
+    --color-cyan-800: #155e75;
+    --color-cyan-900: #164e63;
+
+    /* Success Colors */
+    --color-green-50: #f0fdf4;
+    --color-green-100: #dcfce7;
+    --color-green-200: #bbf7d0;
+    --color-green-300: #86efac;
+    --color-green-400: #4ade80;
+    --color-green-500: #22c55e;
+    --color-green-600: #16a34a;
+    --color-green-700: #15803d;
+    --color-green-800: #166534;
+    --color-green-900: #14532d;
+
+    /* Warning Colors */
+    --color-yellow-50: #fefce8;
+    --color-yellow-100: #fef3c7;
+    --color-yellow-200: #fde68a;
+    --color-yellow-300: #fcd34d;
+    --color-yellow-400: #fbbf24;
+    --color-yellow-500: #f59e0b;
+    --color-yellow-600: #d97706;
+    --color-yellow-700: #b45309;
+    --color-yellow-800: #92400e;
+    --color-yellow-900: #78350f;
+
+    /* Error Colors */
+    --color-red-50: #fef2f2;
+    --color-red-100: #fee2e2;
+    --color-red-200: #fecaca;
+    --color-red-300: #fca5a5;
+    --color-red-400: #f87171;
+    --color-red-500: #ef4444;
+    --color-red-600: #dc2626;
+    --color-red-700: #b91c1c;
+    --color-red-800: #991b1b;
+    --color-red-900: #7f1d1d;
+
+    /* Purple Colors */
+    --color-purple-50: #faf5ff;
+    --color-purple-100: #f3e8ff;
+    --color-purple-200: #e9d5ff;
+    --color-purple-300: #d8b4fe;
+    --color-purple-400: #c084fc;
+    --color-purple-500: #a855f7;
+    --color-purple-600: #9333ea;
+    --color-purple-700: #7c3aed;
+    --color-purple-800: #6b21a8;
+    --color-purple-900: #581c87;
+    --color-purple-950: #3b0764;
+
+    /* Orange Colors */
+    --color-orange-50: #fff7ed;
+    --color-orange-100: #ffedd5;
+    --color-orange-200: #fed7aa;
+    --color-orange-300: #fdba74;
+    --color-orange-400: #fb923c;
+    --color-orange-500: #f97316;
+    --color-orange-600: #ea580c;
+    --color-orange-700: #c2410c;
+    --color-orange-800: #9a3412;
+    --color-orange-900: #7c2d12;
+
+    /* Semantic Colors - Dark Background with Light Cards */
+    --color-background: var(--color-gray-900);
+    --color-background-section-1: var(--color-gray-800);
+    --color-background-section-2: var(--color-gray-700);
+    --color-background-section-3: var(--color-gray-600);
+    --color-background-section-4: var(--color-gray-500);
+    --color-foreground: var(--color-gray-50);
+    --color-muted: var(--color-gray-200);
+    --color-muted-foreground: var(--color-gray-600);
+    --color-border: var(--color-gray-300);
+    --color-input: var(--color-white);
+    --color-card: var(--color-white);
+    --color-card-foreground: var(--color-gray-900);
+
+    /* Section-specific text colors that adapt to background lightness */
+    --color-text-section-1: var(
+        --color-gray-100
+    ); /* Darkest bg = lightest text */
+    --color-text-section-2: var(--color-gray-200); /* Dark bg = light text */
+    --color-text-section-3: var(
+        --color-gray-300
+    ); /* Medium bg = medium light text */
+    --color-text-section-4: var(--color-gray-700); /* Light bg = dark text */
+
+    --color-text-paragraph-section-1: var(
+        --color-gray-300
+    ); /* Paragraph text on darkest bg (gray-800) */
+    --color-text-paragraph-section-2: var(
+        --color-gray-300
+    ); /* Paragraph text on dark bg (gray-700) */
+    --color-text-paragraph-section-3: var(
+        --color-gray-200
+    ); /* Paragraph text on medium bg (gray-600) - needs to be lighter */
+    --color-text-paragraph-section-4: var(
+        --color-gray-700
+    ); /* Paragraph text on lightest bg (gray-500) */
+
+    /* Primary Brand - Cyan */
+    --color-primary: var(--color-cyan-500);
+    --color-primary-hover: var(--color-cyan-600);
+    --color-primary-foreground: var(--color-white);
+
+    /* Secondary - Gray */
+    --color-secondary: var(--color-gray-700);
+    --color-secondary-hover: var(--color-gray-800);
+    --color-secondary-foreground: var(--color-white);
+
+    /* Accent - Purple */
+    --color-accent: var(--color-purple-950);
+    --color-accent-hover: var(--color-purple-900);
+    --color-accent-foreground: var(--color-white);
+
+    /* Success - Green */
+    --color-success: var(--color-green-500);
+    --color-success-hover: var(--color-green-600);
+    --color-success-foreground: var(--color-white);
+
+    /* Info - Cyan Dark */
+    --color-info: var(--color-cyan-700);
+    --color-info-hover: var(--color-cyan-800);
+    --color-info-foreground: var(--color-white);
+
+    /* Destructive - Red */
+    --color-destructive: var(--color-red-500);
+    --color-destructive-hover: var(--color-red-600);
+    --color-destructive-foreground: var(--color-white);
+
+    /* Background variants for light tints */
+    --color-primary-background: var(--color-cyan-50);
+    --color-info-background: var(--color-cyan-100);
+    --color-accent-background: var(--color-purple-50);
+    --color-success-background: var(--color-green-50);
+    --color-destructive-background: var(--color-red-50);
+
+    /* Context-adaptive colors for light backgrounds (white cards) */
+    --color-adaptive-primary-on-light: var(--color-primary); /* Light Blue */
+    --color-adaptive-secondary-on-light: var(--color-info); /* Teal */
+    --color-adaptive-tertiary-on-light: var(--color-accent); /* Purple */
+
+    /* Context-adaptive colors for dark backgrounds */
+    --color-adaptive-primary-on-dark: var(--color-cyan-400); /* Bright Light Blue */
+    --color-adaptive-secondary-on-dark: var(--color-cyan-300); /* Bright Teal */
+    --color-adaptive-tertiary-on-dark: var(--color-green-400); /* Bright Green instead of purple */
+
+    /* Typography */
+    --font-sans: var(--font-geist-sans);
+    --font-mono: var(--font-geist-mono);
+
+    /* Spacing */
+    --spacing-xs: 0.25rem;
+    --spacing-sm: 0.5rem;
+    --spacing-md: 1rem;
+    --spacing-lg: 1.5rem;
+    --spacing-xl: 2rem;
+    --spacing-2xl: 3rem;
+    --spacing-3xl: 4rem;
+
+    /* Border Radius */
+    --radius-sm: 0.375rem;
+    --radius-md: 0.5rem;
+    --radius-lg: 0.75rem;
+    --radius-xl: 1rem;
+
+    /* Shadows */
+    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    --shadow-md:
+        0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+    --shadow-lg:
+        0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+}
+
+@media (prefers-color-scheme: light) {
+    :root {
+        /* Light Mode - Still keep dark background with light cards */
+        --color-background: var(--color-gray-800);
+        --color-background-section-1: var(--color-gray-700);
+        --color-background-section-2: var(--color-gray-600);
+        --color-background-section-3: var(--color-gray-500);
+        --color-background-section-4: var(--color-gray-400);
+        --color-foreground: var(--color-gray-100);
+        --color-muted: var(--color-gray-200);
+        --color-muted-foreground: var(--color-gray-600);
+        --color-border: var(--color-gray-300);
+        --color-input: var(--color-white);
+        --color-card: var(--color-white);
+        --color-card-foreground: var(--color-gray-900);
+
+        /* Primary Brand */
+        --color-primary: var(--color-cyan-500);
+        --color-primary-hover: var(--color-cyan-600);
+        --color-primary-foreground: var(--color-white);
+
+        /* Secondary */
+        --color-secondary: var(--color-gray-700);
+        --color-secondary-hover: var(--color-gray-800);
+        --color-secondary-foreground: var(--color-white);
+
+        /* Accent */
+        --color-accent: var(--color-purple-950);
+        --color-accent-hover: var(--color-purple-900);
+        --color-accent-foreground: var(--color-white);
+
+        /* Success */
+        --color-success: var(--color-green-500);
+        --color-success-hover: var(--color-green-600);
+        --color-success-foreground: var(--color-white);
+
+        /* Info */
+        --color-info: var(--color-cyan-700);
+        --color-info-hover: var(--color-cyan-800);
+        --color-info-foreground: var(--color-white);
+
+        /* Destructive */
+        --color-destructive: var(--color-red-500);
+        --color-destructive-hover: var(--color-red-600);
+        --color-destructive-foreground: var(--color-white);
+
+        /* Background variants */
+        --color-primary-background: var(--color-cyan-50);
+        --color-info-background: var(--color-cyan-100);
+        --color-accent-background: var(--color-purple-50);
+        --color-success-background: var(--color-green-50);
+        --color-destructive-background: var(--color-red-50);
+
+        /* Context-adaptive colors for light backgrounds */
+        --color-adaptive-primary-on-light: var(--color-primary);
+        --color-adaptive-secondary-on-light: var(--color-info);
+        --color-adaptive-tertiary-on-light: var(--color-accent);
+
+        /* Context-adaptive colors for dark backgrounds */
+        --color-adaptive-primary-on-dark: var(--color-cyan-400);
+        --color-adaptive-secondary-on-dark: var(--color-cyan-300);
+        --color-adaptive-tertiary-on-dark: var(--color-green-400);
+    }
+}
+
+@theme {
+    /* Colors for Tailwind utilities */
+    --color-background: var(--color-background);
+    --color-foreground: var(--color-foreground);
+    --color-muted: var(--color-muted);
+    --color-muted-foreground: var(--color-muted-foreground);
+    --color-border: var(--color-border);
+    --color-input: var(--color-input);
+    --color-card: var(--color-card);
+    --color-card-foreground: var(--color-card-foreground);
+    --color-primary: var(--color-primary);
+    --color-primary-hover: var(--color-primary-hover);
+    --color-primary-foreground: var(--color-primary-foreground);
+    --color-secondary: var(--color-secondary);
+    --color-secondary-hover: var(--color-secondary-hover);
+    --color-secondary-foreground: var(--color-secondary-foreground);
+    --color-accent: var(--color-accent);
+    --color-accent-hover: var(--color-accent-hover);
+    --color-accent-foreground: var(--color-accent-foreground);
+    --color-success: var(--color-success);
+    --color-success-hover: var(--color-success-hover);
+    --color-success-foreground: var(--color-success-foreground);
+    --color-info: var(--color-info);
+    --color-info-hover: var(--color-info-hover);
+    --color-info-foreground: var(--color-info-foreground);
+    --color-destructive: var(--color-destructive);
+    --color-destructive-hover: var(--color-destructive-hover);
+    --color-destructive-foreground: var(--color-destructive-foreground);
+    
+    /* Background variants */
+    --color-primary-background: var(--color-primary-background);
+    --color-info-background: var(--color-info-background);
+    --color-accent-background: var(--color-accent-background);
+    --color-success-background: var(--color-success-background);
+    --color-destructive-background: var(--color-destructive-background);
+    
+    /* Typography */
+    --font-family-sans: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+    --font-family-mono: var(--font-mono), ui-monospace, SFMono-Regular, monospace;
+    
+    /* Spacing scale */
+    --spacing-0: 0px;
+    --spacing-px: 1px;
+    --spacing-0\.5: 0.125rem;
+    --spacing-1: 0.25rem;
+    --spacing-1\.5: 0.375rem;
+    --spacing-2: 0.5rem;
+    --spacing-2\.5: 0.625rem;
+    --spacing-3: 0.75rem;
+    --spacing-3\.5: 0.875rem;
+    --spacing-4: 1rem;
+    --spacing-5: 1.25rem;
+    --spacing-6: 1.5rem;
+    --spacing-7: 1.75rem;
+    --spacing-8: 2rem;
+    --spacing-9: 2.25rem;
+    --spacing-10: 2.5rem;
+    --spacing-11: 2.75rem;
+    --spacing-12: 3rem;
+    --spacing-14: 3.5rem;
+    --spacing-16: 4rem;
+    --spacing-20: 5rem;
+    --spacing-24: 6rem;
+    --spacing-28: 7rem;
+    --spacing-32: 8rem;
+    --spacing-36: 9rem;
+    --spacing-40: 10rem;
+    --spacing-44: 11rem;
+    --spacing-48: 12rem;
+    --spacing-52: 13rem;
+    --spacing-56: 14rem;
+    --spacing-60: 15rem;
+    --spacing-64: 16rem;
+    --spacing-72: 18rem;
+    --spacing-80: 20rem;
+    --spacing-96: 24rem;
+    
+    /* Border radius */
+    --radius-none: 0px;
+    --radius-sm: 0.125rem;
+    --radius-DEFAULT: 0.25rem;
+    --radius-md: 0.375rem;
+    --radius-lg: 0.5rem;
+    --radius-xl: 0.75rem;
+    --radius-2xl: 1rem;
+    --radius-3xl: 1.5rem;
+    --radius-full: 9999px;
+    
+    /* Shadows */
+    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    --shadow-DEFAULT: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+    --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+    --shadow-2xl: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+    --shadow-inner: inset 0 2px 4px 0 rgb(0 0 0 / 0.05);
+    --shadow-none: 0 0 #0000;
+}
+
+body {
+    background: var(--color-background);
+    color: var(--color-foreground);
+    font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+}
+
+/* Utility classes for adaptive text colors based on gradient sections */
+.text-section-1 {
+    color: var(--color-text-section-1) !important;
+}
+
+.text-section-2 {
+    color: var(--color-text-section-2) !important;
+}
+
+.text-section-3 {
+    color: var(--color-text-section-3) !important;
+}
+
+.text-section-4 {
+    color: var(--color-text-section-4) !important;
+}
+
+.text-paragraph-section-1 {
+    color: var(--color-text-paragraph-section-1) !important;
+}
+
+.text-paragraph-section-2 {
+    color: var(--color-text-paragraph-section-2) !important;
+}
+
+.text-paragraph-section-3 {
+    color: var(--color-text-paragraph-section-3) !important;
+}
+
+.text-paragraph-section-4 {
+    color: var(--color-text-paragraph-section-4) !important;
+}
+
+/* Responsive adaptive text - automatically adjust based on section background */
+.adaptive-heading-1 {
+    color: var(--color-text-section-1);
+}
+.adaptive-heading-2 {
+    color: var(--color-text-section-2);
+}
+.adaptive-heading-3 {
+    color: var(--color-text-section-3);
+}
+.adaptive-heading-4 {
+    color: var(--color-text-section-4);
+}
+
+.adaptive-paragraph-1 {
+    color: var(--color-text-paragraph-section-1);
+}
+.adaptive-paragraph-2 {
+    color: var(--color-text-paragraph-section-2);
+}
+.adaptive-paragraph-3 {
+    color: var(--color-text-paragraph-section-3);
+}
+.adaptive-paragraph-4 {
+    color: var(--color-text-paragraph-section-4);
+}
+
+/* Footer-specific text classes (same as Section 1 since footer has dark background) */
+.footer-heading {
+    color: var(--color-text-section-1);
+}
+
+.footer-text {
+    color: var(--color-text-paragraph-section-1);
+}
+
+.footer-link {
+    color: var(--color-text-paragraph-section-1);
+    transition: color 0.2s ease;
+}
+
+.footer-link:hover {
+    opacity: 0.8;
+}
