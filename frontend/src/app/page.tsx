@@ -42,14 +42,14 @@ export default function Home() {
               }}
             >
               <TrendingUp className="h-4 w-4 mr-2" />
-              African AI Investment Tracker
+              African AI Innovation Archive
             </div>
 
             <Section1Text
               as="h1"
               className="text-6xl md:text-8xl font-bold mb-6 tracking-tight"
             >
-              At Least $1.1 Billion.
+              African AI by the Numbers.
             </Section1Text>
 
             <Section1Text
@@ -57,9 +57,8 @@ export default function Home() {
               variant="paragraph"
               className="text-xl md:text-2xl max-w-3xl mx-auto"
             >
-              That's how much has been verified in AI investments across Africa
-              since 2020. Help us document the innovations that validate these
-              investments.
+             Since 2023, over $1.2 billion has been invested in African AI ventures across the continent—most in fintech, few in health.
+             We are aggregating open data on AI innovations—funded and unfunded, commercial and academic—to better understand where innovation is happening, who it serves, and who it is leaving behind.
             </Section1Text>
           </div>
         </div>

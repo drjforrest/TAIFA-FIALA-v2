@@ -104,12 +104,7 @@ export default function AboutPage() {
                   className="text-lg leading-relaxed"
                   style={{ color: "var(--color-muted-foreground)" }}
                 >
-                  We serve as a humble scientific network and trusted data centre, 
-                  systematically documenting African AI innovation to bridge the gap 
-                  between funding promises and implemented solutions. Through rigorous 
-                  research methodology and community collaboration, we create transparent 
-                  evidence that helps ensure AI development delivers on its potential 
-                  for all Africans.
+                  To build and maintain an open, structured, and continuously updated dataset of AI innovations across Africa—capturing efforts across health, finance, agriculture, education, and beyond—to support more inclusive, evidence-based understanding of how AI is shaping lives across the continent.
                 </p>
               </CardContent>
             </Card>
@@ -230,17 +225,7 @@ export default function AboutPage() {
                   className="leading-relaxed mb-6 text-left"
                   style={{ color: "var(--color-muted-foreground)" }}
                 >
-                  Hinda Ruton is the CEO and Founder of Africa Quantitative
-                  Sciences, Rwanda's premier data analytics firm. He and his
-                  team at AQS bring the expertise in data science that generate
-                  actionable insights from the data collected. With a focus on
-                  public health outcome analytics and global health security, he
-                  has pioneered innovative data-driven solutions that enhance
-                  vaccine and disease monitoring while strengthening health
-                  systems. His vision combines novel technologies a deep
-                  understanding of operational realities of African businesses
-                  and agencies and the needs of the local communities they
-                  serve.
+                  Hinda Ruton is the CEO and Founder of Africa Quantitative Sciences, Rwanda's premier data analytics firm. He and his team at AQS bring deep expertise in data science to generate actionable insights from the data collected. With a focus on public health outcome analytics and global health security, he has pioneered innovative data-driven solutions that enhance disease monitoring, support vaccine programs, and strengthen health systems. His vision bridges novel technologies with the operational realities of African institutions and the lived needs of local communities.
                 </p>
 
                 <div
@@ -292,17 +277,7 @@ export default function AboutPage() {
                   className="leading-relaxed mb-6 text-left"
                   style={{ color: "var(--color-muted-foreground)" }}
                 >
-                  Dr. Forrest holds a PhD in Population and Public Health from
-                  the University of British Columbia in Vancouver, Canada and
-                  has dedicated his career to addressing health and development
-                  challenges in African countries. With many years living and
-                  working in Rwanda, and earlier career experience in South
-                  Africa, he brings deep contextual understanding of African
-                  development dynamics. His research interests and expertise
-                  include digital health, clinical research methods, and
-                  implemkentation science of equity-driven innovations like
-                  those driving TAIFA-FIALA's scientific approach to holding AI
-                  development accountable for its promise to all Africans.
+                  Dr. Jamie Forrest holds a PhD in Population and Public Health from the University of British Columbia in Vancouver, Canada, and has dedicated his career to addressing health and development challenges in African countries. With years of experience living and working in Rwanda, and earlier roles in South Africa, he brings a grounded understanding of African development contexts. His expertise spans digital health, clinical research methods, and implementation science—with a focus on equity-driven innovations like those powering TAIFA-FIALA’s commitment to making AI development more accountable to African realities.
                 </p>
 
                 <div
@@ -353,11 +328,7 @@ export default function AboutPage() {
                   variant="paragraph"
                   className="text-xl leading-relaxed mb-6"
                 >
-                  Research gaps limit visibility of African AI innovations, while limited 
-                  capacity for rigorous evaluations leave crucial lessons learned untold. 
-                  This prevents the ecosystem from learning, adapting, and building on 
-                  successes. Over $130 billion has been announced for African AI development 
-                  since 2020, but without systematic documentation of resulting innovations.
+                  Research gaps continue to obscure African AI innovations, while limited capacity for rigorous evaluation leaves critical lessons undocumented. This weakens the ecosystem’s ability to learn, adapt, and replicate success. Over $130 billion has been announced globally for AI development since 2020—but Africa’s contributions, outcomes, and innovations are often left untracked.
                 </Section3Text>
 
                 <div
@@ -368,8 +339,7 @@ export default function AboutPage() {
                   }}
                 >
                   <p className="text-lg font-semibold">
-                    We founded TAIFA-FIALA to bridge this gap between funding promises 
-                    and innovation documentation.
+                    We founded TAIFA-FIALA to bridge the gap between bold funding promises and the lived record of African AI innovation.
                   </p>
                 </div>
 
@@ -378,12 +348,7 @@ export default function AboutPage() {
                   variant="paragraph"
                   className="text-lg leading-relaxed"
                 >
-                  Through our pioneering participatory systematic review methodology, 
-                  we create the evidence base that showcases African AI brilliance. 
-                  Innovation stories inspire the next generation, implementation lessons 
-                  help others avoid pitfalls, and success patterns guide better funding 
-                  strategies—building a unifying space where funders celebrate impact, 
-                  innovators gain recognition, and researchers access rigorous evidence.
+                  Through our participatory systematic review methodology, we build the evidence base needed to showcase African AI brilliance. Innovation stories inspire future innovators. Implementation lessons help others avoid pitfalls. And visible patterns of success guide smarter investment. TAIFA-FIALA is a shared space where funders celebrate impact, innovators gain recognition, and researchers access rigorous, actionable evidence.
                 </Section3Text>
               </div>
           </Card>

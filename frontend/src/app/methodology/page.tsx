@@ -30,7 +30,7 @@ export default function MethodologyPage() {
       title: "Community Data Collection",
       subtitle: "Comprehensive",
       description:
-        "Systematic monitoring of 200+ funding organizations to ensure no innovation opportunity is missed",
+        "Data collection begins with published academic evaluations, grant reports, news archives, and digital project documentation—capturing innovations whether celebrated or overlooked.",
       metrics: [
         "85-90% coverage rate",
         "500-800 daily opportunities",
@@ -43,7 +43,7 @@ export default function MethodologyPage() {
       title: "Source Verification",
       subtitle: "Accuracy",
       description:
-        "Detailed validation of funding information directly from official sources to ensure reliability",
+        "Multi-source validation and traceability for every data point—ensuring accuracy through cross-referencing, source weighting, and structured documentation.",
       metrics: ["Multi-source validation", "Format standardization", "95% uptime"],
       icon: <Search />,
     },
@@ -52,7 +52,7 @@ export default function MethodologyPage() {
       title: "Knowledge Enhancement",
       subtitle: "Context",
       description:
-        "Strategic research to provide complete context and background for informed decision-making",
+        "Strategic enrichment of project records with sectoral, geographic, and institutional context—ensuring the dataset reflects not just what exists, but what it means.",
       metrics: [
         "≥70% relevance scoring",
         "90% field completion",
@@ -154,14 +154,9 @@ export default function MethodologyPage() {
               variant="paragraph"
               className="text-xl max-w-4xl mx-auto leading-relaxed"
             >
-              A sophisticated{" "}
-              <span className="font-semibold">technical infrastructure</span>{" "}
-              combining automated data collection, intelligent validation, and
-              advanced analytics to support{" "}
-              <span className="font-semibold">
-                equitable AI development across Africa
-              </span>
-              .
+              A continent-scale system for capturing AI innovation—combining 
+              automation, verification, and contextual research to support inclusive, 
+              evidence-based decision-making.
             </Section1Text>
           </div>
         </div>
@@ -298,27 +293,27 @@ export default function MethodologyPage() {
               {[
                 {
                   icon: <Database className="h-8 w-8" />,
-                  title: "200+ RSS Feeds",
-                  subtitle: "15-30 min polling",
-                  color: "var(--color-primary)",
+                  title: "Primary Data Source Aggregation",
+                  subtitle: "Peer-reviewed, public, and grey literature",
+                  color: "var(--color-primary)", // Input
                 },
                 {
                   icon: <Code className="h-8 w-8" />,
-                  title: "Intelligent Scraping",
-                  subtitle: "Deep content extraction",
-                  color: "var(--color-info)",
+                  title: "Targeted Search",
+                  subtitle: "Gap-filling with programmatic queries and filters",
+                  color: "var(--color-info)", // Processing
                 },
                 {
                   icon: <Search className="h-8 w-8" />,
-                  title: "Targeted Search",
-                  subtitle: "Gap filling precision",
-                  color: "var(--color-accent)",
+                  title: "Intelligent Scraping",
+                  subtitle: "Automation for structure, not discovery",
+                  color: "var(--color-accent)", // Validation
                 },
                 {
                   icon: <CheckCircle className="h-8 w-8" />,
-                  title: "Complete Dataset",
-                  subtitle: "90%+ field completion",
-                  color: "#22c55e",
+                  title: "Structured Record Generation",
+                  subtitle: "Validated, contextualized, query-ready data",
+                  color: "var(--color-success)", // Output
                 },
               ].map((item, index, arr) => (
                 <React.Fragment key={index}>
@@ -795,9 +790,9 @@ export default function MethodologyPage() {
               className="text-lg leading-relaxed text-center"
               style={{ color: "var(--color-muted-foreground)" }}
             >
-              We envision a future where evidence-based insights guide investment decisions, 
-              where innovators receive recognition for breakthrough work, and where policymakers 
-              craft strategies grounded in systematic documentation rather than assumptions.
+              A future in which the full breadth of African AI innovation is visible, valued, and directed toward human wellbeing.
+              By making patterns of research, development, and investment transparent, we seek to inform decisions that move beyond hype—toward 
+              equitable progress in health, education, livelihoods, and public good.
             </Section1Text>
           </div>
         </div>
