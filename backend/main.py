@@ -8,7 +8,7 @@ from datetime import datetime
 from typing import List, Optional
 from uuid import UUID, uuid4
 
-from fastapi import FastAPI, HTTPException, Depends, BackgroundTasks, Query, Request
+from fastapi import FastAPI, HTTPException, Depends, BackgroundTasks, Query
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from slowapi import Limiter, _rate_limit_exceeded_handler
@@ -23,6 +23,7 @@ from config.database import get_db
 from models.database import *
 from models.schemas import *
 from services.vector_service import get_vector_service, VectorService
+from api.etl_live import router as etl_live_router
 try:
     from services.serper_service import search_african_innovations
 except ImportError:
@@ -59,6 +60,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Include routers
+app.include_router(etl_live_router)
 
 
 @app.on_event("startup")
@@ -103,7 +107,7 @@ async def health_check():
 @app.get("/api/innovations", response_model=InnovationSearchResponse)
 @limiter.limit("30/minute")
 async def get_innovations(
-    request: Request,
+    request,
     params: InnovationSearchParams = Depends(),
     db: Session = Depends(get_db)
 ):
@@ -160,7 +164,7 @@ async def get_innovations(
 
 @app.get("/api/innovations/{innovation_id}", response_model=InnovationResponse)
 @limiter.limit("60/minute")
-async def get_innovation(request: Request, innovation_id: UUID, db: Session = Depends(get_db)):
+async def get_innovation(request, innovation_id: UUID, db: Session = Depends(get_db)):
     """Get single innovation by ID"""
     innovation = db.query(Innovation).filter(Innovation.id == innovation_id).first()
 
@@ -173,7 +177,7 @@ async def get_innovation(request: Request, innovation_id: UUID, db: Session = De
 @app.post("/api/innovations", response_model=InnovationResponse)
 @limiter.limit("10/minute")
 async def create_innovation(
-    request: Request,
+    request,
     innovation_data: InnovationCreate,
     background_tasks: BackgroundTasks,
     db: Session = Depends(get_db)
@@ -236,7 +240,7 @@ async def create_innovation(
 @app.get("/api/search", response_model=InnovationSearchResponse)
 @limiter.limit("20/minute")
 async def search_innovations(
-    request: Request,
+    request,
     query: str = Query(..., min_length=3, description="Search query"),
     innovation_type: Optional[str] = None,
     country: Optional[str] = None,
@@ -291,7 +295,7 @@ async def search_innovations(
 @app.post("/api/etl/academic")
 @limiter.limit("5/minute")
 async def trigger_academic_etl(
-    request: Request,
+    request,
     background_tasks: BackgroundTasks,
     days_back: int = Query(7, ge=1, le=30),
     max_results: int = Query(100, ge=10, le=500)
@@ -316,7 +320,7 @@ async def trigger_academic_etl(
 @app.post("/api/etl/news")
 @limiter.limit("5/minute")
 async def trigger_news_etl(
-    request: Request,
+    request,
     background_tasks: BackgroundTasks,
     hours_back: int = Query(24, ge=1, le=168)  # Max 1 week
 ):
@@ -339,7 +343,7 @@ async def trigger_news_etl(
 @app.post("/api/etl/serper-search")
 @limiter.limit("3/minute")
 async def trigger_serper_search(
-    request: Request,
+    request,
     background_tasks: BackgroundTasks,
     innovation_type: Optional[str] = None,
     country: Optional[str] = None,
@@ -367,7 +371,7 @@ async def trigger_serper_search(
 @app.get("/api/community/submissions", response_model=List[CommunitySubmissionResponse])
 @limiter.limit("20/minute")
 async def get_community_submissions(
-    request: Request,
+    request,
     status: Optional[str] = None,
     limit: int = Query(20, ge=1, le=100),
     db: Session = Depends(get_db)
@@ -386,7 +390,7 @@ async def get_community_submissions(
 @app.post("/api/community/vote")
 @limiter.limit("50/minute")
 async def submit_community_vote(
-    request: Request,
+    request,
     vote: CommunityVote,
     db: Session = Depends(get_db)
 ):
@@ -399,7 +403,7 @@ async def submit_community_vote(
 # Statistics Endpoints
 @app.get("/api/stats", response_model=InnovationStats)
 @limiter.limit("10/minute")
-async def get_statistics(request: Request, db: Session = Depends(get_db)):
+async def get_statistics(request, db: Session = Depends(get_db)):
     """Get platform statistics"""
     try:
         total_innovations = db.query(Innovation).count()
@@ -495,7 +499,7 @@ async def run_serper_search(job_id: str, innovation_type: Optional[str],
 # ETL Monitoring Endpoints
 @app.get("/api/etl/status")
 @limiter.limit("30/minute")
-async def get_etl_status(request: Request):
+async def get_etl_status(request):
     """Get comprehensive ETL validation system status"""
     try:
         from services.etl_monitor import etl_monitor
@@ -508,7 +512,7 @@ async def get_etl_status(request: Request):
 
 @app.get("/api/etl/health")
 @limiter.limit("60/minute")
-async def get_etl_health(request: Request):
+async def get_etl_health(request):
     """Get ETL system health check"""
     try:
         from services.etl_monitor import etl_monitor
@@ -531,7 +535,7 @@ async def get_etl_health(request: Request):
 
 @app.get("/api/validation/summary")
 @limiter.limit("20/minute")
-async def get_validation_summary(request: Request):
+async def get_validation_summary(request):
     """Get validation system summary for homepage"""
     try:
         from services.etl_monitor import etl_monitor
@@ -558,31 +562,15 @@ async def get_validation_summary(request: Request):
     except Exception as e:
         logger.error(f"Error getting validation summary: {e}")
         raise HTTPException(status_code=500, detail="Failed to get validation summary")
-        from services.etl_monitor import etl_monitor
-        health = await etl_monitor.get_system_health()
-        return {
-            "status": "healthy" if health.database_status == "healthy" else "unhealthy",
-            "system_health": {
-                "cpu_percent": health.cpu_percent,
-                "memory_percent": health.memory_percent,
-                "disk_usage": health.disk_usage,
-                "database_status": health.database_status,
-                "vector_db_status": health.vector_db_status
-            },
-            "timestamp": health.timestamp.isoformat()
-        }
-    except Exception as e:
-        logger.error(f"Error getting ETL health: {e}")
-        raise HTTPException(status_code=500, detail="ETL health check failed")
 
 
 @app.get("/api/etl/jobs")
 @limiter.limit("30/minute")
-async def get_etl_jobs(request: Request, active_only: bool = False):
+async def get_etl_jobs(request, active_only: bool = False):
     """Get ETL job statuses"""
     try:
         from services.etl_monitor import etl_monitor
-        dashboard_data = await etl_monitor.get_dashboard_data()
+        dashboard_data = etl_monitor.get_dashboard_data()
 
         jobs = dashboard_data['job_statuses']
         if active_only:
@@ -600,7 +588,7 @@ async def get_etl_jobs(request: Request, active_only: bool = False):
 
 @app.get("/api/etl/recent")
 @limiter.limit("30/minute")
-async def get_recent_etl_activity(request: Request, hours: int = Query(24, ge=1, le=168)):
+async def get_recent_etl_activity(request, hours: int = Query(24, ge=1, le=168)):
     """Get recent ETL activity"""
     try:
         from services.etl_monitor import etl_monitor

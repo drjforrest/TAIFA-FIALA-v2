@@ -1,12 +1,12 @@
 {
   "arxiv_scraper": {
-    "last_run": "2025-08-01T15:09:05.142507",
-    "last_success": "2025-08-01T15:09:05.142509",
+    "last_run": "2025-08-01T19:19:56.651726",
+    "last_success": "2025-08-01T19:19:56.651728",
     "last_error": null,
     "success_count": 1,
     "error_count": 0,
-    "avg_runtime": 7.8536717891693115,
-    "items_processed": 2
+    "avg_runtime": 7.679035902023315,
+    "items_processed": 1
   },
   "news_monitor": {
     "last_run": null,

@@ -17,8 +17,12 @@ echo "🚀 Starting TAIFA-FIALA: FastAPI + ETL System"
 echo "Focus: Verified $1B+ funding with live data collection"
 echo "Working directory: $(pwd)"
 
-# Check if virtual environment exists
-if [ ! -d "venv" ]; then
+# Check if virtual environment exists (check both backend and root directories)
+if [ -d "venv" ]; then
+    VENV_PATH="venv"
+elif [ -d "../venv" ]; then
+    VENV_PATH="../venv"
+else
     echo "❌ Virtual environment not found. Please create one first:"
     echo "   python -m venv venv"
     echo "   source venv/bin/activate"
@@ -27,8 +31,8 @@ if [ ! -d "venv" ]; then
 fi
 
 # Activate environment
-echo "🔧 Activating virtual environment..."
-source venv/bin/activate
+echo "🔧 Activating virtual environment from $VENV_PATH..."
+source "$VENV_PATH/bin/activate"
 
 # Check if port is already in use
 if lsof -ti:$API_PORT > /dev/null 2>&1; then
