@@ -52,9 +52,8 @@ class VectorRebuilder:
             self.vector_service = await get_vector_service()
             logger.info("✅ Vector service initialized")
             
-            # Initialize database service
-            await self.db_service.initialize()
-            logger.info("✅ Database service initialized")
+            # Database service doesn't need initialization
+            logger.info("✅ Database service ready")
             
             return True
             

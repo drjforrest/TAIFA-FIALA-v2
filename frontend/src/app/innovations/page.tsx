@@ -83,6 +83,7 @@ export default function ExploreDataPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [totalCount, setTotalCount] = useState(0);
+  const [searchMetadata, setSearchMetadata] = useState<any>(null);
 
   // Search and filter state
   const [searchParams, setSearchParams] = useState<SearchParams>({
@@ -202,6 +203,13 @@ export default function ExploreDataPage() {
 
       setInnovations(data.innovations || []);
       setTotalCount(data.total || 0);
+      
+      // Store search metadata for UI indicators
+      if (data.search_metadata) {
+        setSearchMetadata(data.search_metadata);
+      } else {
+        setSearchMetadata(null);
+      }
 
       // Update filter options from metadata
       if (data.metadata) {
@@ -552,6 +560,67 @@ export default function ExploreDataPage() {
             </div>
           </div>
 
+          {/* Search Quality Indicator */}
+          {searchMetadata && searchParams.query && (
+            <div 
+              className="flex items-center justify-between text-sm mt-4 p-3 rounded-lg"
+              style={{ 
+                backgroundColor: "var(--color-card)",
+                borderColor: "var(--color-border)",
+                border: "1px solid var(--color-border)"
+              }}
+            >
+              <div className="flex items-center space-x-4">
+                {searchMetadata.used_vector_search && (
+                  <div className="flex items-center space-x-2">
+                    <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                    <span style={{ color: "var(--color-card-foreground)" }}>
+                      AI-Powered Search
+                    </span>
+                  </div>
+                )}
+                
+                {searchMetadata.search_quality && searchMetadata.search_quality !== "n/a" && (
+                  <div className="flex items-center space-x-1">
+                    <span style={{ color: "var(--color-muted-foreground)" }}>Quality:</span>
+                    <div className="flex">
+                      {[...Array(5)].map((_, i) => (
+                        <span
+                          key={i}
+                          className={`text-xs ${
+                            i < Math.round((searchMetadata.avg_relevance_score || 0) * 5)
+                              ? "text-yellow-500"
+                              : "text-gray-300"
+                          }`}
+                        >
+                          ⭐
+                        </span>
+                      ))}
+                    </div>
+                    <span 
+                      className="text-xs capitalize ml-1"
+                      style={{ color: "var(--color-muted-foreground)" }}
+                    >
+                      ({searchMetadata.search_quality})
+                    </span>
+                  </div>
+                )}
+              </div>
+              
+              <div className="text-xs" style={{ color: "var(--color-muted-foreground)" }}>
+                {searchMetadata.vector_results_count > 0 && (
+                  <span>{searchMetadata.vector_results_count} semantic matches</span>
+                )}
+                {searchMetadata.traditional_results_count > 0 && searchMetadata.vector_results_count > 0 && (
+                  <span> + {searchMetadata.traditional_results_count} keyword matches</span>
+                )}
+                {searchMetadata.traditional_results_count > 0 && searchMetadata.vector_results_count === 0 && (
+                  <span>{searchMetadata.traditional_results_count} keyword matches</span>
+                )}
+              </div>
+            </div>
+          )}
+
           {/* Results Summary */}
           <div 
             className="flex items-center justify-between text-sm mt-6 pt-4 border-t"
@@ -649,14 +718,40 @@ export default function ExploreDataPage() {
                     {/* Header with verification status */}
                     <div className="flex justify-between items-start mb-4">
                       <div className="flex-1">
-                        <h3 
-                          className="text-xl font-bold mb-2 transition-colors"
-                          style={{ 
-                            color: "var(--color-card-foreground)",
-                          }}
-                        >
-                          {innovation.title}
-                        </h3>
+                        <div className="flex items-center space-x-2 mb-2">
+                          <h3 
+                            className="text-xl font-bold transition-colors"
+                            style={{ 
+                              color: "var(--color-card-foreground)",
+                            }}
+                          >
+                            {innovation.title}
+                          </h3>
+                          {/* Relevance score indicator for search results */}
+                          {searchParams.query && (innovation as any)._relevance_score && (
+                            <div className="flex items-center space-x-1">
+                              <div className="flex">
+                                {[...Array(5)].map((_, i) => (
+                                  <span
+                                    key={i}
+                                    className={`text-xs ${
+                                      i < Math.round(((innovation as any)._relevance_score || 0) * 5)
+                                        ? "text-yellow-500"
+                                        : "text-gray-300"
+                                    }`}
+                                  >
+                                    ⭐
+                                  </span>
+                                ))}
+                              </div>
+                              {(innovation as any)._search_source === 'vector' && (
+                                <span className="text-xs bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400 px-1 py-0.5 rounded">
+                                  AI
+                                </span>
+                              )}
+                            </div>
+                          )}
+                        </div>
                         <div 
                           className="flex items-center space-x-4 text-sm mb-3"
                           style={{ color: "var(--color-muted-foreground)" }}

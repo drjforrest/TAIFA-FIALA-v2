@@ -214,58 +214,189 @@ async def get_innovations(
     limit: int = Query(20, ge=1, le=100),
     offset: int = Query(0, ge=0),
     sort_by: str = Query("created_at"),
-    sort_order: str = Query("desc")
+    sort_order: str = Query("desc"),
+    vector_service: VectorService = Depends(get_vector_service)
 ):
-    """Get innovations with search and filtering using Supabase client"""
+    """Get innovations with hybrid search (vector + traditional) and filtering"""
     try:
         from config.database import get_supabase
         supabase = get_supabase()
         
-        # Build Supabase query
-        query_builder = supabase.table('innovations').select('*')
+        # Initialize search metadata
+        search_metadata = {
+            "query_type": "filter_only",
+            "used_vector_search": False,
+            "used_traditional_search": False,
+            "vector_results_count": 0,
+            "traditional_results_count": 0,
+            "avg_relevance_score": 0,
+            "search_quality": "n/a"
+        }
         
-        # Apply filters
-        if innovation_type:
-            query_builder = query_builder.eq('innovation_type', innovation_type)
+        innovations_data = []
+        total = 0
+        
+        if query and len(query.strip()) >= 3:
+            # HYBRID SEARCH: Vector + Traditional
+            logger.info(f"Performing hybrid search for query: '{query}'")
             
-        if verification_status:
-            query_builder = query_builder.eq('verification_status', verification_status)
+            try:
+                # 1. Vector Search (semantic similarity)
+                vector_results = await vector_service.search_innovations(
+                    query=query,
+                    innovation_type=innovation_type,
+                    country=country,
+                    top_k=min(50, limit * 3)  # Get more results for better ranking
+                )
+                
+                # Extract innovation IDs from vector results
+                vector_innovation_ids = []
+                innovation_scores = {}
+                
+                for result in vector_results:
+                    innovation_id = result.metadata.get('innovation_id')
+                    if innovation_id:
+                        vector_innovation_ids.append(innovation_id)
+                        innovation_scores[innovation_id] = result.score
+                
+                search_metadata.update({
+                    "query_type": "hybrid_search",
+                    "used_vector_search": True,
+                    "vector_results_count": len(vector_results),
+                    "avg_relevance_score": round(sum(r.score for r in vector_results) / len(vector_results), 3) if vector_results else 0
+                })
+                
+                logger.info(f"Vector search found {len(vector_results)} results")
+                
+            except Exception as vector_error:
+                logger.warning(f"Vector search failed, falling back to traditional: {vector_error}")
+                vector_innovation_ids = []
+                innovation_scores = {}
             
-        if country:
-            query_builder = query_builder.eq('country', country)
-        
-        # Apply sorting
-        if sort_by == "title":
-            query_builder = query_builder.order('title', desc=(sort_order == "desc"))
-        elif sort_by == "updated_at":
-            query_builder = query_builder.order('updated_at', desc=(sort_order == "desc"))
-        else:  # default: created_at
-            query_builder = query_builder.order('created_at', desc=(sort_order == "desc"))
-        
-        # Get total count for pagination (separate query)
-        count_query = supabase.table('innovations').select('id', count='exact')
-        if innovation_type:
-            count_query = count_query.eq('innovation_type', innovation_type)
-        if verification_status:
-            count_query = count_query.eq('verification_status', verification_status)
-        if country:
-            count_query = count_query.eq('country', country)
+            # 2. Traditional Search (keyword matching) as fallback/supplement
+            try:
+                traditional_query = supabase.table('innovations').select('*')
+                
+                # Apply text search
+                traditional_query = traditional_query.or_(
+                    f'title.ilike.%{query}%,description.ilike.%{query}%,innovation_type.ilike.%{query}%'
+                )
+                
+                # Apply filters
+                if innovation_type:
+                    traditional_query = traditional_query.eq('innovation_type', innovation_type)
+                if verification_status:
+                    traditional_query = traditional_query.eq('verification_status', verification_status)
+                if country:
+                    traditional_query = traditional_query.eq('country', country)
+                
+                traditional_response = traditional_query.limit(50).execute()
+                traditional_results = traditional_response.data if traditional_response.data else []
+                
+                search_metadata.update({
+                    "used_traditional_search": True,
+                    "traditional_results_count": len(traditional_results)
+                })
+                
+                logger.info(f"Traditional search found {len(traditional_results)} results")
+                
+            except Exception as traditional_error:
+                logger.error(f"Traditional search also failed: {traditional_error}")
+                traditional_results = []
             
-        count_response = count_query.execute()
-        total = count_response.count if count_response.count is not None else 0
+            # 3. Merge and rank results (prioritize vector results)
+            merged_results = {}
+            
+            # First, add vector results (higher priority)
+            if vector_innovation_ids:
+                vector_query = supabase.table('innovations').select('*').in_('id', vector_innovation_ids)
+                if verification_status:
+                    vector_query = vector_query.eq('verification_status', verification_status)
+                
+                vector_data_response = vector_query.execute()
+                vector_data = vector_data_response.data if vector_data_response.data else []
+                
+                for innovation in vector_data:
+                    innovation_id = innovation['id']
+                    innovation['_relevance_score'] = innovation_scores.get(innovation_id, 0)
+                    innovation['_search_source'] = 'vector'
+                    merged_results[innovation_id] = innovation
+            
+            # Then, add traditional results (lower priority, only if not already included)
+            for innovation in traditional_results:
+                innovation_id = innovation['id']
+                if innovation_id not in merged_results:
+                    innovation['_relevance_score'] = 0.3  # Lower score for traditional matches
+                    innovation['_search_source'] = 'traditional'
+                    merged_results[innovation_id] = innovation
+            
+            # Convert to list and sort by relevance score
+            innovations_data = list(merged_results.values())
+            innovations_data.sort(key=lambda x: x.get('_relevance_score', 0), reverse=True)
+            
+            total = len(innovations_data)
+            
+            # Update search quality assessment
+            if search_metadata["avg_relevance_score"] > 0.8:
+                search_metadata["search_quality"] = "excellent"
+            elif search_metadata["avg_relevance_score"] > 0.6:
+                search_metadata["search_quality"] = "good"
+            elif search_metadata["avg_relevance_score"] > 0.3:
+                search_metadata["search_quality"] = "fair"
+            else:
+                search_metadata["search_quality"] = "poor"
+            
+        else:
+            # NO QUERY: Traditional filtering and pagination
+            query_builder = supabase.table('innovations').select('*')
+            
+            # Apply filters
+            if innovation_type:
+                query_builder = query_builder.eq('innovation_type', innovation_type)
+            if verification_status:
+                query_builder = query_builder.eq('verification_status', verification_status)
+            if country:
+                query_builder = query_builder.eq('country', country)
+            
+            # Get total count
+            count_query = supabase.table('innovations').select('id', count='exact')
+            if innovation_type:
+                count_query = count_query.eq('innovation_type', innovation_type)
+            if verification_status:
+                count_query = count_query.eq('verification_status', verification_status)
+            if country:
+                count_query = count_query.eq('country', country)
+            
+            count_response = count_query.execute()
+            total = count_response.count if count_response.count is not None else 0
+            
+            # Apply sorting
+            if sort_by == "title":
+                query_builder = query_builder.order('title', desc=(sort_order == "desc"))
+            elif sort_by == "updated_at":
+                query_builder = query_builder.order('updated_at', desc=(sort_order == "desc"))
+            else:  # default: created_at
+                query_builder = query_builder.order('created_at', desc=(sort_order == "desc"))
+            
+            # Apply pagination
+            query_builder = query_builder.range(offset, offset + limit - 1)
+            
+            # Execute query
+            response = query_builder.execute()
+            innovations_data = response.data if response.data else []
+            
+            search_metadata["query_type"] = "filter_only"
         
-        # Apply pagination
-        query_builder = query_builder.range(offset, offset + limit - 1)
-        
-        # Execute query
-        response = query_builder.execute()
-        innovations_data = response.data if response.data else []
+        # Apply pagination to search results
+        if query and innovations_data:
+            paginated_data = innovations_data[offset:offset + limit]
+        else:
+            paginated_data = innovations_data
         
         # Convert to response format
         innovations = []
-        for innovation_data in innovations_data:
-            # Convert Supabase data to InnovationResponse format
-            innovations.append({
+        for innovation_data in paginated_data:
+            innovation_response = {
                 "id": innovation_data.get("id"),
                 "title": innovation_data.get("title"),
                 "description": innovation_data.get("description"),
@@ -280,14 +411,22 @@ async def get_innovations(
                 "publications": innovation_data.get("publications", []),
                 "tags": innovation_data.get("tags", []),
                 "impact_metrics": innovation_data.get("impact_metrics", {})
-            })
+            }
+            
+            # Add search-specific metadata for search results
+            if query and '_relevance_score' in innovation_data:
+                innovation_response['_relevance_score'] = innovation_data['_relevance_score']
+                innovation_response['_search_source'] = innovation_data['_search_source']
+            
+            innovations.append(innovation_response)
         
         return {
             "innovations": innovations,
             "total": total,
             "limit": limit,
             "offset": offset,
-            "has_more": offset + limit < total
+            "has_more": offset + limit < total,
+            "search_metadata": search_metadata
         }
         
     except Exception as e:

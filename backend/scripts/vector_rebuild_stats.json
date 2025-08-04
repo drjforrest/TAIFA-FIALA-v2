@@ -1,0 +1,16 @@
+{
+  "innovations_processed": 24,
+  "innovations_vectorized": 24,
+  "publications_processed": 50,
+  "publications_vectorized": 50,
+  "news_processed": 0,
+  "news_vectorized": 0,
+  "errors": [],
+  "start_time": "2025-08-04T13:41:18.938608",
+  "total_vectors_created": 24,
+  "vector_db_stats": {
+    "total_vectors": 39,
+    "index_fullness": 0.0,
+    "dimension": 1024,
+    "namespaces": {
+      "": 
