@@ -108,14 +108,16 @@ export default function ExploreDataPage() {
     return () => clearTimeout(timer);
   }, [searchParams.query]);
 
-  // Fetch innovations
-  const fetchInnovations = useCallback(async (params: SearchParams) => {
+  // Fetch innovations with retry logic
+  const fetchInnovations = useCallback(async (params: SearchParams, retryCount = 0) => {
     try {
       setLoading(true);
       setError(null);
+      
+      console.log('Fetching innovations with params:', params);
 
       // Check if API URL is configured
-      if (!API_BASE_URL || API_BASE_URL === "http://localhost:8000") {
+      if (!API_BASE_URL || API_BASE_URL.includes("localhost")) {
         console.warn("API not available, using mock data");
         // Provide mock data when API is not available
         setTimeout(() => {
@@ -148,6 +150,10 @@ export default function ExploreDataPage() {
 
       console.log('Fetching innovations with URL:', `${API_BASE_URL}/api/innovations?${queryParams}`);
       
+      // Create abort controller for timeout
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+      
       const response = await fetch(
         `${API_BASE_URL}/api/innovations?${queryParams}`,
         {
@@ -157,8 +163,12 @@ export default function ExploreDataPage() {
             'Content-Type': 'application/json',
           },
           mode: 'cors', // Explicitly set CORS mode
+          credentials: 'omit', // Don't send credentials for CORS requests
+          signal: controller.signal,
         }
       );
+      
+      clearTimeout(timeoutId);
 
       if (!response.ok) {
         // If it's a 500 error, provide a more user-friendly message
@@ -188,15 +198,36 @@ export default function ExploreDataPage() {
     } catch (err) {
       console.error("Error fetching innovations:", err);
       
-      // Handle different types of errors
-      if (err instanceof TypeError && err.message.includes('fetch')) {
+      // Retry logic for network errors
+      if (retryCount < 2 && (err instanceof TypeError || (err instanceof DOMException && err.name === 'AbortError'))) {
+        console.log(`Retrying request (attempt ${retryCount + 1}/2)...`);
+        setTimeout(() => {
+          fetchInnovations(params, retryCount + 1);
+        }, 1000 * (retryCount + 1)); // Exponential backoff
+        return;
+      }
+      
+      // Handle different types of errors with more specific messages
+      if (err instanceof DOMException && err.name === 'AbortError') {
         setError(
-          "Unable to connect to the innovation database. This may be due to network issues or CORS configuration."
+          "Request timeout: The server is taking too long to respond. Please try again."
         );
+      } else if (err instanceof TypeError) {
+        if (err.message.includes('fetch')) {
+          setError(
+            "Network error: Unable to connect to the server. Please check your internet connection and try again."
+          );
+        } else if (err.message.includes('NetworkError') || err.message.includes('CORS')) {
+          setError(
+            "CORS error: The server is not properly configured to accept requests from this domain."
+          );
+        } else {
+          setError(`Network error: ${err.message}`);
+        }
       } else if (err instanceof Error) {
         setError(err.message);
       } else {
-        setError("Failed to fetch innovations. Please try again later.");
+        setError("An unexpected error occurred. Please try again later.");
       }
     } finally {
       setLoading(false);
@@ -205,13 +236,20 @@ export default function ExploreDataPage() {
 
   // Initial load and search updates
   useEffect(() => {
-    fetchInnovations(searchParams);
+    const params = {
+      ...searchParams,
+      query: debouncedQuery,
+    };
+    fetchInnovations(params);
   }, [
     debouncedQuery,
     searchParams.innovation_type,
     searchParams.country,
     searchParams.verification_status,
     searchParams.offset,
+    searchParams.funding_min,
+    searchParams.funding_max,
+    searchParams.limit,
     fetchInnovations,
   ]);
 
@@ -539,14 +577,25 @@ export default function ExploreDataPage() {
         {/* Error State */}
         {error && (
           <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-6">
-            <div className="flex items-center">
-              <AlertCircle className="h-6 w-6 text-red-600 dark:text-red-400 mr-3" />
-              <div>
-                <h3 className="text-lg font-medium text-red-800 dark:text-red-200">
-                  Search Error
-                </h3>
-                <p className="text-red-600 dark:text-red-400 mt-1">{error}</p>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center">
+                <AlertCircle className="h-6 w-6 text-red-600 dark:text-red-400 mr-3" />
+                <div>
+                  <h3 className="text-lg font-medium text-red-800 dark:text-red-200">
+                    Search Error
+                  </h3>
+                  <p className="text-red-600 dark:text-red-400 mt-1">{error}</p>
+                </div>
               </div>
+              <button
+                onClick={() => {
+                  const params = { ...searchParams, query: debouncedQuery };
+                  fetchInnovations(params);
+                }}
+                className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors text-sm"
+              >
+                Retry
+              </button>
             </div>
           </div>
         )}
