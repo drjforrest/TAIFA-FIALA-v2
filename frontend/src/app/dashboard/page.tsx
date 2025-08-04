@@ -383,7 +383,7 @@ export default function DashboardStats() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Academic Pipeline */}
             <div
-              className="rounded-lg border p-6"
+              className="rounded-lg border p-6 hover:shadow-lg hover:scale-105 hover:-translate-y-1 transition-all duration-300 ease-in-out"
               style={{
                 backgroundColor: "var(--color-card)",
                 borderColor: "var(--color-border)",
@@ -403,7 +403,7 @@ export default function DashboardStats() {
                 <button
                   onClick={handleTriggerAcademic}
                   disabled={etlLoading}
-                  className="p-2 rounded-lg hover:shadow-md transition-all"
+                  className="p-3 rounded-lg hover:shadow-lg hover:scale-110 transition-all duration-200 ease-in-out active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
                   style={{
                     backgroundColor: "var(--color-primary)",
                     color: "var(--color-primary-foreground)",
@@ -488,7 +488,7 @@ export default function DashboardStats() {
 
             {/* News Pipeline */}
             <div
-              className="rounded-lg border p-6"
+              className="rounded-lg border p-6 hover:shadow-lg hover:scale-105 hover:-translate-y-1 transition-all duration-300 ease-in-out"
               style={{
                 backgroundColor: "var(--color-card)",
                 borderColor: "var(--color-border)",
@@ -508,7 +508,7 @@ export default function DashboardStats() {
                 <button
                   onClick={handleTriggerNews}
                   disabled={etlLoading}
-                  className="p-2 rounded-lg hover:shadow-md transition-all"
+                  className="p-3 rounded-lg hover:shadow-lg hover:scale-110 transition-all duration-200 ease-in-out active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
                   style={{
                     backgroundColor: "var(--color-success)",
                     color: "var(--color-success-foreground)",
@@ -593,7 +593,7 @@ export default function DashboardStats() {
 
             {/* Discovery Pipeline */}
             <div
-              className="rounded-lg border p-6"
+              className="rounded-lg border p-6 hover:shadow-lg hover:scale-105 hover:-translate-y-1 transition-all duration-300 ease-in-out"
               style={{
                 backgroundColor: "var(--color-card)",
                 borderColor: "var(--color-border)",
@@ -613,7 +613,7 @@ export default function DashboardStats() {
                 <button
                   onClick={handleTriggerDiscovery}
                   disabled={etlLoading}
-                  className="p-2 rounded-lg hover:shadow-md transition-all"
+                  className="p-3 rounded-lg hover:shadow-lg hover:scale-110 transition-all duration-200 ease-in-out active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
                   style={{
                     backgroundColor: "var(--color-accent)",
                     color: "var(--color-accent-foreground)",
@@ -710,7 +710,7 @@ export default function DashboardStats() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Today's Processing Activity */}
             <div
-              className="rounded-lg border p-6"
+              className="rounded-lg border p-6 hover:shadow-lg hover:scale-105 hover:-translate-y-1 transition-all duration-300 ease-in-out"
               style={{
                 backgroundColor: "var(--color-card)",
                 borderColor: "var(--color-accent)",
@@ -779,7 +779,7 @@ export default function DashboardStats() {
 
             {/* Innovation Archive Summary */}
             <div
-              className="rounded-lg border p-6"
+              className="rounded-lg border p-6 hover:shadow-lg hover:scale-105 hover:-translate-y-1 transition-all duration-300 ease-in-out"
               style={{
                 backgroundColor: "var(--color-card)",
                 borderColor: "var(--color-primary)",

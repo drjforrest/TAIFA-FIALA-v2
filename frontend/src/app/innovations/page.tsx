@@ -22,7 +22,12 @@ import {
 } from "lucide-react";
 import { Section1Text } from "@/components/ui/adaptive-text";
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+// Production API URL - update this to your actual production backend URL
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 
+  (process.env.NODE_ENV === 'production' 
+    ? 'https://your-backend-domain.com' // Replace with actual production URL
+    : "http://localhost:8000"
+  );
 
 interface Innovation {
   id: string;
@@ -109,6 +114,23 @@ export default function ExploreDataPage() {
       setLoading(true);
       setError(null);
 
+      // Check if API URL is configured
+      if (!API_BASE_URL || API_BASE_URL === "http://localhost:8000") {
+        console.warn("API not available, using mock data");
+        // Provide mock data when API is not available
+        setTimeout(() => {
+          setInnovations([]);
+          setTotalCount(0);
+          setFilterOptions({
+            innovation_types: ["AI/ML Platform", "Healthcare AI", "FinTech", "AgTech"],
+            countries: ["Nigeria", "South Africa", "Kenya", "Ghana", "Egypt"],
+            organizations: [],
+          });
+          setLoading(false);
+        }, 500);
+        return;
+      }
+
       const queryParams = new URLSearchParams();
 
       if (params.query) queryParams.append("query", params.query);
@@ -124,11 +146,27 @@ export default function ExploreDataPage() {
       queryParams.append("limit", params.limit.toString());
       queryParams.append("offset", params.offset.toString());
 
+      console.log('Fetching innovations with URL:', `${API_BASE_URL}/api/innovations?${queryParams}`);
+      
       const response = await fetch(
         `${API_BASE_URL}/api/innovations?${queryParams}`,
+        {
+          method: 'GET',
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+          },
+          mode: 'cors', // Explicitly set CORS mode
+        }
       );
 
       if (!response.ok) {
+        // If it's a 500 error, provide a more user-friendly message
+        if (response.status === 500) {
+          throw new Error(
+            "The innovation database is currently unavailable. Please try again later."
+          );
+        }
         throw new Error(
           `Search failed: ${response.status} ${response.statusText}`,
         );
@@ -149,9 +187,17 @@ export default function ExploreDataPage() {
       }
     } catch (err) {
       console.error("Error fetching innovations:", err);
-      setError(
-        err instanceof Error ? err.message : "Failed to fetch innovations",
-      );
+      
+      // Handle different types of errors
+      if (err instanceof TypeError && err.message.includes('fetch')) {
+        setError(
+          "Unable to connect to the innovation database. This may be due to network issues or CORS configuration."
+        );
+      } else if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError("Failed to fetch innovations. Please try again later.");
+      }
     } finally {
       setLoading(false);
     }
@@ -229,36 +275,68 @@ export default function ExploreDataPage() {
       className="min-h-screen"
       style={{ backgroundColor: "var(--color-background)" }}
     >
-      {/* Header */}
-      <div
+      {/* Hero Section */}
+      <section
+        className="py-16"
         style={{ backgroundColor: "var(--color-background-section-1)" }}
-        className="shadow-sm"
       >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="flex justify-between items-center">
-            <div>
-              <Section1Text as="h1" className="text-3xl font-bold">
-                Explore AI Innovations
-              </Section1Text>
-              <Section1Text as="p" variant="paragraph" className="mt-2">
-                Discover documented AI breakthroughs across Africa's innovation
-                ecosystem
-              </Section1Text>
-            </div>
-            <Link
-              href="/submit"
-              className="px-6 py-2 rounded-lg transition-colors hover:opacity-90 flex items-center space-x-2"
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center">
+            <div
+              className="inline-flex items-center px-4 py-2 rounded-full text-sm font-medium mb-6"
               style={{
                 backgroundColor: "var(--color-primary)",
                 color: "var(--color-primary-foreground)",
               }}
             >
-              <span>Submit Innovation</span>
-              <ArrowUpRight className="h-4 w-4" />
-            </Link>
+              <Search className="h-4 w-4 mr-2" />
+              Innovation Discovery
+            </div>
+
+            <Section1Text
+              as="h1"
+              className="text-4xl md:text-6xl font-bold mb-6 leading-tight"
+            >
+              Explore AI Innovations
+            </Section1Text>
+
+            <Section1Text
+              as="p"
+              variant="paragraph"
+              className="text-xl max-w-3xl mx-auto mb-8"
+            >
+              Discover documented AI breakthroughs across Africa's innovation
+              ecosystem—from verified startups to groundbreaking research
+            </Section1Text>
+
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Link
+                href="/submit"
+                className="px-6 py-3 rounded-lg transition-all duration-200 hover:opacity-90 hover:scale-105 flex items-center justify-center space-x-2"
+                style={{
+                  backgroundColor: "var(--color-primary)",
+                  color: "var(--color-primary-foreground)",
+                }}
+              >
+                <span>Submit Innovation</span>
+                <ArrowUpRight className="h-4 w-4" />
+              </Link>
+              <Link
+                href="/methodology"
+                className="px-6 py-3 rounded-lg border-2 transition-all duration-200 hover:opacity-90 hover:scale-105 flex items-center justify-center space-x-2"
+                style={{
+                  borderColor: "var(--color-border)",
+                  backgroundColor: "var(--color-card)",
+                  color: "var(--color-card-foreground)",
+                }}
+              >
+                <span>Our Methodology</span>
+                <TrendingUp className="h-4 w-4" />
+              </Link>
+            </div>
           </div>
         </div>
-      </div>
+      </section>
 
       {/* Search and Filters */}
       <div
@@ -266,94 +344,168 @@ export default function ExploreDataPage() {
         style={{ backgroundColor: "var(--color-background-section-2)" }}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col lg:flex-row gap-4 mb-6">
-            {/* Search Bar */}
-            <div className="flex-1 relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
-              <input
-                type="text"
-                className="w-full pl-10 pr-4 py-3 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
-                style={{
-                  border: "1px solid var(--color-border)",
-                  backgroundColor: "var(--color-input)",
-                  color: "var(--color-foreground)",
-                }}
-                placeholder="Search innovations, organizations, technologies..."
-                value={searchParams.query}
-                onChange={(e) => handleSearchChange(e.target.value)}
-              />
+          <div className="space-y-6">
+            {/* Search Bar with Label */}
+            <div>
+              <label
+                htmlFor="search-input"
+                className="block text-sm font-medium mb-2"
+                style={{ color: "var(--color-foreground)" }}
+              >
+                <Search className="inline h-4 w-4 mr-2" />
+                Search Innovations
+              </label>
+              <div className="relative">
+                <Search 
+                  className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5" 
+                  style={{ color: "var(--color-muted-foreground)" }}
+                />
+                <input
+                  id="search-input"
+                  type="text"
+                  className="w-full pl-10 pr-4 py-3 rounded-lg border-2 focus:ring-2 focus:ring-opacity-50 transition-all duration-200 hover:border-opacity-80"
+                  style={{
+                    borderColor: "var(--color-border)",
+                    backgroundColor: "var(--color-card)",
+                    color: "var(--color-card-foreground)",
+                  }}
+                  placeholder="Search innovations, organizations, technologies..."
+                  value={searchParams.query}
+                  onChange={(e) => handleSearchChange(e.target.value)}
+                />
+              </div>
             </div>
 
-            {/* Filters */}
-            <div className="flex flex-wrap gap-2">
-              <select
-                className="px-4 py-3 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
-                style={{
-                  border: "1px solid var(--color-border)",
-                  backgroundColor: "var(--color-input)",
-                  color: "var(--color-foreground)",
-                }}
-                value={searchParams.innovation_type || ""}
-                onChange={(e) =>
-                  handleFilterChange(
-                    "innovation_type",
-                    e.target.value || undefined,
-                  )
-                }
-              >
-                <option value="">All Innovation Types</option>
-                {filterOptions.innovation_types.map((type) => (
-                  <option key={type} value={type}>
-                    {type}
-                  </option>
-                ))}
-              </select>
+            {/* Filters with Labels */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {/* Innovation Type Filter */}
+              <div>
+                <label
+                  htmlFor="innovation-type-select"
+                  className="block text-sm font-medium mb-2"
+                  style={{ color: "var(--color-foreground)" }}
+                >
+                  <Tag className="inline h-4 w-4 mr-2" />
+                  Innovation Type
+                </label>
+                <div className="relative">
+                  <Tag 
+                    className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4" 
+                    style={{ color: "var(--color-muted-foreground)" }}
+                  />
+                  <select
+                    id="innovation-type-select"
+                    className="w-full pl-10 pr-4 py-3 rounded-lg border-2 focus:ring-2 focus:ring-opacity-50 transition-all duration-200 hover:border-opacity-80 appearance-none cursor-pointer"
+                    style={{
+                      borderColor: "var(--color-border)",
+                      backgroundColor: "var(--color-card)",
+                      color: "var(--color-card-foreground)",
+                    }}
+                    value={searchParams.innovation_type || ""}
+                    onChange={(e) =>
+                      handleFilterChange(
+                        "innovation_type",
+                        e.target.value || undefined,
+                      )
+                    }
+                  >
+                    <option value="">All Innovation Types</option>
+                    {filterOptions.innovation_types.map((type) => (
+                      <option key={type} value={type}>
+                        {type}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
 
-              <select
-                className="px-4 py-3 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
-                style={{
-                  border: "1px solid var(--color-border)",
-                  backgroundColor: "var(--color-input)",
-                  color: "var(--color-foreground)",
-                }}
-                value={searchParams.country || ""}
-                onChange={(e) =>
-                  handleFilterChange("country", e.target.value || undefined)
-                }
-              >
-                <option value="">All Countries</option>
-                {filterOptions.countries.map((country) => (
-                  <option key={country} value={country}>
-                    {country}
-                  </option>
-                ))}
-              </select>
+              {/* Country Filter */}
+              <div>
+                <label
+                  htmlFor="country-select"
+                  className="block text-sm font-medium mb-2"
+                  style={{ color: "var(--color-foreground)" }}
+                >
+                  <Globe className="inline h-4 w-4 mr-2" />
+                  Country
+                </label>
+                <div className="relative">
+                  <Globe 
+                    className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4" 
+                    style={{ color: "var(--color-muted-foreground)" }}
+                  />
+                  <select
+                    id="country-select"
+                    className="w-full pl-10 pr-4 py-3 rounded-lg border-2 focus:ring-2 focus:ring-opacity-50 transition-all duration-200 hover:border-opacity-80 appearance-none cursor-pointer"
+                    style={{
+                      borderColor: "var(--color-border)",
+                      backgroundColor: "var(--color-card)",
+                      color: "var(--color-card-foreground)",
+                    }}
+                    value={searchParams.country || ""}
+                    onChange={(e) =>
+                      handleFilterChange("country", e.target.value || undefined)
+                    }
+                  >
+                    <option value="">All Countries</option>
+                    {filterOptions.countries.map((country) => (
+                      <option key={country} value={country}>
+                        {country}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
 
-              <select
-                className="px-4 py-3 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
-                style={{
-                  border: "1px solid var(--color-border)",
-                  backgroundColor: "var(--color-input)",
-                  color: "var(--color-foreground)",
-                }}
-                value={searchParams.verification_status || ""}
-                onChange={(e) =>
-                  handleFilterChange(
-                    "verification_status",
-                    e.target.value || undefined,
-                  )
-                }
-              >
-                <option value="">All Verification Status</option>
-                <option value="verified">Verified</option>
-                <option value="pending">Under Review</option>
-                <option value="community">Community Validated</option>
-              </select>
+              {/* Verification Status Filter */}
+              <div>
+                <label
+                  htmlFor="verification-select"
+                  className="block text-sm font-medium mb-2"
+                  style={{ color: "var(--color-foreground)" }}
+                >
+                  <CheckCircle className="inline h-4 w-4 mr-2" />
+                  Verification Status
+                </label>
+                <div className="relative">
+                  <CheckCircle 
+                    className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4" 
+                    style={{ color: "var(--color-muted-foreground)" }}
+                  />
+                  <select
+                    id="verification-select"
+                    className="w-full pl-10 pr-4 py-3 rounded-lg border-2 focus:ring-2 focus:ring-opacity-50 transition-all duration-200 hover:border-opacity-80 appearance-none cursor-pointer"
+                    style={{
+                      borderColor: "var(--color-border)",
+                      backgroundColor: "var(--color-card)",
+                      color: "var(--color-card-foreground)",
+                    }}
+                    value={searchParams.verification_status || ""}
+                    onChange={(e) =>
+                      handleFilterChange(
+                        "verification_status",
+                        e.target.value || undefined,
+                      )
+                    }
+                  >
+                    <option value="">All Verification Status</option>
+                    <option value="verified">Verified</option>
+                    <option value="pending">Under Review</option>
+                    <option value="community">Community Validated</option>
+                  </select>
+                </div>
+              </div>
             </div>
           </div>
 
           {/* Results Summary */}
-          <div className="flex items-center justify-between text-sm text-gray-600 dark:text-gray-400">
+          <div 
+            className="flex items-center justify-between text-sm mt-6 pt-4 border-t"
+            style={{ 
+              color: "var(--color-muted-foreground)",
+              borderColor: "var(--color-border)"
+            }}
+          >
             <span>
               {loading
                 ? "Searching..."
@@ -361,7 +513,7 @@ export default function ExploreDataPage() {
             </span>
             {searchParams.query && (
               <span>
-                Results for: <strong>"{searchParams.query}"</strong>
+                Results for: <strong style={{ color: "var(--color-card-foreground)" }}>"{searchParams.query}"</strong>
               </span>
             )}
           </div>
@@ -422,17 +574,28 @@ export default function ExploreDataPage() {
               {innovations.map((innovation) => (
                 <div
                   key={innovation.id}
-                  className="rounded-lg shadow-sm hover:shadow-md transition-all duration-200 group"
-                  style={{ backgroundColor: "var(--color-card)" }}
+                  className="rounded-lg border shadow-sm hover:shadow-lg hover:scale-105 hover:-translate-y-1 transition-all duration-300 ease-in-out group"
+                  style={{ 
+                    backgroundColor: "var(--color-card)",
+                    borderColor: "var(--color-border)"
+                  }}
                 >
                   <div className="p-6">
                     {/* Header with verification status */}
                     <div className="flex justify-between items-start mb-4">
                       <div className="flex-1">
-                        <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                        <h3 
+                          className="text-xl font-bold mb-2 transition-colors"
+                          style={{ 
+                            color: "var(--color-card-foreground)",
+                          }}
+                        >
                           {innovation.title}
                         </h3>
-                        <div className="flex items-center space-x-4 text-sm text-gray-500 dark:text-gray-400 mb-3">
+                        <div 
+                          className="flex items-center space-x-4 text-sm mb-3"
+                          style={{ color: "var(--color-muted-foreground)" }}
+                        >
                           {innovation.country && (
                             <span className="flex items-center">
                               <MapPin className="h-4 w-4 mr-1" />
@@ -458,14 +621,23 @@ export default function ExploreDataPage() {
                     </div>
 
                     {/* Description */}
-                    <p className="text-gray-600 dark:text-gray-300 mb-4 line-clamp-3">
+                    <p 
+                      className="mb-4 line-clamp-3"
+                      style={{ color: "var(--color-muted-foreground)" }}
+                    >
                       {innovation.description}
                     </p>
 
                     {/* Innovation Type */}
                     <div className="flex items-center mb-4">
-                      <Tag className="h-4 w-4 text-blue-600 dark:text-blue-400 mr-2" />
-                      <span className="text-sm font-medium text-blue-600 dark:text-blue-400">
+                      <Tag 
+                        className="h-4 w-4 mr-2" 
+                        style={{ color: "var(--color-primary)" }}
+                      />
+                      <span 
+                        className="text-sm font-medium"
+                        style={{ color: "var(--color-primary)" }}
+                      >
                         {innovation.innovation_type}
                       </span>
                     </div>
