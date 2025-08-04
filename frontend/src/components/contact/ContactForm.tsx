@@ -73,24 +73,44 @@ export default function ContactForm() {
     marginBottom: "8px",
     fontSize: "14px",
     fontWeight: "600",
-    color: "#1f2937",
+    color: "var(--color-card-foreground)",
   };
 
   if (submitStatus === "success") {
     return (
-      <Card className="max-w-2xl mx-auto bg-white/20 backdrop-blur-sm border border-white/30">
+      <Card 
+        className="max-w-2xl mx-auto backdrop-blur-sm border"
+        style={{
+          backgroundColor: "var(--color-success-background)",
+          borderColor: "var(--color-success)",
+        }}
+      >
         <CardContent className="p-16 text-center">
-          <CheckCircle className="h-16 w-16 mx-auto mb-4 text-green-400" />
-          <h3 className="text-2xl font-bold text-white mb-4">
+          <CheckCircle 
+            className="h-16 w-16 mx-auto mb-4" 
+            style={{ color: "var(--color-success)" }}
+          />
+          <h3 
+            className="text-2xl font-bold mb-4"
+            style={{ color: "var(--color-success)" }}
+          >
             Message Sent Successfully!
           </h3>
-          <p className="text-white/90 mb-6">
+          <p 
+            className="mb-6 text-lg"
+            style={{ color: "var(--color-card-foreground)" }}
+          >
             Thank you for reaching out. We'll get back to you within 24-48
             hours.
           </p>
           <Button
             onClick={() => setSubmitStatus("idle")}
-            className="bg-white/20 text-white border border-white/30 hover:bg-white/30"
+            style={{
+              backgroundColor: "var(--color-success)",
+              color: "var(--color-success-foreground)",
+              borderColor: "var(--color-success)",
+            }}
+            className="hover:opacity-90 transition-opacity duration-200"
           >
             Send Another Message
           </Button>
@@ -100,13 +120,36 @@ export default function ContactForm() {
   }
 
   return (
-    <Card className="max-w-2xl mx-auto bg-white/20 backdrop-blur-sm border border-white/30 p-16">
+    <Card 
+      className="max-w-2xl mx-auto backdrop-blur-sm border"
+      style={{
+        backgroundColor: "var(--color-card)",
+        borderColor: "var(--color-primary)",
+        padding: "4rem",
+      }}
+    >
         <div className="text-center mb-8">
-          <div className="flex items-center justify-center mb-4">
-            <Mail className="h-6 w-6 text-gray-800 mr-3" />
-            <h3 className="text-2xl font-bold text-gray-800">Get In Touch</h3>
+          <div className="flex items-center justify-center mb-6">
+            <div 
+              className="w-12 h-12 rounded-full flex items-center justify-center mr-4"
+              style={{
+                backgroundColor: "var(--color-primary)",
+                color: "var(--color-primary-foreground)",
+              }}
+            >
+              <Mail className="h-6 w-6" />
+            </div>
+            <h3 
+              className="text-3xl font-bold"
+              style={{ color: "var(--color-card-foreground)" }}
+            >
+              Get In Touch
+            </h3>
           </div>
-          <p className="text-gray-600">
+          <p 
+            className="text-lg leading-relaxed"
+            style={{ color: "var(--color-muted-foreground)" }}
+          >
             We'd love to hear from you. Send us a message and we'll respond as
             soon as possible.
           </p>
@@ -121,10 +164,23 @@ export default function ContactForm() {
               </label>
               <input
                 type="text"
-                className="w-full p-3 rounded-lg border border-gray-300 bg-white text-gray-800 placeholder:text-gray-500"
+                className="w-full p-3 rounded-lg border transition-all duration-200 focus:outline-none focus:ring-2"
+                style={{
+                  backgroundColor: "var(--color-input)",
+                  borderColor: "var(--color-border)",
+                  color: "var(--color-card-foreground)",
+                }}
                 value={formData.name}
                 onChange={(e) => handleInputChange("name", e.target.value)}
                 placeholder="Your full name"
+                onFocus={(e) => {
+                  e.target.style.borderColor = "var(--color-primary)";
+                  e.target.style.boxShadow = `0 0 0 2px var(--color-primary-background)`;
+                }}
+                onBlur={(e) => {
+                  e.target.style.borderColor = "var(--color-border)";
+                  e.target.style.boxShadow = "none";
+                }}
                 required
               />
             </div>
@@ -135,10 +191,23 @@ export default function ContactForm() {
               </label>
               <input
                 type="email"
-                className="w-full p-3 rounded-lg border border-gray-300 bg-white text-gray-800 placeholder:text-gray-500"
+                className="w-full p-3 rounded-lg border transition-all duration-200 focus:outline-none focus:ring-2"
+                style={{
+                  backgroundColor: "var(--color-input)",
+                  borderColor: "var(--color-border)",
+                  color: "var(--color-card-foreground)",
+                }}
                 value={formData.email}
                 onChange={(e) => handleInputChange("email", e.target.value)}
                 placeholder="your.email@example.com"
+                onFocus={(e) => {
+                  e.target.style.borderColor = "var(--color-primary)";
+                  e.target.style.boxShadow = `0 0 0 2px var(--color-primary-background)`;
+                }}
+                onBlur={(e) => {
+                  e.target.style.borderColor = "var(--color-border)";
+                  e.target.style.boxShadow = "none";
+                }}
                 required
               />
             </div>
@@ -148,12 +217,25 @@ export default function ContactForm() {
             <label style={labelStyles}>Organization</label>
             <input
               type="text"
-              className="w-full p-3 rounded-lg border border-gray-300 bg-white text-gray-800 placeholder:text-gray-500"
+              className="w-full p-3 rounded-lg border transition-all duration-200 focus:outline-none focus:ring-2"
+              style={{
+                backgroundColor: "var(--color-input)",
+                borderColor: "var(--color-border)",
+                color: "var(--color-card-foreground)",
+              }}
               value={formData.organization}
               onChange={(e) =>
                 handleInputChange("organization", e.target.value)
               }
               placeholder="Your organization or company (optional)"
+              onFocus={(e) => {
+                e.target.style.borderColor = "var(--color-primary)";
+                e.target.style.boxShadow = `0 0 0 2px var(--color-primary-background)`;
+              }}
+              onBlur={(e) => {
+                e.target.style.borderColor = "var(--color-border)";
+                e.target.style.boxShadow = "none";
+              }}
             />
           </div>
 
@@ -163,77 +245,72 @@ export default function ContactForm() {
               Subject *
             </label>
             <select
-              className="w-full p-3 rounded-lg border border-gray-300 bg-white text-gray-800"
+              className="w-full p-3 rounded-lg border transition-all duration-200 focus:outline-none focus:ring-2"
+              style={{
+                backgroundColor: "var(--color-input)",
+                borderColor: "var(--color-border)",
+                color: "var(--color-card-foreground)",
+              }}
               value={formData.subject}
               onChange={(e) => handleInputChange("subject", e.target.value)}
+              onFocus={(e) => {
+                e.target.style.borderColor = "var(--color-primary)";
+                e.target.style.boxShadow = `0 0 0 2px var(--color-primary-background)`;
+              }}
+              onBlur={(e) => {
+                e.target.style.borderColor = "var(--color-border)";
+                e.target.style.boxShadow = "none";
+              }}
               required
             >
-              <option
-                value=""
-                style={{ color: "#374151", backgroundColor: "white" }}
-              >
-                Select a subject
-              </option>
-              <option
-                value="partnership"
-                style={{ color: "#374151", backgroundColor: "white" }}
-              >
-                Partnership Opportunities
-              </option>
-              <option
-                value="funding"
-                style={{ color: "#374151", backgroundColor: "white" }}
-              >
-                Funding & Support
-              </option>
-              <option
-                value="research"
-                style={{ color: "#374151", backgroundColor: "white" }}
-              >
-                Research Collaboration
-              </option>
-              <option
-                value="data"
-                style={{ color: "#374151", backgroundColor: "white" }}
-              >
-                Data Contribution
-              </option>
-              <option
-                value="media"
-                style={{ color: "#374151", backgroundColor: "white" }}
-              >
-                Media & Press
-              </option>
-              <option
-                value="general"
-                style={{ color: "#374151", backgroundColor: "white" }}
-              >
-                General Inquiry
-              </option>
-              <option
-                value="other"
-                style={{ color: "#374151", backgroundColor: "white" }}
-              >
-                Other
-              </option>
+              <option value="">Select a subject</option>
+              <option value="partnership">Partnership Opportunities</option>
+              <option value="funding">Funding & Support</option>
+              <option value="research">Research Collaboration</option>
+              <option value="data">Data Contribution</option>
+              <option value="media">Media & Press</option>
+              <option value="general">General Inquiry</option>
+              <option value="other">Other</option>
             </select>
           </div>
 
           <div>
             <label style={labelStyles}>Message *</label>
             <textarea
-              className="w-full p-3 rounded-lg border border-gray-300 bg-white text-gray-800 placeholder:text-gray-500 min-h-[120px] resize-vertical"
+              className="w-full p-3 rounded-lg border transition-all duration-200 focus:outline-none focus:ring-2 min-h-[120px] resize-vertical"
+              style={{
+                backgroundColor: "var(--color-input)",
+                borderColor: "var(--color-border)",
+                color: "var(--color-card-foreground)",
+              }}
               value={formData.message}
               onChange={(e) => handleInputChange("message", e.target.value)}
               placeholder="Tell us about your interest in TAIFA-FIALA and how we might work together..."
               rows={5}
+              onFocus={(e) => {
+                e.target.style.borderColor = "var(--color-primary)";
+                e.target.style.boxShadow = `0 0 0 2px var(--color-primary-background)`;
+              }}
+              onBlur={(e) => {
+                e.target.style.borderColor = "var(--color-border)";
+                e.target.style.boxShadow = "none";
+              }}
               required
             />
           </div>
 
           {submitStatus === "error" && (
-            <div className="p-4 bg-red-500/20 border border-red-500/30 rounded-lg">
-              <p className="text-red-200 text-sm">
+            <div 
+              className="p-4 border rounded-lg"
+              style={{
+                backgroundColor: "var(--color-destructive-background)",
+                borderColor: "var(--color-destructive)",
+              }}
+            >
+              <p 
+                className="text-sm font-medium"
+                style={{ color: "var(--color-destructive)" }}
+              >
                 There was an error sending your message. Please try again or
                 contact us directly.
               </p>
@@ -244,11 +321,26 @@ export default function ContactForm() {
             <Button
               type="submit"
               disabled={isSubmitting}
-              className="flex-1 bg-white text-gray-900 hover:bg-white/90 font-semibold"
+              className="flex-1 font-semibold transition-all duration-200 hover:shadow-lg"
+              style={{
+                backgroundColor: "var(--color-primary)",
+                color: "var(--color-primary-foreground)",
+              }}
+              onMouseEnter={(e) => {
+                const target = e.target as HTMLButtonElement;
+                target.style.backgroundColor = "var(--color-primary-hover)";
+              }}
+              onMouseLeave={(e) => {
+                const target = e.target as HTMLButtonElement;
+                target.style.backgroundColor = "var(--color-primary)";
+              }}
             >
               {isSubmitting ? (
                 <>
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-gray-900 mr-2"></div>
+                  <div 
+                    className="animate-spin rounded-full h-4 w-4 border-b-2 mr-2"
+                    style={{ borderColor: "var(--color-primary-foreground)" }}
+                  ></div>
                   Sending...
                 </>
               ) : (
@@ -260,8 +352,20 @@ export default function ContactForm() {
             </Button>
             <Button
               type="button"
-              variant="outline"
-              className="border-gray-300 text-gray-800 hover:bg-gray-50 bg-white"
+              className="font-semibold transition-all duration-200 hover:shadow-md"
+              style={{
+                backgroundColor: "var(--color-secondary)",
+                color: "var(--color-secondary-foreground)",
+                borderColor: "var(--color-secondary)",
+              }}
+              onMouseEnter={(e) => {
+                const target = e.target as HTMLButtonElement;
+                target.style.backgroundColor = "var(--color-secondary-hover)";
+              }}
+              onMouseLeave={(e) => {
+                const target = e.target as HTMLButtonElement;
+                target.style.backgroundColor = "var(--color-secondary)";
+              }}
               onClick={() => {
                 setFormData({
                   name: "",
@@ -278,7 +382,10 @@ export default function ContactForm() {
           </div>
 
           <div className="text-center">
-            <p className="text-sm text-gray-600">
+            <p 
+              className="text-sm"
+              style={{ color: "var(--color-muted-foreground)" }}
+            >
               By submitting this form, you agree to our privacy policy and terms
               of service.
             </p>
@@ -286,26 +393,83 @@ export default function ContactForm() {
         </form>
 
         {/* Alternative Contact Methods */}
-        <div className="mt-12 pt-8 border-t border-gray-300">
+        <div 
+          className="mt-12 pt-8 border-t"
+          style={{ borderColor: "var(--color-border)" }}
+        >
           <div className="text-center mb-6">
-            <h4 className="text-lg font-semibold text-gray-800 mb-2">
+            <h4 
+              className="text-lg font-semibold mb-2"
+              style={{ color: "var(--color-card-foreground)" }}
+            >
               Other Ways to Reach Us
             </h4>
-            <p className="text-gray-600 text-sm">
+            <p 
+              className="text-sm"
+              style={{ color: "var(--color-muted-foreground)" }}
+            >
               Prefer direct contact? Here are additional ways to get in touch.
             </p>
           </div>
 
           <div className="grid md:grid-cols-2 gap-6">
-            <div className="text-center p-4 bg-gray-50 rounded-lg border border-gray-200">
-              <Mail className="h-8 w-8 mx-auto mb-2 text-gray-600" />
-              <h5 className="font-semibold text-gray-800 mb-1">Email</h5>
-              <p className="text-gray-600 text-sm">contact@taifa-fiala.org</p>
+            <div 
+              className="text-center p-6 rounded-lg border transition-all duration-200 hover:shadow-md"
+              style={{
+                backgroundColor: "var(--color-primary-background)",
+                borderColor: "var(--color-primary)",
+              }}
+            >
+              <div 
+                className="w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-3"
+                style={{
+                  backgroundColor: "var(--color-primary)",
+                  color: "var(--color-primary-foreground)",
+                }}
+              >
+                <Mail className="h-6 w-6" />
+              </div>
+              <h5 
+                className="font-semibold mb-1"
+                style={{ color: "var(--color-primary)" }}
+              >
+                Email
+              </h5>
+              <p 
+                className="text-sm font-medium"
+                style={{ color: "var(--color-card-foreground)" }}
+              >
+                contact@taifa-fiala.org
+              </p>
             </div>
-            <div className="text-center p-4 bg-gray-50 rounded-lg border border-gray-200">
-              <MessageSquare className="h-8 w-8 mx-auto mb-2 text-gray-600" />
-              <h5 className="font-semibold text-gray-800 mb-1">Response Time</h5>
-              <p className="text-gray-600 text-sm">24-48 hours</p>
+            <div 
+              className="text-center p-6 rounded-lg border transition-all duration-200 hover:shadow-md"
+              style={{
+                backgroundColor: "var(--color-info-background)",
+                borderColor: "var(--color-info)",
+              }}
+            >
+              <div 
+                className="w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-3"
+                style={{
+                  backgroundColor: "var(--color-info)",
+                  color: "var(--color-info-foreground)",
+                }}
+              >
+                <MessageSquare className="h-6 w-6" />
+              </div>
+              <h5 
+                className="font-semibold mb-1"
+                style={{ color: "var(--color-info)" }}
+              >
+                Response Time
+              </h5>
+              <p 
+                className="text-sm font-medium"
+                style={{ color: "var(--color-card-foreground)" }}
+              >
+                24-48 hours
+              </p>
             </div>
           </div>
         </div>

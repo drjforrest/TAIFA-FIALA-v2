@@ -383,31 +383,49 @@ export default function AboutPage() {
 
             {/* Funding Statement */}
             <Card
-              className="max-w-4xl mx-auto mb-12 p-8"
+              className="max-w-4xl mx-auto mb-12 p-8 transition-all duration-300 hover:shadow-lg"
               style={{
                 backgroundColor: "var(--color-card)",
-                borderColor: "var(--color-border)",
+                borderColor: "var(--color-primary)",
+                borderWidth: "2px",
               }}
             >
-              <div className="flex items-center justify-center mb-4">
-                <Heart
-                  className="h-6 w-6 mr-3"
-                  style={{ color: "var(--color-primary)" }}
-                />
+              <div className="flex items-center justify-center mb-6">
+                <div 
+                  className="w-12 h-12 rounded-full flex items-center justify-center mr-4"
+                  style={{
+                    backgroundColor: "var(--color-primary)",
+                    color: "var(--color-primary-foreground)",
+                  }}
+                >
+                  <Heart className="h-6 w-6" />
+                </div>
                 <span
-                  className="text-lg font-semibold"
+                  className="text-xl font-bold"
                   style={{ color: "var(--color-card-foreground)" }}
                 >
                   Self-Supporting Initiative
                 </span>
               </div>
+              <div 
+                className="w-full h-1 rounded-full mb-6"
+                style={{ backgroundColor: "var(--color-primary-background)" }}
+              >
+                <div 
+                  className="h-full w-1/3 rounded-full"
+                  style={{ backgroundColor: "var(--color-primary)" }}
+                ></div>
+              </div>
               <p
-                className="leading-relaxed text-lg"
+                className="leading-relaxed text-lg text-center"
                 style={{ color: "var(--color-muted-foreground)" }}
               >
-                <strong style={{ color: "var(--color-card-foreground)" }}>
+                <strong 
+                  className="block text-xl mb-3"
+                  style={{ color: "var(--color-card-foreground)" }}
+                >
                   TAIFA-FIALA is currently self-supporting.
-                </strong>{" "}
+                </strong>
                 If you are interested in helping us grow our reach and expand
                 our platform to serve more African communities, please get in
                 touch with us below.
@@ -421,34 +439,52 @@ export default function AboutPage() {
 
           <div className="text-center">
             <Card
-              className="max-w-4xl mx-auto p-8"
+              className="max-w-4xl mx-auto p-8 transition-all duration-300 hover:shadow-lg"
               style={{
                 backgroundColor: "var(--color-card)",
-                borderColor: "var(--color-border)",
+                borderColor: "var(--color-accent)",
+                borderWidth: "2px",
               }}
             >
-              <div className="flex items-center justify-center mb-4">
-                <Shield
-                  className="h-6 w-6 mr-3"
-                  style={{ color: "var(--color-accent)" }}
-                />
+              <div className="flex items-center justify-center mb-6">
+                <div 
+                  className="w-12 h-12 rounded-full flex items-center justify-center mr-4"
+                  style={{
+                    backgroundColor: "var(--color-accent)",
+                    color: "var(--color-accent-foreground)",
+                  }}
+                >
+                  <Shield className="h-6 w-6" />
+                </div>
                 <span
-                  className="text-lg font-semibold"
+                  className="text-xl font-bold"
                   style={{ color: "var(--color-card-foreground)" }}
                 >
                   Transparency Note
                 </span>
               </div>
+              <div 
+                className="w-full h-1 rounded-full mb-6"
+                style={{ backgroundColor: "var(--color-accent-background)" }}
+              >
+                <div 
+                  className="h-full w-full rounded-full"
+                  style={{ backgroundColor: "var(--color-accent)" }}
+                ></div>
+              </div>
               <p
-                className="leading-relaxed mb-4"
+                className="leading-relaxed mb-4 text-center"
                 style={{ color: "var(--color-muted-foreground)" }}
               >
-                <strong style={{ color: "var(--color-card-foreground)" }}>
+                <strong 
+                  className="block text-lg mb-3"
+                  style={{ color: "var(--color-card-foreground)" }}
+                >
                   TAIFA-FIALA operates as an independent initiative.
                 </strong>
               </p>
               <p
-                className="text-sm leading-relaxed"
+                className="leading-relaxed text-center"
                 style={{ color: "var(--color-muted-foreground)" }}
               >
                 Our funding sources and methodology are fully documented to
