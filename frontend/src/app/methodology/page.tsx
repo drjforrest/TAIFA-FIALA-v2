@@ -172,7 +172,7 @@ export default function MethodologyPage() {
             <h2 className="text-4xl font-bold mb-4 text-white">
               Three-Stage Data Collection Pipeline
             </h2>
-            <p className="text-lg text-white">Volume → Depth → Precision</p>
+            <p className="text-lg text-white">Gather → Validate → Enrich</p>
           </div>
 
           <div className="grid md:grid-cols-3 gap-10 mb-16">
@@ -192,7 +192,7 @@ export default function MethodologyPage() {
                 >
                   <div className="flex items-center mb-6">
                     <div
-                      className="w-16 h-16 rounded-full flex items-center justify-center mr-5 border-2"
+                      className="w-16 h-16 rounded-full flex items-center justify-center mr-5 border-2 flex-shrink-0"
                       style={{
                         backgroundColor:
                           index === 0
@@ -209,7 +209,10 @@ export default function MethodologyPage() {
                         color: "white",
                       }}
                     >
-                      {React.cloneElement(stage.icon, { className: "h-8 w-8" })}
+                      {React.cloneElement(stage.icon, { 
+                        className: "h-8 w-8",
+                        style: { minWidth: '2rem', minHeight: '2rem' }
+                      })}
                     </div>
                     <div>
                       <div
@@ -244,9 +247,9 @@ export default function MethodologyPage() {
                     </div>
                   </div>
 
-                  <p className="mb-6 h-24 text-gray-600">{stage.description}</p>
+                  <p className="mb-8 min-h-32 text-gray-600 leading-relaxed">{stage.description}</p>
 
-                  <div className="space-y-3">
+                  <div className="space-y-4">
                     {stage.metrics.map((metric, idx) => (
                       <div key={idx} className="flex items-center text-sm">
                         <CheckCircle
@@ -267,11 +270,16 @@ export default function MethodologyPage() {
                 </div>
 
                 {index < stages.length - 1 && (
-                  <div className="hidden md:block absolute top-1/2 -right-5 transform -translate-y-1/2 group-hover:scale-125 transition-transform">
-                    <ArrowRight
-                      className="h-10 w-10"
-                      style={{ color: "var(--color-muted-foreground)" }}
-                    />
+                  <div className="hidden md:block absolute top-1/2 -right-5 transform -translate-y-1/2 group-hover:scale-110 transition-transform z-10">
+                    <div 
+                      className="w-12 h-12 rounded-full flex items-center justify-center shadow-lg"
+                      style={{
+                        backgroundColor: "var(--color-gray-700)",
+                        color: "white",
+                      }}
+                    >
+                      <ArrowRight className="h-6 w-6" />
+                    </div>
                   </div>
                 )}
               </div>
@@ -319,14 +327,17 @@ export default function MethodologyPage() {
                 <React.Fragment key={index}>
                   <div className="text-center group cursor-pointer">
                     <div
-                      className="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-3 border-2 group-hover:scale-110 transition-transform"
+                      className="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-3 border-2 group-hover:scale-110 transition-transform flex-shrink-0"
                       style={{
                         backgroundColor: item.color,
                         borderColor: item.color,
                         color: "white",
                       }}
                     >
-                      {item.icon}
+                      {React.cloneElement(item.icon, { 
+                        className: "h-8 w-8",
+                        style: { minWidth: '2rem', minHeight: '2rem' }
+                      })}
                     </div>
                     <div className="text-md font-medium text-gray-800">
                       {item.title}
@@ -334,10 +345,17 @@ export default function MethodologyPage() {
                     <div className="text-sm text-gray-600">{item.subtitle}</div>
                   </div>
                   {index < arr.length - 1 && (
-                    <ArrowRight
-                      className="hidden md:block h-10 w-10 stroke-2"
-                      style={{ color: "var(--color-muted-foreground)" }}
-                    />
+                    <div className="hidden md:flex items-center justify-center">
+                      <div 
+                        className="w-12 h-12 rounded-full flex items-center justify-center shadow-lg"
+                        style={{
+                          backgroundColor: "var(--color-gray-700)",
+                          color: "white",
+                        }}
+                      >
+                        <ArrowRight className="h-6 w-6" />
+                      </div>
+                    </div>
                   )}
                 </React.Fragment>
               ))}
@@ -378,6 +396,7 @@ export default function MethodologyPage() {
               >
                 <div className="flex items-center mb-5">
                   <div
+                    className="flex-shrink-0"
                     style={{
                       color:
                         index === 0
@@ -387,7 +406,10 @@ export default function MethodologyPage() {
                             : "var(--color-accent)",
                     }}
                   >
-                    {React.cloneElement(stack.icon, { className: "h-8 w-8" })}
+                    {React.cloneElement(stack.icon, { 
+                      className: "h-8 w-8",
+                      style: { minWidth: '2rem', minHeight: '2rem' }
+                    })}
                   </div>
                   <h3
                     className="text-2xl font-semibold ml-4"
@@ -750,14 +772,18 @@ export default function MethodologyPage() {
                 }}
               >
                 <div
-                  className="p-3 rounded-lg mb-6 inline-block"
+                  className="p-3 rounded-lg mb-6 inline-block flex-shrink-0"
                   style={{
                     backgroundColor: item.bgColor,
                   }}
                 >
                   {React.cloneElement(item.icon, { 
                     className: "h-6 w-6",
-                    style: { color: item.color }
+                    style: { 
+                      color: item.color,
+                      minWidth: '1.5rem',
+                      minHeight: '1.5rem'
+                    }
                   })}
                 </div>
                 <h3

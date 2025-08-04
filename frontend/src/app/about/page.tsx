@@ -296,69 +296,10 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* Section 3: Initiative Background */}
+      {/* Section 3: Coming Soon - Advisory Board */}
       <section
         className="py-16"
         style={{ backgroundColor: "var(--color-background-section-3)" }}
-      >
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-8">
-            <div
-              className="inline-flex items-center px-4 py-2 rounded-full text-sm font-medium mb-3"
-              style={{
-                backgroundColor: "var(--color-secondary)",
-                color: "var(--color-secondary-foreground)",
-              }}
-            >
-              <Lightbulb className="h-4 w-4 mr-2" />
-              Our Foundation
-            </div>
-            <Section3Text as="h2" className="text-4xl font-bold mb-8">
-              Why TAIFA-FIALA?
-            </Section3Text>
-          </div>
-
-          <Card
-            className="mt-16 p-16"
-            style={{ backgroundColor: "var(--color-card)" }}
-          >
-              <div className="max-w-4xl mx-auto">
-                <Section3Text
-                  as="p"
-                  variant="paragraph"
-                  className="text-xl leading-relaxed mb-6"
-                >
-                  Research gaps continue to obscure African AI innovations, while limited capacity for rigorous evaluation leaves critical lessons undocumented. This weakens the ecosystem’s ability to learn, adapt, and replicate success. Over $130 billion has been announced globally for AI development since 2020—but Africa’s contributions, outcomes, and innovations are often left untracked.
-                </Section3Text>
-
-                <div
-                  className="p-6 rounded-xl mb-6"
-                  style={{
-                    backgroundColor: "var(--color-primary)",
-                    color: "var(--color-primary-foreground)",
-                  }}
-                >
-                  <p className="text-lg font-semibold">
-                    We founded TAIFA-FIALA to bridge the gap between bold funding promises and the lived record of African AI innovation.
-                  </p>
-                </div>
-
-                <Section3Text
-                  as="p"
-                  variant="paragraph"
-                  className="text-lg leading-relaxed"
-                >
-                  Through our participatory systematic review methodology, we build the evidence base needed to showcase African AI brilliance. Innovation stories inspire future innovators. Implementation lessons help others avoid pitfalls. And visible patterns of success guide smarter investment. TAIFA-FIALA is a shared space where funders celebrate impact, innovators gain recognition, and researchers access rigorous, actionable evidence.
-                </Section3Text>
-              </div>
-          </Card>
-        </div>
-      </section>
-
-      {/* Section 4: Coming Soon - Advisory Board */}
-      <section
-        className="py-16"
-        style={{ backgroundColor: "var(--color-background-section-4)" }}
       >
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <Card
@@ -366,13 +307,13 @@ export default function AboutPage() {
             style={{ backgroundColor: "var(--color-card)" }}
           >
               <div
-                className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6"
+                className="w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6"
                 style={{
                   backgroundColor: "var(--color-accent)",
                   color: "var(--color-accent-foreground)",
                 }}
               >
-                <Calendar className="h-8 w-8" />
+                <Calendar className="h-12 w-12" />
               </div>
               <div
                 className="inline-block font-semibold px-4 py-2 rounded-full text-sm mb-4"
@@ -414,40 +355,63 @@ export default function AboutPage() {
       <section
         id="contact"
         className="py-16"
-        style={{
-          background: `linear-gradient(135deg, var(--color-primary), var(--color-accent))`,
-        }}
+        style={{ backgroundColor: "var(--color-background-section-4)" }}
       >
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <div className="inline-flex items-center px-4 py-2 bg-white/20 border border-white/30 rounded-full text-sm font-medium text-white mb-6">
+            <div
+              className="inline-flex items-center px-4 py-2 rounded-full text-sm font-medium mb-6"
+              style={{
+                backgroundColor: "var(--color-primary)",
+                color: "var(--color-primary-foreground)",
+              }}
+            >
               <Mail className="h-4 w-4 mr-2" />
               Get In Touch
             </div>
-            <h2 className="text-4xl font-bold text-white mb-6">
+            <Section4Text as="h2" className="text-4xl font-bold mb-6">
               Contact & Collaboration
-            </h2>
-            <p className="text-xl text-white/90 mb-8 max-w-3xl mx-auto">
+            </Section4Text>
+            <Section4Text
+              as="p"
+              variant="paragraph"
+              className="text-xl max-w-3xl mx-auto mb-8"
+            >
               Partner with us in building transparent, equitable AI development
               across Africa
-            </p>
+            </Section4Text>
 
             {/* Funding Statement */}
-            <Card className="max-w-4xl mx-auto mb-12 bg-gradient-to-br from-blue-50 to-indigo-100 border border-blue-200 p-16">
-                <div className="flex items-center justify-center mb-4">
-                  <Heart className="h-6 w-6 text-blue-600 mr-3" />
-                  <span className="text-lg font-semibold text-blue-800">
-                    Self-Supporting Initiative
-                  </span>
-                </div>
-                <p className="text-blue-700 leading-relaxed text-lg">
-                  <strong className="text-blue-800">
-                    TAIFA-FIALA is currently self-supporting.
-                  </strong>{" "}
-                  If you are interested in helping us grow our reach and expand
-                  our platform to serve more African communities, please get in
-                  touch with us below.
-                </p>
+            <Card
+              className="max-w-4xl mx-auto mb-12 p-8"
+              style={{
+                backgroundColor: "var(--color-card)",
+                borderColor: "var(--color-border)",
+              }}
+            >
+              <div className="flex items-center justify-center mb-4">
+                <Heart
+                  className="h-6 w-6 mr-3"
+                  style={{ color: "var(--color-primary)" }}
+                />
+                <span
+                  className="text-lg font-semibold"
+                  style={{ color: "var(--color-card-foreground)" }}
+                >
+                  Self-Supporting Initiative
+                </span>
+              </div>
+              <p
+                className="leading-relaxed text-lg"
+                style={{ color: "var(--color-muted-foreground)" }}
+              >
+                <strong style={{ color: "var(--color-card-foreground)" }}>
+                  TAIFA-FIALA is currently self-supporting.
+                </strong>{" "}
+                If you are interested in helping us grow our reach and expand
+                our platform to serve more African communities, please get in
+                touch with us below.
+              </p>
             </Card>
           </div>
 
@@ -456,23 +420,41 @@ export default function AboutPage() {
           </div>
 
           <div className="text-center">
-            <Card className="bg-gradient-to-br from-emerald-50 to-teal-100 border border-emerald-200 max-w-4xl mx-auto p-16">
-                <div className="flex items-center justify-center mb-4">
-                  <Shield className="h-6 w-6 text-emerald-600 mr-3" />
-                  <span className="text-lg font-semibold text-emerald-800">
-                    Transparency Note
-                  </span>
-                </div>
-                <p className="text-emerald-700 leading-relaxed mb-4">
-                  <strong className="text-emerald-800">
-                    TAIFA-FIALA operates as an independent initiative.
-                  </strong>
-                </p>
-                <p className="text-sm text-emerald-600 leading-relaxed">
-                  Our funding sources and methodology are fully documented to
-                  ensure accountability in our mission to promote transparency
-                  in African AI development.
-                </p>
+            <Card
+              className="max-w-4xl mx-auto p-8"
+              style={{
+                backgroundColor: "var(--color-card)",
+                borderColor: "var(--color-border)",
+              }}
+            >
+              <div className="flex items-center justify-center mb-4">
+                <Shield
+                  className="h-6 w-6 mr-3"
+                  style={{ color: "var(--color-accent)" }}
+                />
+                <span
+                  className="text-lg font-semibold"
+                  style={{ color: "var(--color-card-foreground)" }}
+                >
+                  Transparency Note
+                </span>
+              </div>
+              <p
+                className="leading-relaxed mb-4"
+                style={{ color: "var(--color-muted-foreground)" }}
+              >
+                <strong style={{ color: "var(--color-card-foreground)" }}>
+                  TAIFA-FIALA operates as an independent initiative.
+                </strong>
+              </p>
+              <p
+                className="text-sm leading-relaxed"
+                style={{ color: "var(--color-muted-foreground)" }}
+              >
+                Our funding sources and methodology are fully documented to
+                ensure accountability in our mission to promote transparency
+                in African AI development.
+              </p>
             </Card>
           </div>
         </div>

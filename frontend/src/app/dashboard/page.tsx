@@ -289,7 +289,7 @@ export default function DashboardStats() {
               return (
                 <div
                   key={index}
-                  className="rounded-lg border p-6 hover:shadow-lg transition-shadow"
+                  className="rounded-lg border p-6 hover:shadow-lg hover:scale-105 hover:-translate-y-1 transition-all duration-300 ease-in-out"
                   style={{
                     backgroundColor: "var(--color-card)",
                     borderColor: "var(--color-border)",
@@ -297,35 +297,31 @@ export default function DashboardStats() {
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex-1">
-                      <Section2Text
-                        as="p"
-                        variant="paragraph"
+                      <p
                         className="text-sm font-medium mb-1"
+                        style={{ color: "var(--color-muted-foreground)" }}
                       >
                         {stat.label}
-                      </Section2Text>
-                      <Section2Text
-                        as="p"
+                      </p>
+                      <p
                         className="text-3xl font-bold mb-2"
                         style={{ color: "var(--color-card-foreground)" }}
                       >
                         {typeof stat.value === "number"
                           ? stat.value.toLocaleString()
                           : stat.value}
-                      </Section2Text>
-                      <Section2Text
-                        as="p"
-                        variant="paragraph"
+                      </p>
+                      <p
                         className="text-xs"
+                        style={{ color: "var(--color-muted-foreground)" }}
                       >
                         {stat.description}
-                      </Section2Text>
+                      </p>
                     </div>
                     <div
                       className="p-3 rounded-lg"
                       style={{
-                        backgroundColor: stat.color,
-                        opacity: 0.1,
+                        backgroundColor: `${stat.color}20`,
                       }}
                     >
                       <IconComponent
@@ -394,8 +390,7 @@ export default function DashboardStats() {
               }}
             >
               <div className="flex items-center justify-between mb-4">
-                <Section3Text
-                  as="h3"
+                <h3
                   className="text-lg font-semibold flex items-center"
                   style={{ color: "var(--color-card-foreground)" }}
                 >
@@ -404,7 +399,7 @@ export default function DashboardStats() {
                     style={{ color: "var(--color-primary)" }}
                   />
                   Academic Pipeline
-                </Section3Text>
+                </h3>
                 <button
                   onClick={handleTriggerAcademic}
                   disabled={etlLoading}
@@ -424,13 +419,12 @@ export default function DashboardStats() {
               </div>
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <Section3Text
-                    as="span"
-                    variant="paragraph"
+                  <span
                     className="text-sm"
+                    style={{ color: "var(--color-muted-foreground)" }}
                   >
                     Status
-                  </Section3Text>
+                  </span>
                   <div className="flex items-center">
                     {(() => {
                       const StatusIcon = getStatusIcon(
@@ -447,9 +441,7 @@ export default function DashboardStats() {
                         />
                       );
                     })()}
-                    <Section3Text
-                      as="span"
-                      variant="paragraph"
+                    <span
                       className="ml-1 text-sm"
                       style={{
                         color: getStatusColor(
@@ -460,39 +452,36 @@ export default function DashboardStats() {
                       {etl_status?.academic_pipeline_active
                         ? "Active"
                         : "Inactive"}
-                    </Section3Text>
+                    </span>
                   </div>
                 </div>
                 <div className="flex items-center justify-between">
-                  <Section3Text
-                    as="span"
-                    variant="paragraph"
+                  <span
                     className="text-sm"
+                    style={{ color: "var(--color-muted-foreground)" }}
                   >
                     Last Run
-                  </Section3Text>
-                  <Section3Text
-                    as="span"
+                  </span>
+                  <span
                     className="text-sm"
                     style={{ color: "var(--color-card-foreground)" }}
                   >
                     {etl_status?.last_academic_run
                       ? new Date(etl_status.last_academic_run).toLocaleString()
                       : "Never"}
-                  </Section3Text>
+                  </span>
                 </div>
                 <div
                   className="pt-2 border-t"
                   style={{ borderColor: "var(--color-border)" }}
                 >
-                  <Section3Text
-                    as="div"
-                    variant="paragraph"
+                  <div
                     className="text-xs"
+                    style={{ color: "var(--color-muted-foreground)" }}
                   >
                     Discovers AI research from academic papers, arxiv, and
                     institutional repositories
-                  </Section3Text>
+                  </div>
                 </div>
               </div>
             </div>
@@ -506,24 +495,23 @@ export default function DashboardStats() {
               }}
             >
               <div className="flex items-center justify-between mb-4">
-                <Section3Text
-                  as="h3"
+                <h3
                   className="text-lg font-semibold flex items-center"
                   style={{ color: "var(--color-card-foreground)" }}
                 >
                   <Zap
                     className="h-5 w-5 mr-2"
-                    style={{ color: "var(--color-info)" }}
+                    style={{ color: "var(--color-success)" }}
                   />
                   News Pipeline
-                </Section3Text>
+                </h3>
                 <button
                   onClick={handleTriggerNews}
                   disabled={etlLoading}
                   className="p-2 rounded-lg hover:shadow-md transition-all"
                   style={{
-                    backgroundColor: "var(--color-info)",
-                    color: "var(--color-info-foreground)",
+                    backgroundColor: "var(--color-success)",
+                    color: "var(--color-success-foreground)",
                   }}
                   title="Trigger News Pipeline"
                 >
@@ -536,13 +524,12 @@ export default function DashboardStats() {
               </div>
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <Section3Text
-                    as="span"
-                    variant="paragraph"
+                  <span
                     className="text-sm"
+                    style={{ color: "var(--color-muted-foreground)" }}
                   >
                     Status
-                  </Section3Text>
+                  </span>
                   <div className="flex items-center">
                     {(() => {
                       const StatusIcon = getStatusIcon(
@@ -574,35 +561,32 @@ export default function DashboardStats() {
                   </div>
                 </div>
                 <div className="flex items-center justify-between">
-                  <Section3Text
-                    as="span"
-                    variant="paragraph"
+                  <span
                     className="text-sm"
+                    style={{ color: "var(--color-muted-foreground)" }}
                   >
                     Last Run
-                  </Section3Text>
-                  <Section3Text
-                    as="span"
+                  </span>
+                  <span
                     className="text-sm"
                     style={{ color: "var(--color-card-foreground)" }}
                   >
                     {etl_status?.last_news_run
                       ? new Date(etl_status.last_news_run).toLocaleString()
                       : "Never"}
-                  </Section3Text>
+                  </span>
                 </div>
                 <div
                   className="pt-2 border-t"
                   style={{ borderColor: "var(--color-border)" }}
                 >
-                  <Section3Text
-                    as="div"
-                    variant="paragraph"
+                  <div
                     className="text-xs"
+                    style={{ color: "var(--color-muted-foreground)" }}
                   >
                     Monitors RSS feeds and news sources for innovation
                     announcements and project launches
-                  </Section3Text>
+                  </div>
                 </div>
               </div>
             </div>
@@ -616,24 +600,23 @@ export default function DashboardStats() {
               }}
             >
               <div className="flex items-center justify-between mb-4">
-                <Section3Text
-                  as="h3"
+                <h3
                   className="text-lg font-semibold flex items-center"
                   style={{ color: "var(--color-card-foreground)" }}
                 >
                   <RefreshCw
                     className="h-5 w-5 mr-2"
-                    style={{ color: "var(--color-adaptive-tertiary-on-dark)" }}
+                    style={{ color: "var(--color-accent)" }}
                   />
                   Discovery Pipeline
-                </Section3Text>
+                </h3>
                 <button
                   onClick={handleTriggerDiscovery}
                   disabled={etlLoading}
                   className="p-2 rounded-lg hover:shadow-md transition-all"
                   style={{
-                    backgroundColor: "var(--color-adaptive-tertiary-on-dark)",
-                    color: "var(--color-white)",
+                    backgroundColor: "var(--color-accent)",
+                    color: "var(--color-accent-foreground)",
                   }}
                   title="Trigger Discovery Search"
                 >
@@ -646,13 +629,12 @@ export default function DashboardStats() {
               </div>
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <Section3Text
-                    as="span"
-                    variant="paragraph"
+                  <span
                     className="text-sm"
+                    style={{ color: "var(--color-muted-foreground)" }}
                   >
                     Status
-                  </Section3Text>
+                  </span>
                   <div className="flex items-center">
                     {(() => {
                       const StatusIcon = getStatusIcon(
@@ -686,35 +668,32 @@ export default function DashboardStats() {
                   </div>
                 </div>
                 <div className="flex items-center justify-between">
-                  <Section3Text
-                    as="span"
-                    variant="paragraph"
+                  <span
                     className="text-sm"
+                    style={{ color: "var(--color-muted-foreground)" }}
                   >
                     Last Run
-                  </Section3Text>
-                  <Section3Text
-                    as="span"
+                  </span>
+                  <span
                     className="text-sm"
                     style={{ color: "var(--color-card-foreground)" }}
                   >
                     {etl_status?.last_serper_run
                       ? new Date(etl_status.last_serper_run).toLocaleString()
                       : "Never"}
-                  </Section3Text>
+                  </span>
                 </div>
                 <div
                   className="pt-2 border-t"
                   style={{ borderColor: "var(--color-border)" }}
                 >
-                  <Section3Text
-                    as="div"
-                    variant="paragraph"
+                  <div
                     className="text-xs"
+                    style={{ color: "var(--color-muted-foreground)" }}
                   >
                     Uses Serper.dev for precision searches and Crawl4AI for
                     project site extraction
-                  </Section3Text>
+                  </div>
                 </div>
               </div>
             </div>
@@ -734,37 +713,36 @@ export default function DashboardStats() {
               className="rounded-lg border p-6"
               style={{
                 backgroundColor: "var(--color-card)",
-                borderColor: "var(--color-border)",
+                borderColor: "var(--color-accent)",
+                borderWidth: "2px",
               }}
             >
-              <Section4Text
-                as="h3"
+              <h3
                 className="text-lg font-semibold mb-4 flex items-center"
                 style={{ color: "var(--color-card-foreground)" }}
               >
                 <Activity
                   className="h-5 w-5 mr-2"
-                  style={{ color: "var(--color-info)" }}
+                  style={{ color: "var(--color-accent)" }}
                 />
                 Today's Activity
-              </Section4Text>
+              </h3>
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <Section4Text as="span" variant="paragraph">
+                  <span style={{ color: "var(--color-muted-foreground)" }}>
                     Projects Processed
-                  </Section4Text>
-                  <Section4Text
-                    as="span"
+                  </span>
+                  <span
                     className="text-lg font-semibold"
                     style={{ color: "var(--color-card-foreground)" }}
                   >
                     {etl_status?.total_processed_today || 0}
-                  </Section4Text>
+                  </span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <Section4Text as="span" variant="paragraph">
+                  <span style={{ color: "var(--color-muted-foreground)" }}>
                     Processing Errors
-                  </Section4Text>
+                  </span>
                   <div className="flex items-center">
                     {(etl_status?.errors_today || 0) > 0 && (
                       <AlertTriangle
@@ -772,8 +750,7 @@ export default function DashboardStats() {
                         style={{ color: "var(--color-destructive)" }}
                       />
                     )}
-                    <Section4Text
-                      as="span"
+                    <span
                       className="text-lg font-semibold"
                       style={{
                         color:
@@ -783,57 +760,102 @@ export default function DashboardStats() {
                       }}
                     >
                       {etl_status?.errors_today || 0}
-                    </Section4Text>
+                    </span>
                   </div>
                 </div>
                 <div
                   className="pt-2 border-t"
                   style={{ borderColor: "var(--color-border)" }}
                 >
-                  <Section4Text
-                    as="div"
-                    variant="paragraph"
+                  <div
                     className="text-xs"
+                    style={{ color: "var(--color-muted-foreground)" }}
                   >
                     Real-time processing statistics reset daily at midnight UTC
-                  </Section4Text>
+                  </div>
                 </div>
               </div>
             </div>
 
             {/* Innovation Archive Summary */}
             <div
-              className="rounded-lg p-6 text-white"
+              className="rounded-lg border p-6"
               style={{
-                background: `linear-gradient(135deg, var(--color-adaptive-primary-on-dark), var(--color-adaptive-tertiary-on-dark))`,
+                backgroundColor: "var(--color-card)",
+                borderColor: "var(--color-primary)",
+                borderWidth: "2px",
               }}
             >
-              <h3 className="text-xl font-bold mb-2">
+              <h3
+                className="text-xl font-bold mb-2 flex items-center"
+                style={{ color: "var(--color-card-foreground)" }}
+              >
+                <Database
+                  className="h-5 w-5 mr-2"
+                  style={{ color: "var(--color-primary)" }}
+                />
                 African AI Innovation Archive
               </h3>
-              <p className="text-white/90 mb-4 text-sm">
+              <p
+                className="mb-4 text-sm"
+                style={{ color: "var(--color-muted-foreground)" }}
+              >
                 Systematic documentation transforming{" "}
                 {african_countries_covered} countries' AI landscape from
                 promises to proven innovations
               </p>
               <div className="grid grid-cols-3 gap-4 text-center">
                 <div>
-                  <div className="text-2xl font-bold">{total_innovations}</div>
-                  <div className="text-xs text-white/80">Innovations</div>
+                  <div
+                    className="text-2xl font-bold"
+                    style={{ color: "var(--color-card-foreground)" }}
+                  >
+                    {total_innovations}
+                  </div>
+                  <div
+                    className="text-xs"
+                    style={{ color: "var(--color-muted-foreground)" }}
+                  >
+                    Innovations
+                  </div>
                 </div>
                 <div>
-                  <div className="text-2xl font-bold">{total_publications}</div>
-                  <div className="text-xs text-white/80">Publications</div>
+                  <div
+                    className="text-2xl font-bold"
+                    style={{ color: "var(--color-card-foreground)" }}
+                  >
+                    {total_publications}
+                  </div>
+                  <div
+                    className="text-xs"
+                    style={{ color: "var(--color-muted-foreground)" }}
+                  >
+                    Publications
+                  </div>
                 </div>
                 <div>
-                  <div className="text-2xl font-bold">
+                  <div
+                    className="text-2xl font-bold"
+                    style={{ color: "var(--color-card-foreground)" }}
+                  >
                     {african_countries_covered}
                   </div>
-                  <div className="text-xs text-white/80">Countries</div>
+                  <div
+                    className="text-xs"
+                    style={{ color: "var(--color-muted-foreground)" }}
+                  >
+                    Countries
+                  </div>
                 </div>
               </div>
-              <div className="mt-4 pt-4 border-t border-white/30">
-                <div className="flex justify-between text-xs text-white/80">
+              <div
+                className="mt-4 pt-4 border-t"
+                style={{ borderColor: "var(--color-border)" }}
+              >
+                <div
+                  className="flex justify-between text-xs"
+                  style={{ color: "var(--color-muted-foreground)" }}
+                >
                   <span>
                     African Relevance:{" "}
                     {(avg_african_relevance * 100).toFixed(1)}%

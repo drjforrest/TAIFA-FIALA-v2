@@ -56,7 +56,29 @@ export function useDashboard(): DashboardData {
     try {
       setDashboardData((prev) => ({ ...prev, loading: true, error: null }));
 
-      // Try to get from materialized view first
+      // Try to get from backend API first
+      try {
+        const apiData = await apiCall<any>(API_ENDPOINTS.stats);
+        
+        setDashboardData({
+          total_publications: apiData.total_publications || 0,
+          total_innovations: apiData.total_innovations || 0,
+          total_organizations: apiData.total_organizations || 0,
+          verified_individuals: apiData.verified_individuals || 0,
+          african_countries_covered: apiData.african_countries_covered || 0,
+          unique_keywords: apiData.unique_keywords || 0,
+          avg_african_relevance: apiData.avg_african_relevance || 0,
+          avg_ai_relevance: apiData.avg_ai_relevance || 0,
+          last_updated: apiData.last_updated || new Date().toISOString(),
+          loading: false,
+          error: null,
+        });
+        return;
+      } catch (apiError) {
+        console.log('Backend API not available, trying Supadatabase...');
+      }
+
+      // Try to get from materialized view as fallback
       const { data: viewData, error: viewError } = await supabase
         .from("dashboard_stats")
         .select("*")
