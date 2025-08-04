@@ -154,19 +154,35 @@ export default function ExploreDataPage() {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
       
-      const response = await fetch(
-        `${API_BASE_URL}/api/innovations?${queryParams}`,
-        {
-          method: 'GET',
-          headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json',
-          },
-          mode: 'cors', // Explicitly set CORS mode
-          credentials: 'omit', // Don't send credentials for CORS requests
-          signal: controller.signal,
-        }
-      );
+      // Try direct API call first, fallback to proxy if CORS fails
+      let response;
+      try {
+        response = await fetch(
+          `${API_BASE_URL}/api/innovations?${queryParams}`,
+          {
+            method: 'GET',
+            headers: {
+              'Accept': 'application/json',
+            },
+            mode: 'cors',
+            credentials: 'omit',
+            signal: controller.signal,
+          }
+        );
+      } catch (corsError) {
+        console.log('CORS error, trying proxy route...', corsError instanceof Error ? corsError.message : corsError);
+        // Fallback to Next.js API route as proxy
+        response = await fetch(
+          `/api/innovations?${queryParams}`,
+          {
+            method: 'GET',
+            headers: {
+              'Accept': 'application/json',
+            },
+            signal: controller.signal,
+          }
+        );
+      }
       
       clearTimeout(timeoutId);
 
