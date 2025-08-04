@@ -25,7 +25,7 @@ class SystematicReviewProcessor:
         
         # Initialize database and deduplication services
         self.db_service = DatabaseService()
-        self.dedup_service = DeduplicationService(self.db_service)
+        self.dedup_service = DeduplicationService()
         
     def load_data(self) -> pd.DataFrame:
         """Load systematic review data from CSV"""

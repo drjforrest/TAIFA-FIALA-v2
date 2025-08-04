@@ -84,7 +84,7 @@ class DataCollectionOrchestrator:
         
         # Initialize database and deduplication services
         self.db_service = DatabaseService()
-        self.dedup_service = DeduplicationService(self.db_service)
+        self.dedup_service = DeduplicationService()
         
         # Collection state
         self.active_targets: List[CollectionTarget] = []

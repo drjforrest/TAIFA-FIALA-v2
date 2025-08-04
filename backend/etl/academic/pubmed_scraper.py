@@ -46,7 +46,7 @@ class PubMedScraper:
         
         # Initialize database and deduplication services
         self.db_service = DatabaseService()
-        self.dedup_service = DeduplicationService(self.db_service)
+        self.dedup_service = DeduplicationService()
         
     async def __aenter__(self):
         self.session = aiohttp.ClientSession()
