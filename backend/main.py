@@ -886,6 +886,177 @@ async def get_recent_etl_activity(request, hours: int = Query(24, ge=1, le=168))
         raise HTTPException(status_code=500, detail="Failed to get ETL activity")
 
 
+# Vector Database Monitoring Endpoints
+@app.get("/api/vector/stats")
+@limiter.limit("20/minute")
+async def get_vector_stats(
+    request: Request,
+    vector_service: VectorService = Depends(get_vector_service)
+):
+    """Get vector database statistics and coverage"""
+    try:
+        # Get vector database stats
+        vector_stats = await vector_service.get_stats()
+        
+        # Get database counts from Supabase
+        from config.database import get_supabase
+        supabase = get_supabase()
+        
+        # Count total innovations and publications
+        innovations_response = supabase.table('innovations').select('id', count='exact').execute()
+        publications_response = supabase.table('publications').select('id', count='exact').execute()
+        
+        total_innovations = innovations_response.count if innovations_response.count is not None else 0
+        total_publications = publications_response.count if publications_response.count is not None else 0
+        total_documents = total_innovations + total_publications
+        
+        # Calculate coverage (approximate)
+        total_vectors = vector_stats.get('total_vectors', 0)
+        coverage_percentage = round((total_vectors / max(1, total_documents)) * 100, 1) if total_documents > 0 else 0
+        
+        return {
+            "vector_database": vector_stats,
+            "coverage": {
+                "total_documents_in_db": total_documents,
+                "innovations_in_db": total_innovations,
+                "publications_in_db": total_publications,
+                "total_vectors": total_vectors,
+                "coverage_percentage": coverage_percentage,
+                "estimated_missing": max(0, total_documents - total_vectors)
+            },
+            "status": "healthy" if total_vectors > 0 else "needs_rebuild",
+            "timestamp": datetime.now().isoformat()
+        }
+        
+    except Exception as e:
+        logger.error(f"Error getting vector statistics: {e}")
+        raise HTTPException(status_code=500, detail="Failed to get vector statistics")
+
+
+@app.get("/api/vector/search-quality")
+@limiter.limit("30/minute")
+async def test_search_quality(
+    request: Request,
+    test_queries: List[str] = Query(["AI agriculture", "machine learning healthcare", "fintech innovation"]),
+    vector_service: VectorService = Depends(get_vector_service)
+):
+    """Test search quality with sample queries"""
+    try:
+        results = {}
+        
+        for query in test_queries[:5]:  # Limit to 5 queries
+            try:
+                # Test vector search
+                vector_results = await vector_service.search_innovations(query, top_k=5)
+                
+                # Calculate quality metrics
+                avg_score = sum(r.score for r in vector_results) / len(vector_results) if vector_results else 0
+                
+                results[query] = {
+                    "results_count": len(vector_results),
+                    "avg_relevance_score": round(avg_score, 3),
+                    "top_results": [
+                        {
+                            "title": r.metadata.get('title', 'No title'),
+                            "score": round(r.score, 3),
+                            "type": r.metadata.get('innovation_type', 'Unknown')
+                        }
+                        for r in vector_results[:3]
+                    ]
+                }
+            except Exception as query_error:
+                results[query] = {
+                    "error": str(query_error),
+                    "results_count": 0,
+                    "avg_relevance_score": 0
+                }
+        
+        # Calculate overall quality
+        total_results = sum(r.get('results_count', 0) for r in results.values())
+        avg_quality = sum(r.get('avg_relevance_score', 0) for r in results.values()) / len(results)
+        
+        return {
+            "test_results": results,
+            "overall_quality": {
+                "total_test_queries": len(test_queries),
+                "total_results_found": total_results,
+                "average_relevance_score": round(avg_quality, 3),
+                "quality_rating": "excellent" if avg_quality > 0.8 else "good" if avg_quality > 0.6 else "needs_improvement"
+            },
+            "timestamp": datetime.now().isoformat()
+        }
+        
+    except Exception as e:
+        logger.error(f"Error testing search quality: {e}")
+        raise HTTPException(status_code=500, detail="Failed to test search quality")
+
+
+@app.post("/api/vector/rebuild")
+@limiter.limit("2/hour")  # Very limited - this is an expensive operation
+async def trigger_vector_rebuild(
+    request: Request,
+    background_tasks: BackgroundTasks,
+    document_types: List[str] = Query(["innovations", "publications"])
+):
+    """Trigger vector database rebuild (admin only)"""
+    try:
+        job_id = str(uuid4())
+        
+        # Add rebuild task to background
+        background_tasks.add_task(
+            run_vector_rebuild,
+            job_id,
+            document_types
+        )
+        
+        return {
+            "job_id": job_id,
+            "status": "started",
+            "message": f"Vector rebuild started for: {', '.join(document_types)}",
+            "estimated_duration": "5-15 minutes",
+            "warning": "This will regenerate all embeddings and may affect search temporarily"
+        }
+        
+    except Exception as e:
+        logger.error(f"Error triggering vector rebuild: {e}")
+        raise HTTPException(status_code=500, detail="Failed to trigger vector rebuild")
+
+
+async def run_vector_rebuild(job_id: str, document_types: List[str]):
+    """Run vector database rebuild in background"""
+    try:
+        logger.info(f"Starting vector rebuild job {job_id} for types: {document_types}")
+        
+        # Import the rebuilder
+        from scripts.rebuild_vectors import VectorRebuilder
+        
+        rebuilder = VectorRebuilder()
+        
+        if not await rebuilder.initialize():
+            logger.error(f"Vector rebuild job {job_id} failed to initialize")
+            return
+        
+        success = True
+        
+        if "innovations" in document_types:
+            if not await rebuilder.rebuild_innovations():
+                success = False
+        
+        if "publications" in document_types:
+            if not await rebuilder.rebuild_publications():
+                success = False
+        
+        await rebuilder.save_stats()
+        
+        if success:
+            logger.info(f"Vector rebuild job {job_id} completed successfully")
+        else:
+            logger.warning(f"Vector rebuild job {job_id} completed with errors")
+        
+    except Exception as e:
+        logger.error(f"Vector rebuild job {job_id} failed: {e}")
+
+
 if __name__ == "__main__":
     import uvicorn
 
