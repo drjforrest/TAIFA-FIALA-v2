@@ -41,7 +41,6 @@ export default function DashboardStats() {
     unique_keywords,
     avg_african_relevance,
     avg_ai_relevance,
-    etl_status,
     loading,
     error,
   } = useDashboard();
@@ -428,14 +427,14 @@ export default function DashboardStats() {
                   <div className="flex items-center">
                     {(() => {
                       const StatusIcon = getStatusIcon(
-                        etl_status?.academic_pipeline_active || false,
+                        etlStatus?.academic_pipeline_active || false,
                       );
                       return (
                         <StatusIcon
                           className="h-4 w-4"
                           style={{
                             color: getStatusColor(
-                              etl_status?.academic_pipeline_active || false,
+                              etlStatus?.academic_pipeline_active || false,
                             ),
                           }}
                         />
@@ -445,11 +444,11 @@ export default function DashboardStats() {
                       className="ml-1 text-sm"
                       style={{
                         color: getStatusColor(
-                          etl_status?.academic_pipeline_active || false,
+                          etlStatus?.academic_pipeline_active || false,
                         ),
                       }}
                     >
-                      {etl_status?.academic_pipeline_active
+                      {etlStatus?.academic_pipeline_active
                         ? "Active"
                         : "Inactive"}
                     </span>
@@ -466,8 +465,8 @@ export default function DashboardStats() {
                     className="text-sm"
                     style={{ color: "var(--color-card-foreground)" }}
                   >
-                    {etl_status?.last_academic_run
-                      ? new Date(etl_status.last_academic_run).toLocaleString()
+                    {etlStatus?.last_academic_run
+                      ? new Date(etlStatus.last_academic_run).toLocaleString()
                       : "Never"}
                   </span>
                 </div>
@@ -533,14 +532,14 @@ export default function DashboardStats() {
                   <div className="flex items-center">
                     {(() => {
                       const StatusIcon = getStatusIcon(
-                        etl_status?.news_pipeline_active || false,
+                        etlStatus?.news_pipeline_active || false,
                       );
                       return (
                         <StatusIcon
                           className="h-4 w-4"
                           style={{
                             color: getStatusColor(
-                              etl_status?.news_pipeline_active || false,
+                              etlStatus?.news_pipeline_active || false,
                             ),
                           }}
                         />
@@ -552,11 +551,11 @@ export default function DashboardStats() {
                       className="ml-1 text-sm"
                       style={{
                         color: getStatusColor(
-                          etl_status?.news_pipeline_active || false,
+                          etlStatus?.news_pipeline_active || false,
                         ),
                       }}
                     >
-                      {etl_status?.news_pipeline_active ? "Active" : "Inactive"}
+                      {etlStatus?.news_pipeline_active ? "Active" : "Inactive"}
                     </Section3Text>
                   </div>
                 </div>
@@ -571,8 +570,8 @@ export default function DashboardStats() {
                     className="text-sm"
                     style={{ color: "var(--color-card-foreground)" }}
                   >
-                    {etl_status?.last_news_run
-                      ? new Date(etl_status.last_news_run).toLocaleString()
+                    {etlStatus?.last_news_run
+                      ? new Date(etlStatus.last_news_run).toLocaleString()
                       : "Never"}
                   </span>
                 </div>
@@ -638,14 +637,14 @@ export default function DashboardStats() {
                   <div className="flex items-center">
                     {(() => {
                       const StatusIcon = getStatusIcon(
-                        etl_status?.serper_pipeline_active || false,
+                        etlStatus?.serper_pipeline_active || false,
                       );
                       return (
                         <StatusIcon
                           className="h-4 w-4"
                           style={{
                             color: getStatusColor(
-                              etl_status?.serper_pipeline_active || false,
+                              etlStatus?.serper_pipeline_active || false,
                             ),
                           }}
                         />
@@ -657,11 +656,11 @@ export default function DashboardStats() {
                       className="ml-1 text-sm"
                       style={{
                         color: getStatusColor(
-                          etl_status?.serper_pipeline_active || false,
+                          etlStatus?.serper_pipeline_active || false,
                         ),
                       }}
                     >
-                      {etl_status?.serper_pipeline_active
+                      {etlStatus?.serper_pipeline_active
                         ? "Active"
                         : "Inactive"}
                     </Section3Text>
@@ -678,8 +677,8 @@ export default function DashboardStats() {
                     className="text-sm"
                     style={{ color: "var(--color-card-foreground)" }}
                   >
-                    {etl_status?.last_serper_run
-                      ? new Date(etl_status.last_serper_run).toLocaleString()
+                    {etlStatus?.last_serper_run
+                      ? new Date(etlStatus.last_serper_run).toLocaleString()
                       : "Never"}
                   </span>
                 </div>
@@ -736,7 +735,7 @@ export default function DashboardStats() {
                     className="text-lg font-semibold"
                     style={{ color: "var(--color-card-foreground)" }}
                   >
-                    {etl_status?.total_processed_today || 0}
+                    {etlStatus?.total_processed_today || 0}
                   </span>
                 </div>
                 <div className="flex items-center justify-between">
@@ -744,7 +743,7 @@ export default function DashboardStats() {
                     Processing Errors
                   </span>
                   <div className="flex items-center">
-                    {(etl_status?.errors_today || 0) > 0 && (
+                    {(etlStatus?.errors_today || 0) > 0 && (
                       <AlertTriangle
                         className="h-4 w-4 mr-1"
                         style={{ color: "var(--color-destructive)" }}
@@ -754,12 +753,12 @@ export default function DashboardStats() {
                       className="text-lg font-semibold"
                       style={{
                         color:
-                          (etl_status?.errors_today || 0) > 0
+                          (etlStatus?.errors_today || 0) > 0
                             ? "var(--color-destructive)"
                             : "var(--color-card-foreground)",
                       }}
                     >
-                      {etl_status?.errors_today || 0}
+                      {etlStatus?.errors_today || 0}
                     </span>
                   </div>
                 </div>

@@ -260,39 +260,76 @@ export function useETLMonitoring() {
 
   const fetchETLStatus = async () => {
     try {
-      // Try to get ETL status from a dedicated table or API endpoint
+      setETLData(prev => ({ ...prev, loading: true, error: null }));
+
+      // Try to get ETL status from the backend API first
+      try {
+        const etlStatusResponse = await apiCall<any>(API_ENDPOINTS.etl.status);
+        
+        if (etlStatusResponse.success && etlStatusResponse.data) {
+          const pipelines = etlStatusResponse.data.pipelines;
+          
+          // Convert backend pipeline format to frontend ETLStatus format
+          const status: ETLStatus = {
+            academic_pipeline_active: pipelines.academic_pipeline?.status === 'running',
+            news_pipeline_active: pipelines.news_pipeline?.status === 'running',
+            serper_pipeline_active: pipelines.discovery_pipeline?.status === 'running',
+            last_academic_run: pipelines.academic_pipeline?.last_run,
+            last_news_run: pipelines.news_pipeline?.last_run,
+            last_serper_run: pipelines.discovery_pipeline?.last_run,
+            total_processed_today: (pipelines.academic_pipeline?.items_processed || 0) + 
+                                 (pipelines.news_pipeline?.items_processed || 0) + 
+                                 (pipelines.discovery_pipeline?.items_processed || 0),
+            errors_today: (pipelines.academic_pipeline?.errors || 0) + 
+                         (pipelines.news_pipeline?.errors || 0) + 
+                         (pipelines.discovery_pipeline?.errors || 0),
+          };
+
+          const health: ETLHealth = {
+            status: etlStatusResponse.data.system_health === 'healthy' ? 'healthy' : 'degraded',
+            last_check: etlStatusResponse.data.last_updated || new Date().toISOString(),
+            response_time: 150, // Could be measured from actual response time
+          };
+
+          setETLData({
+            status,
+            health,
+            loading: false,
+            error: null,
+          });
+          return;
+        }
+      } catch (apiError) {
+        console.log('ETL API not available, trying Supabase fallback...', apiError);
+      }
+
+      // Fallback to Supabase table if API fails
       const { data: statusData, error: statusError } = await supabase
         .from("etl_status")
         .select("*")
         .single();
 
       if (statusError) {
-        console.log("ETL status table not available, using mock data");
-        // Mock data for development
+        console.log("ETL status table not available, using default inactive state");
+        // Default to inactive state when no data source is available
         setETLData({
           status: {
-            academic_pipeline_active: Math.random() > 0.5,
-            news_pipeline_active: Math.random() > 0.3,
-            serper_pipeline_active: Math.random() > 0.7,
-            last_academic_run: new Date(
-              Date.now() - Math.random() * 86400000,
-            ).toISOString(),
-            last_news_run: new Date(
-              Date.now() - Math.random() * 86400000,
-            ).toISOString(),
-            last_serper_run: new Date(
-              Date.now() - Math.random() * 86400000,
-            ).toISOString(),
-            total_processed_today: Math.floor(Math.random() * 100),
-            errors_today: Math.floor(Math.random() * 5),
+            academic_pipeline_active: false,
+            news_pipeline_active: false,
+            serper_pipeline_active: false,
+            last_academic_run: null,
+            last_news_run: null,
+            last_serper_run: null,
+            total_processed_today: 0,
+            errors_today: 0,
           },
           health: {
-            status: "healthy",
+            status: "down",
             last_check: new Date().toISOString(),
-            response_time: Math.floor(Math.random() * 200) + 50,
+            response_time: 0,
           },
           loading: false,
-          error: null,
+          error: "ETL monitoring unavailable",
         });
       } else {
         setETLData({
