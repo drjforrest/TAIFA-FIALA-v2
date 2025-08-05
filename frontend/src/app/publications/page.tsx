@@ -1,4 +1,4 @@
-import PublicationsTable from "@/components/Publications/PublicationsTable";
+import PublicationsTable from "@/components/Dashboard/PublicationsTable";
 import { Section1Text } from "@/components/ui/adaptive-text";
 
 export default function PublicationsPage() {

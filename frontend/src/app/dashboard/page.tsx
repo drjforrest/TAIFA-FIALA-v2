@@ -1,32 +1,33 @@
 "use client";
 
-import React, { useState } from "react";
-import { useDashboard, useETLMonitoring } from "@/hooks/useDashboard";
-import {
-  BarChart3,
-  Users,
-  FileText,
-  Building2,
-  Globe,
-  Hash,
-  TrendingUp,
-  Activity,
-  CheckCircle,
-  XCircle,
-  Play,
-  RefreshCw,
-  Database,
-  Zap,
-  AlertTriangle,
-} from "lucide-react";
+import RealTimeAnalytics from "@/components/Dashboard/RealTimeAnalytics";
 import {
   Section1Text,
   Section2Text,
-  Section3Text,
-  Section4Text,
+  Section3Text
 } from "@/components/ui/adaptive-text";
+import { useDashboard, useETLMonitoring } from "@/hooks/useDashboard";
+import {
+  Activity,
+  AlertTriangle,
+  BarChart3,
+  Building2,
+  CheckCircle,
+  Database,
+  FileText,
+  Globe,
+  Hash,
+  Play,
+  RefreshCw,
+  TrendingUp,
+  Users,
+  XCircle,
+  Zap,
+} from "lucide-react";
+import { useState } from "react";
 
 export default function DashboardStats() {
+  const [activeTab, setActiveTab] = useState<'monitoring' | 'analytics'>('monitoring');
   const [feedbackMessage, setFeedbackMessage] = useState<{
     type: 'success' | 'error' | null;
     message: string;
@@ -51,6 +52,7 @@ export default function DashboardStats() {
     triggerAcademicPipeline,
     triggerNewsPipeline,
     triggerSerperSearch,
+    triggerEnrichment,
     loading: etlLoading,
   } = useETLMonitoring();
 
@@ -79,6 +81,16 @@ export default function DashboardStats() {
   const handleTriggerDiscovery = async () => {
     setFeedbackMessage({ type: null, message: '' });
     const result = await triggerSerperSearch();
+    setFeedbackMessage({
+      type: result.success ? 'success' : 'error',
+      message: result.message
+    });
+    setTimeout(() => setFeedbackMessage({ type: null, message: '' }), 5000);
+  };
+
+  const handleTriggerEnrichment = async () => {
+    setFeedbackMessage({ type: null, message: '' });
+    const result = await triggerEnrichment();
     setFeedbackMessage({
       type: result.success ? 'success' : 'error',
       message: result.message
@@ -288,7 +300,7 @@ export default function DashboardStats() {
               return (
                 <div
                   key={index}
-                  className="rounded-lg border p-6 hover:shadow-lg hover:scale-105 hover:-translate-y-1 transition-all duration-300 ease-in-out"
+                  className="rounded-lg border p-6 hover:shadow-lg transition-all duration-300 ease-in-out"
                   style={{
                     backgroundColor: "var(--color-card)",
                     borderColor: "var(--color-border)",
@@ -336,7 +348,53 @@ export default function DashboardStats() {
         </div>
       </section>
 
-      {/* ETL Pipeline Status */}
+      {/* Tab Navigation */}
+      <section
+        className="py-4"
+        style={{ backgroundColor: "var(--color-background-section-2)" }}
+      >
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="border-b" style={{ borderColor: "var(--color-border)" }}>
+            <nav className="flex space-x-8">
+              <button
+                onClick={() => setActiveTab('monitoring')}
+                className={`flex items-center py-4 px-1 border-b-2 font-medium text-sm transition-colors ${
+                  activeTab === 'monitoring'
+                    ? 'text-primary'
+                    : 'text-muted-foreground hover:text-foreground'
+                }`}
+                style={{
+                  borderBottomColor: activeTab === 'monitoring' ? 'var(--color-primary)' : 'transparent',
+                  color: activeTab === 'monitoring' ? 'var(--color-primary)' : 'var(--color-muted-foreground)',
+                }}
+              >
+                <Activity className="h-4 w-4 mr-2" />
+                ETL Monitoring
+              </button>
+              <button
+                onClick={() => setActiveTab('analytics')}
+                className={`flex items-center py-4 px-1 border-b-2 font-medium text-sm transition-colors ${
+                  activeTab === 'analytics'
+                    ? 'text-primary'
+                    : 'text-muted-foreground hover:text-foreground'
+                }`}
+                style={{
+                  borderBottomColor: activeTab === 'analytics' ? 'var(--color-primary)' : 'transparent',
+                  color: activeTab === 'analytics' ? 'var(--color-primary)' : 'var(--color-muted-foreground)',
+                }}
+              >
+                <BarChart3 className="h-4 w-4 mr-2" />
+                Real-time Analytics
+              </button>
+            </nav>
+          </div>
+        </div>
+      </section>
+
+      {/* Tab Content - ETL Monitoring */}
+      {activeTab === 'monitoring' && (
+        <>
+          {/* ETL Pipeline Status */}
       <section
         className="py-16"
         style={{ backgroundColor: "var(--color-background-section-3)" }}
@@ -379,10 +437,10 @@ export default function DashboardStats() {
             )}
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-6">
             {/* Academic Pipeline */}
             <div
-              className="rounded-lg border p-6 hover:shadow-lg hover:scale-105 hover:-translate-y-1 transition-all duration-300 ease-in-out"
+              className="rounded-lg border p-6 hover:shadow-lg transition-all duration-300 ease-in-out"
               style={{
                 backgroundColor: "var(--color-card)",
                 borderColor: "var(--color-border)",
@@ -402,7 +460,7 @@ export default function DashboardStats() {
                 <button
                   onClick={handleTriggerAcademic}
                   disabled={etlLoading}
-                  className="p-3 rounded-lg hover:shadow-lg hover:scale-110 transition-all duration-200 ease-in-out active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="p-4 rounded-lg hover:shadow-lg hover:scale-110 transition-all duration-200 ease-in-out active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
                   style={{
                     backgroundColor: "var(--color-primary)",
                     color: "var(--color-primary-foreground)",
@@ -410,9 +468,9 @@ export default function DashboardStats() {
                   title="Trigger Academic Pipeline"
                 >
                   {etlLoading ? (
-                    <RefreshCw className="h-4 w-4 animate-spin" />
+                    <RefreshCw className="h-6 w-6 animate-spin" />
                   ) : (
-                    <Play className="h-4 w-4" />
+                    <Play className="h-6 w-6" />
                   )}
                 </button>
               </div>
@@ -470,6 +528,29 @@ export default function DashboardStats() {
                       : "Never"}
                   </span>
                 </div>
+                {/* Metrics Display */}
+                {etlStatus?.academic_pipeline_active && (
+                  <div className="space-y-2 pt-2 border-t" style={{ borderColor: "var(--color-border)" }}>
+                    <div className="flex items-center justify-between text-xs">
+                      <span style={{ color: "var(--color-muted-foreground)" }}>Batch Size</span>
+                      <span style={{ color: "var(--color-card-foreground)" }}>
+                        {etlStatus?.metrics?.batch_size || 0}
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between text-xs">
+                      <span style={{ color: "var(--color-muted-foreground)" }}>Duplicates Removed</span>
+                      <span style={{ color: "var(--color-card-foreground)" }}>
+                        {etlStatus?.metrics?.duplicates_removed || 0}
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between text-xs">
+                      <span style={{ color: "var(--color-muted-foreground)" }}>Processing Time</span>
+                      <span style={{ color: "var(--color-card-foreground)" }}>
+                        {etlStatus?.metrics?.processing_time_ms ? `${etlStatus.metrics.processing_time_ms}ms` : '0ms'}
+                      </span>
+                    </div>
+                  </div>
+                )}
                 <div
                   className="pt-2 border-t"
                   style={{ borderColor: "var(--color-border)" }}
@@ -487,7 +568,7 @@ export default function DashboardStats() {
 
             {/* News Pipeline */}
             <div
-              className="rounded-lg border p-6 hover:shadow-lg hover:scale-105 hover:-translate-y-1 transition-all duration-300 ease-in-out"
+              className="rounded-lg border p-6 hover:shadow-lg transition-all duration-300 ease-in-out"
               style={{
                 backgroundColor: "var(--color-card)",
                 borderColor: "var(--color-border)",
@@ -507,7 +588,7 @@ export default function DashboardStats() {
                 <button
                   onClick={handleTriggerNews}
                   disabled={etlLoading}
-                  className="p-3 rounded-lg hover:shadow-lg hover:scale-110 transition-all duration-200 ease-in-out active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="p-4 rounded-lg hover:shadow-lg hover:scale-110 transition-all duration-200 ease-in-out active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
                   style={{
                     backgroundColor: "var(--color-success)",
                     color: "var(--color-success-foreground)",
@@ -515,9 +596,9 @@ export default function DashboardStats() {
                   title="Trigger News Pipeline"
                 >
                   {etlLoading ? (
-                    <RefreshCw className="h-4 w-4 animate-spin" />
+                    <RefreshCw className="h-6 w-6 animate-spin" />
                   ) : (
-                    <Play className="h-4 w-4" />
+                    <Play className="h-6 w-6" />
                   )}
                 </button>
               </div>
@@ -592,7 +673,7 @@ export default function DashboardStats() {
 
             {/* Discovery Pipeline */}
             <div
-              className="rounded-lg border p-6 hover:shadow-lg hover:scale-105 hover:-translate-y-1 transition-all duration-300 ease-in-out"
+              className="rounded-lg border p-6 hover:shadow-lg transition-all duration-300 ease-in-out"
               style={{
                 backgroundColor: "var(--color-card)",
                 borderColor: "var(--color-border)",
@@ -612,7 +693,7 @@ export default function DashboardStats() {
                 <button
                   onClick={handleTriggerDiscovery}
                   disabled={etlLoading}
-                  className="p-3 rounded-lg hover:shadow-lg hover:scale-110 transition-all duration-200 ease-in-out active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="p-4 rounded-lg hover:shadow-lg hover:scale-110 transition-all duration-200 ease-in-out active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
                   style={{
                     backgroundColor: "var(--color-accent)",
                     color: "var(--color-accent-foreground)",
@@ -620,9 +701,9 @@ export default function DashboardStats() {
                   title="Trigger Discovery Search"
                 >
                   {etlLoading ? (
-                    <RefreshCw className="h-4 w-4 animate-spin" />
+                    <RefreshCw className="h-6 w-6 animate-spin" />
                   ) : (
-                    <Play className="h-4 w-4" />
+                    <Play className="h-6 w-6" />
                   )}
                 </button>
               </div>
@@ -696,6 +777,140 @@ export default function DashboardStats() {
                 </div>
               </div>
             </div>
+
+            {/* AI Enrichment Pipeline */}
+            <div
+              className="rounded-lg border p-6 hover:shadow-lg transition-all duration-300 ease-in-out"
+              style={{
+                backgroundColor: "var(--color-card)",
+                borderColor: "var(--color-border)",
+              }}
+            >
+              <div className="flex items-center justify-between mb-4">
+                <h3
+                  className="text-lg font-semibold flex items-center"
+                  style={{ color: "var(--color-card-foreground)" }}
+                >
+                  <Zap
+                    className="h-5 w-5 mr-2"
+                    style={{ color: "var(--color-orange-500)" }}
+                  />
+                  AI Enrichment
+                </h3>
+                <button
+                  onClick={handleTriggerEnrichment}
+                  disabled={etlLoading}
+                  className="p-4 rounded-lg hover:shadow-lg hover:scale-110 transition-all duration-200 ease-in-out active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+                  style={{
+                    backgroundColor: "var(--color-orange-500)",
+                    color: "var(--color-white)",
+                  }}
+                  title="Trigger AI Intelligence Enrichment"
+                >
+                  {etlLoading ? (
+                    <RefreshCw className="h-6 w-6 animate-spin" />
+                  ) : (
+                    <Play className="h-6 w-6" />
+                  )}
+                </button>
+              </div>
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <span
+                    className="text-sm"
+                    style={{ color: "var(--color-muted-foreground)" }}
+                  >
+                    Status
+                  </span>
+                  <div className="flex items-center">
+                    {(() => {
+                      const StatusIcon = getStatusIcon(
+                        etlStatus?.enrichment_pipeline_active || false,
+                      );
+                      return (
+                        <StatusIcon
+                          className="h-4 w-4"
+                          style={{
+                            color: getStatusColor(
+                              etlStatus?.enrichment_pipeline_active || false,
+                            ),
+                          }}
+                        />
+                      );
+                    })()}
+                    <Section3Text
+                      as="span"
+                      variant="paragraph"
+                      className="ml-1 text-sm"
+                      style={{
+                        color: getStatusColor(
+                          etlStatus?.enrichment_pipeline_active || false,
+                        ),
+                      }}
+                    >
+                      {etlStatus?.enrichment_pipeline_active ? "Active" : "Inactive"}
+                    </Section3Text>
+                  </div>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span
+                    className="text-sm"
+                    style={{ color: "var(--color-muted-foreground)" }}
+                  >
+                    Last Run
+                  </span>
+                  <span
+                    className="text-sm"
+                    style={{ color: "var(--color-card-foreground)" }}
+                  >
+                    {etlStatus?.last_enrichment_run
+                      ? new Date(etlStatus.last_enrichment_run).toLocaleString()
+                      : "Never"}
+                  </span>
+                </div>
+                {/* Metrics Display */}
+                {etlStatus?.pipeline_metrics?.enrichment_pipeline && (
+                  <div className="space-y-2 pt-2 border-t" style={{ borderColor: "var(--color-border)" }}>
+                    <div className="flex items-center justify-between text-xs">
+                      <span style={{ color: "var(--color-muted-foreground)" }}>Batch Size</span>
+                      <span style={{ color: "var(--color-card-foreground)" }}>
+                        {etlStatus.pipeline_metrics.enrichment_pipeline.batch_size}
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between text-xs">
+                      <span style={{ color: "var(--color-muted-foreground)" }}>Duplicates Removed</span>
+                      <span style={{ color: "var(--color-card-foreground)" }}>
+                        {etlStatus.pipeline_metrics.enrichment_pipeline.duplicates_removed}
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between text-xs">
+                      <span style={{ color: "var(--color-muted-foreground)" }}>Processing Time</span>
+                      <span style={{ color: "var(--color-card-foreground)" }}>
+                        {etlStatus.pipeline_metrics.enrichment_pipeline.processing_time_ms}ms
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between text-xs">
+                      <span style={{ color: "var(--color-muted-foreground)" }}>Success Rate</span>
+                      <span style={{ color: "var(--color-card-foreground)" }}>
+                        {etlStatus.pipeline_metrics.enrichment_pipeline.success_rate.toFixed(1)}%
+                      </span>
+                    </div>
+                  </div>
+                )}
+                <div
+                  className="pt-2 border-t"
+                  style={{ borderColor: "var(--color-border)" }}
+                >
+                  <div
+                    className="text-xs"
+                    style={{ color: "var(--color-muted-foreground)" }}
+                  >
+                    Uses AI (Perplexity, OpenAI, etc.) for intelligent analysis and
+                    comprehensive insights on African AI ecosystem
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -709,7 +924,7 @@ export default function DashboardStats() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Today's Processing Activity */}
             <div
-              className="rounded-lg border p-6 hover:shadow-lg hover:scale-105 hover:-translate-y-1 transition-all duration-300 ease-in-out"
+              className="rounded-lg border p-6 hover:shadow-lg transition-all duration-300 ease-in-out"
               style={{
                 backgroundColor: "var(--color-card)",
                 borderColor: "var(--color-accent)",
@@ -778,7 +993,7 @@ export default function DashboardStats() {
 
             {/* Innovation Archive Summary */}
             <div
-              className="rounded-lg border p-6 hover:shadow-lg hover:scale-105 hover:-translate-y-1 transition-all duration-300 ease-in-out"
+              className="rounded-lg border p-6 hover:shadow-lg transition-all duration-300 ease-in-out"
               style={{
                 backgroundColor: "var(--color-card)",
                 borderColor: "var(--color-primary)",
@@ -866,6 +1081,20 @@ export default function DashboardStats() {
           </div>
         </div>
       </section>
+        </>
+      )}
+
+      {/* Tab Content - Real-time Analytics */}
+      {activeTab === 'analytics' && (
+        <section
+          className="py-16"
+          style={{ backgroundColor: "var(--color-background-section-3)" }}
+        >
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <RealTimeAnalytics />
+          </div>
+        </section>
+      )}
     </div>
   );
 }

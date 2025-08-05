@@ -18,8 +18,12 @@ import {
   TrendingUp,
   Globe,
   DollarSign,
+  MessageCircle,
+  FileText,
+  Info,
 } from "lucide-react";
 import { Section1Text } from "@/components/ui/adaptive-text";
+import PineconeAssistantChat from "@/components/Chat/PineconeAssistantChat";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 
   (process.env.NODE_ENV === 'production' 
@@ -76,6 +80,7 @@ export default function InnovationDetailPage() {
   const [innovation, setInnovation] = useState<Innovation | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState<'overview' | 'details' | 'chat'>('overview');
 
   useEffect(() => {
     if (!id) return;
@@ -266,11 +271,145 @@ export default function InnovationDetailPage() {
         </div>
       </div>
 
-      {/* Content */}
+      {/* Tab Navigation */}
+      <div 
+        className="border-b"
+        style={{ 
+          backgroundColor: "var(--color-background-section-2)",
+          borderColor: "var(--color-border)"
+        }}
+      >
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <nav className="flex space-x-8">
+            <button
+              onClick={() => setActiveTab('overview')}
+              className={`flex items-center py-4 px-1 border-b-2 font-medium text-sm transition-colors ${
+                activeTab === 'overview'
+                  ? 'text-primary'
+                  : 'text-muted-foreground hover:text-foreground'
+              }`}
+              style={{
+                borderBottomColor: activeTab === 'overview' ? 'var(--color-primary)' : 'transparent',
+                color: activeTab === 'overview' ? 'var(--color-primary)' : 'var(--color-muted-foreground)',
+              }}
+            >
+              <Info className="h-4 w-4 mr-2" />
+              Overview
+            </button>
+            <button
+              onClick={() => setActiveTab('details')}
+              className={`flex items-center py-4 px-1 border-b-2 font-medium text-sm transition-colors ${
+                activeTab === 'details'
+                  ? 'text-primary'
+                  : 'text-muted-foreground hover:text-foreground'
+              }`}
+              style={{
+                borderBottomColor: activeTab === 'details' ? 'var(--color-primary)' : 'transparent',
+                color: activeTab === 'details' ? 'var(--color-primary)' : 'var(--color-muted-foreground)',
+              }}
+            >
+              <FileText className="h-4 w-4 mr-2" />
+              Details
+            </button>
+            <button
+              onClick={() => setActiveTab('chat')}
+              className={`flex items-center py-4 px-1 border-b-2 font-medium text-sm transition-colors ${
+                activeTab === 'chat'
+                  ? 'text-primary'
+                  : 'text-muted-foreground hover:text-foreground'
+              }`}
+              style={{
+                borderBottomColor: activeTab === 'chat' ? 'var(--color-primary)' : 'transparent',
+                color: activeTab === 'chat' ? 'var(--color-primary)' : 'var(--color-muted-foreground)',
+              }}
+            >
+              <MessageCircle className="h-4 w-4 mr-2" />
+              Chat with Document
+            </button>
+          </nav>
+        </div>
+      </div>
+
+      {/* Tab Content */}
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Main Content */}
-          <div className="lg:col-span-2 space-y-8">
+        {/* Overview Tab */}
+        {activeTab === 'overview' && (
+          <div className="space-y-8">
+            {/* Description */}
+            <div 
+              className="rounded-lg border p-6"
+              style={{ 
+                backgroundColor: "var(--color-card)",
+                borderColor: "var(--color-border)"
+              }}
+            >
+              <h2 className="text-xl font-semibold mb-4" style={{ color: "var(--color-card-foreground)" }}>
+                Description
+              </h2>
+              <div 
+                className="prose prose-gray dark:prose-invert max-w-none"
+                style={{ color: "var(--color-muted-foreground)" }}
+              >
+                {innovation.description.split('\n').map((paragraph, index) => (
+                  <p key={index} className="mb-4">
+                    {paragraph}
+                  </p>
+                ))}
+              </div>
+            </div>
+
+            {/* Quick Links */}
+            {(innovation.website_url || innovation.github_url || innovation.demo_url) && (
+              <div 
+                className="rounded-lg border p-6"
+                style={{ 
+                  backgroundColor: "var(--color-card)",
+                  borderColor: "var(--color-border)"
+                }}
+              >
+                <h2 className="text-xl font-semibold mb-4" style={{ color: "var(--color-card-foreground)" }}>
+                  Quick Access
+                </h2>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {innovation.website_url && (
+                    <a 
+                      href={innovation.website_url} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="flex items-center p-3 rounded-lg border border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-900/10 hover:bg-blue-100 dark:hover:bg-blue-900/20 transition-colors"
+                    >
+                      <Globe className="h-5 w-5 text-blue-600 dark:text-blue-400 mr-3" />
+                      <div>
+                        <div className="font-medium text-blue-800 dark:text-blue-300">Website</div>
+                        <div className="text-sm text-blue-600 dark:text-blue-400">Visit project</div>
+                      </div>
+                    </a>
+                  )}
+                  {innovation.demo_url && (
+                    <a 
+                      href={innovation.demo_url} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="flex items-center p-3 rounded-lg border border-green-200 dark:border-green-800 bg-green-50 dark:bg-green-900/10 hover:bg-green-100 dark:hover:bg-green-900/20 transition-colors"
+                    >
+                      <ExternalLink className="h-5 w-5 text-green-600 dark:text-green-400 mr-3" />
+                      <div>
+                        <div className="font-medium text-green-800 dark:text-green-300">Live Demo</div>
+                        <div className="text-sm text-green-600 dark:text-green-400">Try now</div>
+                      </div>
+                    </a>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Details Tab */}
+        {activeTab === 'details' && (
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            {/* Main Content */}
+            <div className="lg:col-span-2 space-y-8">
             {/* Description */}
             <div 
               className="rounded-lg border p-6"
@@ -535,6 +674,22 @@ export default function InnovationDetailPage() {
             )}
           </div>
         </div>
+        )}
+
+        {/* Chat Tab */}
+        {activeTab === 'chat' && (
+          <div className="max-w-4xl mx-auto">
+            <PineconeAssistantChat 
+              innovation={{
+                id: innovation.id,
+                title: innovation.title,
+                description: innovation.description,
+                innovation_type: innovation.innovation_type
+              }}
+              assistantName="innovation-document-assistant"
+            />
+          </div>
+        )}
       </div>
     </div>
   );

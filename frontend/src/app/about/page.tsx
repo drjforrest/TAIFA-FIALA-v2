@@ -1,8 +1,4 @@
-import {
-  Section1Text,
-  Section2Text,
-  Section4Text,
-} from "@/components/ui/adaptive-text";
+import ContactForm from "@/components/About/ContactForm";
 import {
   Card,
   CardContent,
@@ -10,20 +6,23 @@ import {
   CardTitle,
 } from "@/components/ui";
 import {
+  Section1Text,
+  Section2Text,
+  Section4Text,
+} from "@/components/ui/adaptive-text";
+import {
+  Award,
+  Calendar,
+  Globe,
+  Heart,
+  Lightbulb,
   Mail,
   MapPin,
-  Users,
-  Calendar,
-  Heart,
-  Globe,
   Shield,
   Target,
-  Award,
-  Lightbulb,
+  Users,
 } from "lucide-react";
 import { Metadata } from "next";
-import ContactForm from "@/components/contact/ContactForm";
-import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "About TAIFA-FIALA | Leadership & Mission",

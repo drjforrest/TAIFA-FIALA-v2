@@ -1,30 +1,87 @@
 {
-  "arxiv_scraper": {
-    "last_run": "2025-08-03T20:15:25.200208",
-    "last_success": null,
-    "last_error": "DeduplicationService.__init__() takes 1 positional argument but 2 were given",
-    "success_count": 0,
-    "error_count": 1,
-    "avg_runtime": 0.0,
-    "items_processed": 0
+  "academic_pipeline": {
+    "last_run": "2025-08-05T06:37:31.080433",
+    "last_success": "2025-08-05T06:37:31.080435",
+    "last_error": null,
+    "success_count": 1,
+    "error_count": 0,
+    "avg_runtime": 7.661465167999268,
+    "items_processed": 9,
+    "status": "idle",
+    "pipeline_active": false,
+    "metrics": {
+      "batch_size": 10,
+      "duplicates_removed": 0,
+      "processing_time_ms": 7661,
+      "success_rate": 100.0,
+      "items_processed": 9,
+      "items_failed": 1,
+      "memory_usage_mb": 0.0,
+      "cpu_usage_percent": 0.0
+    }
   },
-  "news_monitor": {
+  "news_pipeline": {
     "last_run": null,
     "last_success": null,
     "last_error": null,
     "success_count": 0,
     "error_count": 0,
     "avg_runtime": 0.0,
-    "items_processed": 0
+    "items_processed": 0,
+    "status": "idle",
+    "pipeline_active": false,
+    "metrics": {
+      "batch_size": 0,
+      "duplicates_removed": 0,
+      "processing_time_ms": 0,
+      "success_rate": 0.0,
+      "items_processed": 0,
+      "items_failed": 0,
+      "memory_usage_mb": 0.0,
+      "cpu_usage_percent": 0.0
+    }
   },
-  "serper_search": {
+  "serper_pipeline": {
     "last_run": null,
     "last_success": null,
     "last_error": null,
     "success_count": 0,
     "error_count": 0,
     "avg_runtime": 0.0,
-    "items_processed": 0
+    "items_processed": 0,
+    "status": "idle",
+    "pipeline_active": false,
+    "metrics": {
+      "batch_size": 0,
+      "duplicates_removed": 0,
+      "processing_time_ms": 0,
+      "success_rate": 0.0,
+      "items_processed": 0,
+      "items_failed": 0,
+      "memory_usage_mb": 0.0,
+      "cpu_usage_percent": 0.0
+    }
+  },
+  "enrichment_pipeline": {
+    "last_run": null,
+    "last_success": null,
+    "last_error": null,
+    "success_count": 0,
+    "error_count": 0,
+    "avg_runtime": 0.0,
+    "items_processed": 0,
+    "status": "idle",
+    "pipeline_active": false,
+    "metrics": {
+      "batch_size": 0,
+      "duplicates_removed": 0,
+      "processing_time_ms": 0,
+      "success_rate": 0.0,
+      "items_processed": 0,
+      "items_failed": 0,
+      "memory_usage_mb": 0.0,
+      "cpu_usage_percent": 0.0
+    }
   },
   "crawl4ai": {
     "last_run": null,
@@ -33,7 +90,19 @@
     "success_count": 0,
     "error_count": 0,
     "avg_runtime": 0.0,
-    "items_processed": 0
+    "items_processed": 0,
+    "status": "idle",
+    "pipeline_active": false,
+    "metrics": {
+      "batch_size": 0,
+      "duplicates_removed": 0,
+      "processing_time_ms": 0,
+      "success_rate": 0.0,
+      "items_processed": 0,
+      "items_failed": 0,
+      "memory_usage_mb": 0.0,
+      "cpu_usage_percent": 0.0
+    }
   },
   "startup_tracker": {
     "last_run": null,
@@ -42,7 +111,19 @@
     "success_count": 0,
     "error_count": 0,
     "avg_runtime": 0.0,
-    "items_processed": 0
+    "items_processed": 0,
+    "status": "idle",
+    "pipeline_active": false,
+    "metrics": {
+      "batch_size": 0,
+      "duplicates_removed": 0,
+      "processing_time_ms": 0,
+      "success_rate": 0.0,
+      "items_processed": 0,
+      "items_failed": 0,
+      "memory_usage_mb": 0.0,
+      "cpu_usage_percent": 0.0
+    }
   },
   "funding_tracker": {
     "last_run": null,
@@ -51,6 +132,24 @@
     "success_count": 0,
     "error_count": 0,
     "avg_runtime": 0.0,
-    "items_processed": 0
+    "items_processed": 0,
+    "status": "idle",
+    "pipeline_active": false,
+    "metrics": {
+      "batch_size": 0,
+      "duplicates_removed": 0,
+      "processing_time_ms": 0,
+      "success_rate": 0.0,
+      "items_processed": 0,
+      "items_failed": 0,
+      "memory_usage_mb": 0.0,
+      "cpu_usage_percent": 0.0
+    }
+  },
+  "_metadata": {
+    "format_version": "2.0",
+    "last_updated": "2025-08-05T13:56:00.000Z",
+    "description": "Unified ETL status tracking with comprehensive metrics",
+    "frontend_compatible": true
   }
 }

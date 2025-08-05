@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { supabase, DashboardStats } from "@/lib/supabase";
 import { API_ENDPOINTS, apiCall } from "@/lib/api";
+import { DashboardStats, supabase } from "@/lib/supabase";
+import { useEffect, useState } from "react";
 
 export interface DashboardData extends DashboardStats {
   loading: boolean;
@@ -10,15 +10,35 @@ export interface DashboardData extends DashboardStats {
   etl_status?: ETLStatus;
 }
 
+export interface ETLMetrics {
+  batch_size: number;
+  duplicates_removed: number;
+  processing_time_ms: number;
+  success_rate: number;
+  items_processed: number;
+  items_failed: number;
+  memory_usage_mb: number;
+  cpu_usage_percent: number;
+}
+
 export interface ETLStatus {
   academic_pipeline_active: boolean;
   news_pipeline_active: boolean;
   serper_pipeline_active: boolean;
+  enrichment_pipeline_active: boolean;
   last_academic_run: string | null;
   last_news_run: string | null;
   last_serper_run: string | null;
+  last_enrichment_run: string | null;
   total_processed_today: number;
   errors_today: number;
+  metrics?: ETLMetrics;
+  pipeline_metrics?: {
+    academic_pipeline?: ETLMetrics;
+    news_pipeline?: ETLMetrics;
+    discovery_pipeline?: ETLMetrics;
+    enrichment_pipeline?: ETLMetrics;
+  };
 }
 
 export interface ETLHealth {
@@ -274,15 +294,61 @@ export function useETLMonitoring() {
             academic_pipeline_active: pipelines.academic_pipeline?.status === 'running',
             news_pipeline_active: pipelines.news_pipeline?.status === 'running',
             serper_pipeline_active: pipelines.discovery_pipeline?.status === 'running',
+            enrichment_pipeline_active: pipelines.enrichment_pipeline?.status === 'running',
             last_academic_run: pipelines.academic_pipeline?.last_run,
             last_news_run: pipelines.news_pipeline?.last_run,
             last_serper_run: pipelines.discovery_pipeline?.last_run,
-            total_processed_today: (pipelines.academic_pipeline?.items_processed || 0) + 
-                                 (pipelines.news_pipeline?.items_processed || 0) + 
-                                 (pipelines.discovery_pipeline?.items_processed || 0),
-            errors_today: (pipelines.academic_pipeline?.errors || 0) + 
-                         (pipelines.news_pipeline?.errors || 0) + 
-                         (pipelines.discovery_pipeline?.errors || 0),
+            last_enrichment_run: pipelines.enrichment_pipeline?.last_run,
+            total_processed_today: (pipelines.academic_pipeline?.items_processed || 0) +
+                                 (pipelines.news_pipeline?.items_processed || 0) +
+                                 (pipelines.discovery_pipeline?.items_processed || 0) +
+                                 (pipelines.enrichment_pipeline?.items_processed || 0),
+            errors_today: (pipelines.academic_pipeline?.errors || 0) +
+                         (pipelines.news_pipeline?.errors || 0) +
+                         (pipelines.discovery_pipeline?.errors || 0) +
+                         (pipelines.enrichment_pipeline?.errors || 0),
+            pipeline_metrics: {
+              academic_pipeline: pipelines.academic_pipeline?.metrics ? {
+                batch_size: pipelines.academic_pipeline.metrics.batch_size || 0,
+                duplicates_removed: pipelines.academic_pipeline.metrics.duplicates_removed || 0,
+                processing_time_ms: pipelines.academic_pipeline.metrics.processing_time_ms || 0,
+                success_rate: pipelines.academic_pipeline.metrics.success_rate || 0,
+                items_processed: pipelines.academic_pipeline.metrics.items_processed || 0,
+                items_failed: pipelines.academic_pipeline.metrics.items_failed || 0,
+                memory_usage_mb: pipelines.academic_pipeline.metrics.memory_usage_mb || 0,
+                cpu_usage_percent: pipelines.academic_pipeline.metrics.cpu_usage_percent || 0,
+              } : undefined,
+              news_pipeline: pipelines.news_pipeline?.metrics ? {
+                batch_size: pipelines.news_pipeline.metrics.batch_size || 0,
+                duplicates_removed: pipelines.news_pipeline.metrics.duplicates_removed || 0,
+                processing_time_ms: pipelines.news_pipeline.metrics.processing_time_ms || 0,
+                success_rate: pipelines.news_pipeline.metrics.success_rate || 0,
+                items_processed: pipelines.news_pipeline.metrics.items_processed || 0,
+                items_failed: pipelines.news_pipeline.metrics.items_failed || 0,
+                memory_usage_mb: pipelines.news_pipeline.metrics.memory_usage_mb || 0,
+                cpu_usage_percent: pipelines.news_pipeline.metrics.cpu_usage_percent || 0,
+              } : undefined,
+              discovery_pipeline: pipelines.discovery_pipeline?.metrics ? {
+                batch_size: pipelines.discovery_pipeline.metrics.batch_size || 0,
+                duplicates_removed: pipelines.discovery_pipeline.metrics.duplicates_removed || 0,
+                processing_time_ms: pipelines.discovery_pipeline.metrics.processing_time_ms || 0,
+                success_rate: pipelines.discovery_pipeline.metrics.success_rate || 0,
+                items_processed: pipelines.discovery_pipeline.metrics.items_processed || 0,
+                items_failed: pipelines.discovery_pipeline.metrics.items_failed || 0,
+                memory_usage_mb: pipelines.discovery_pipeline.metrics.memory_usage_mb || 0,
+                cpu_usage_percent: pipelines.discovery_pipeline.metrics.cpu_usage_percent || 0,
+              } : undefined,
+              enrichment_pipeline: pipelines.enrichment_pipeline?.metrics ? {
+                batch_size: pipelines.enrichment_pipeline.metrics.batch_size || 0,
+                duplicates_removed: pipelines.enrichment_pipeline.metrics.duplicates_removed || 0,
+                processing_time_ms: pipelines.enrichment_pipeline.metrics.processing_time_ms || 0,
+                success_rate: pipelines.enrichment_pipeline.metrics.success_rate || 0,
+                items_processed: pipelines.enrichment_pipeline.metrics.items_processed || 0,
+                items_failed: pipelines.enrichment_pipeline.metrics.items_failed || 0,
+                memory_usage_mb: pipelines.enrichment_pipeline.metrics.memory_usage_mb || 0,
+                cpu_usage_percent: pipelines.enrichment_pipeline.metrics.cpu_usage_percent || 0,
+              } : undefined,
+            }
           };
 
           const health: ETLHealth = {
@@ -317,9 +383,11 @@ export function useETLMonitoring() {
             academic_pipeline_active: false,
             news_pipeline_active: false,
             serper_pipeline_active: false,
+            enrichment_pipeline_active: false,
             last_academic_run: null,
             last_news_run: null,
             last_serper_run: null,
+            last_enrichment_run: null,
             total_processed_today: 0,
             errors_today: 0,
           },
@@ -450,6 +518,48 @@ export function useETLMonitoring() {
     }
   };
 
+  const triggerEnrichment = async (
+    intelligence_types: string[] = ["innovation_discovery", "funding_landscape"],
+    time_period: string = "last_7_days",
+    geographic_focus?: string[],
+    provider: string = "perplexity"
+  ) => {
+    try {
+      const result = await apiCall<APIResponse>(API_ENDPOINTS.etl.triggerEnrichment, {
+        method: 'POST',
+        body: JSON.stringify({ 
+          intelligence_types,
+          time_period,
+          geographic_focus,
+          provider
+        }),
+      });
+
+      if (result.success) {
+        // Refresh status after triggering
+        await fetchETLStatus();
+        return {
+          success: true,
+          message: result.message || "AI enrichment triggered successfully",
+        };
+      } else {
+        return {
+          success: false,
+          message: result.message || "Failed to trigger AI enrichment",
+        };
+      }
+    } catch (err) {
+      console.error("Error triggering AI enrichment:", err);
+      return {
+        success: false,
+        message:
+          err instanceof Error
+            ? err.message
+            : "Failed to trigger AI enrichment",
+      };
+    }
+  };
+
   return {
     status: etlData.status,
     health: etlData.health,
@@ -458,6 +568,7 @@ export function useETLMonitoring() {
     triggerAcademicPipeline,
     triggerNewsPipeline,
     triggerSerperSearch,
+    triggerEnrichment,
     refresh: fetchETLStatus,
   };
 }

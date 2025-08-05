@@ -8,20 +8,26 @@ from datetime import datetime
 from typing import List, Optional
 from uuid import UUID, uuid4
 
-from fastapi import FastAPI, HTTPException, Depends, BackgroundTasks, Query, Request
+from api.etl_live import router as etl_live_router
+from config.settings import settings
+from fastapi import BackgroundTasks, Depends, FastAPI, HTTPException, Query, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from loguru import logger
+from models.schemas import (
+    CommunitySubmissionResponse,
+    CommunityVote,
+    InnovationCreate,
+    InnovationResponse,
+    InnovationSearchResponse,
+    InnovationStats,
+)
+from services.vector_service import VectorService, get_vector_service
 from slowapi import Limiter, _rate_limit_exceeded_handler
-from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
 from slowapi.middleware import SlowAPIMiddleware
-from loguru import logger
+from slowapi.util import get_remote_address
 
-from config.settings import settings
-from models.database import *
-from models.schemas import *
-from services.vector_service import get_vector_service, VectorService
-from api.etl_live import router as etl_live_router
 try:
     from services.serper_service import search_african_innovations
 except ImportError:
@@ -31,9 +37,11 @@ except ImportError:
         return []
 from etl.academic.arxiv_scraper import scrape_arxiv_papers
 from etl.news.rss_monitor import monitor_rss_feeds
-from services.ai_backfill_service import ai_backfill_service, create_backfill_jobs_for_innovations
+from services.ai_backfill_service import (
+    ai_backfill_service,
+    create_backfill_jobs_for_innovations,
+)
 from services.integration_guide import backfill_integration
-
 
 # Initialize limiter
 limiter = Limiter(key_func=get_remote_address)
@@ -74,7 +82,7 @@ async def startup_event():
     async def init_vector_service():
         try:
             import asyncio
-            vector_service = await asyncio.wait_for(get_vector_service(), timeout=10.0)
+            await asyncio.wait_for(get_vector_service(), timeout=10.0)
             logger.info("Vector service initialized")
         except asyncio.TimeoutError:
             logger.warning("Vector service initialization timed out - will retry on first use")
@@ -639,12 +647,13 @@ async def search_innovations(
 @app.post("/api/etl/academic")
 @limiter.limit("5/minute")
 async def trigger_academic_etl(
-    request,
+    request: Request,
     background_tasks: BackgroundTasks,
     days_back: int = Query(7, ge=1, le=30),
     max_results: int = Query(100, ge=10, le=500)
 ):
     """Trigger academic paper scraping"""
+    logger.info(f"Academic ETL triggered with days_back={days_back}, max_results={max_results}")
     job_id = str(uuid4())
 
     background_tasks.add_task(
@@ -664,11 +673,12 @@ async def trigger_academic_etl(
 @app.post("/api/etl/news")
 @limiter.limit("5/minute")
 async def trigger_news_etl(
-    request,
+    request: Request,
     background_tasks: BackgroundTasks,
     hours_back: int = Query(24, ge=1, le=168)  # Max 1 week
 ):
     """Trigger news monitoring"""
+    logger.info(f"News ETL triggered with hours_back={hours_back}")
     job_id = str(uuid4())
 
     background_tasks.add_task(
@@ -687,13 +697,14 @@ async def trigger_news_etl(
 @app.post("/api/etl/serper-search")
 @limiter.limit("3/minute")
 async def trigger_serper_search(
-    request,
+    request: Request,
     background_tasks: BackgroundTasks,
     innovation_type: Optional[str] = None,
     country: Optional[str] = None,
     num_results: int = Query(50, ge=10, le=100)
 ):
     """Trigger Serper.dev innovation search"""
+    logger.info(f"Serper search triggered with innovation_type={innovation_type}, country={country}, num_results={num_results}")
     job_id = str(uuid4())
 
     background_tasks.add_task(

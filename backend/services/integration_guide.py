@@ -19,13 +19,15 @@ Cost Management:
 
 import asyncio
 from datetime import datetime, timedelta
-from typing import List, Dict, Any, Optional
+from typing import Any, Dict, List, Optional
 
+from config.database import supabase
 from loguru import logger
-
-from services.ai_backfill_service import ai_backfill_service, create_backfill_jobs_for_innovations
+from services.ai_backfill_service import (
+    ai_backfill_service,
+    create_backfill_jobs_for_innovations,
+)
 from services.targeted_search_service import run_targeted_searches_for_innovations
-from database.supabase_client import supabase
 
 
 class BackfillIntegrationService:

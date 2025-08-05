@@ -1,33 +1,27 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
-import Link from "next/link";
+import { Section1Text } from "@/components/ui/adaptive-text";
 import {
-  Search,
-  Filter,
-  MapPin,
-  Calendar,
-  Users,
-  ExternalLink,
-  Star,
-  TrendingUp,
+  AlertCircle,
+  ArrowUpRight,
   Building2,
-  Tag,
+  Calendar,
   CheckCircle,
   Clock,
-  AlertCircle,
-  Zap,
+  ExternalLink,
   Globe,
-  ArrowUpRight,
+  MapPin,
+  Search,
+  Tag,
+  TrendingUp,
+  Users,
+  Zap
 } from "lucide-react";
-import { Section1Text } from "@/components/ui/adaptive-text";
+import Link from "next/link";
+import { useCallback, useEffect, useState } from "react";
 
-// Production API URL - update this to your actual production backend URL
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 
-  (process.env.NODE_ENV === 'production' 
-    ? 'https://your-backend-domain.com' // Replace with actual production URL
-    : "http://localhost:8000"
-  );
+// API URL from environment variables
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
 interface Innovation {
   id: string;
@@ -121,22 +115,8 @@ export default function ExploreDataPage() {
       
       console.log('Fetching innovations with params:', params);
 
-      // Check if API URL is configured
-      if (!API_BASE_URL || API_BASE_URL.includes("localhost")) {
-        console.warn("API not available, using mock data");
-        // Provide mock data when API is not available
-        setTimeout(() => {
-          setInnovations([]);
-          setTotalCount(0);
-          setFilterOptions({
-            innovation_types: ["AI/ML Platform", "Healthcare AI", "FinTech", "AgTech"],
-            countries: ["Nigeria", "South Africa", "Kenya", "Ghana", "Egypt"],
-            organizations: [],
-          });
-          setLoading(false);
-        }, 500);
-        return;
-      }
+      // Log the API URL being used
+      console.log('Using API_BASE_URL:', API_BASE_URL);
 
       const queryParams = new URLSearchParams();
 
@@ -192,15 +172,30 @@ export default function ExploreDataPage() {
       clearTimeout(timeoutId);
 
       if (!response.ok) {
-        // If it's a 500 error, provide a more user-friendly message
-        if (response.status === 500) {
+        console.error(`API request failed: ${response.status} ${response.statusText}`);
+        
+        // Provide specific error messages based on status codes
+        if (response.status === 502) {
+          throw new Error(
+            "Backend service is temporarily unavailable. Please check if the backend server is running on localhost:8000."
+          );
+        } else if (response.status === 500) {
           throw new Error(
             "The innovation database is currently unavailable. Please try again later."
           );
+        } else if (response.status === 404) {
+          throw new Error(
+            "API endpoint not found. Please verify the backend server is running correctly."
+          );
+        } else if (response.status >= 400 && response.status < 500) {
+          throw new Error(
+            `Client error: ${response.status} ${response.statusText}. Please check your request.`
+          );
+        } else {
+          throw new Error(
+            `Search failed: ${response.status} ${response.statusText}`
+          );
         }
-        throw new Error(
-          `Search failed: ${response.status} ${response.statusText}`,
-        );
       }
 
       const data = await response.json();
@@ -241,9 +236,9 @@ export default function ExploreDataPage() {
           "Request timeout: The server is taking too long to respond. Please try again."
         );
       } else if (err instanceof TypeError) {
-        if (err.message.includes('fetch')) {
+        if (err.message.includes('fetch') || err.message.includes('Failed to fetch')) {
           setError(
-            "Network error: Unable to connect to the server. Please check your internet connection and try again."
+            "Network error: Unable to connect to the backend server. Please ensure the backend is running on localhost:8000 and try again."
           );
         } else if (err.message.includes('NetworkError') || err.message.includes('CORS')) {
           setError(
