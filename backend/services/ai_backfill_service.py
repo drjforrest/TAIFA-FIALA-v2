@@ -25,6 +25,10 @@ from loguru import logger
 from config.settings import settings
 from services.serper_service import SerperService
 from etl.intelligence.perplexity_african_ai import PerplexityAfricanAIModule
+from services.unified_cache import (
+    unified_cache, cache_api_response, get_cached_response, 
+    cache_null_response, is_null_cached, DataSource, CacheType
+)
 
 
 class BackfillPriority(Enum):

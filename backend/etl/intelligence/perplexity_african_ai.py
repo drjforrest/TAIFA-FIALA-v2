@@ -15,6 +15,11 @@ from datetime import datetime, timedelta
 import json
 import aiohttp
 
+from services.unified_cache import (
+    cache_api_response, get_cached_response, cache_null_response, 
+    is_null_cached, DataSource
+)
+
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
@@ -46,6 +51,8 @@ class IntelligenceReport:
     follow_up_actions: List[str]
     generation_timestamp: datetime
     time_period_analyzed: str
+    # NEW: Structured citations for snowball sampling
+    extracted_citations: List[Dict[str, Any]] = None
 
     def to_json(self) -> str:
         """Convert report to JSON string"""
@@ -203,7 +210,32 @@ class PerplexityAfricanAIModule:
             """
 
     async def _call_perplexity_api(self, prompt: str) -> Dict[str, Any]:
-        """Make API call to Perplexity"""
+        """Make API call to Perplexity (with caching)"""
+        
+        # Create cache key parameters
+        cache_params = {
+            'prompt': prompt,
+            'model': "llama-3.1-sonar-large-128k-online",
+            'temperature': 0.2,
+            'max_tokens': 4000
+        }
+        
+        # Check if response is cached
+        try:
+            cached_response = await get_cached_response(DataSource.PERPLEXITY, cache_params)
+            if cached_response:
+                logger.info("Using cached Perplexity response")
+                return cached_response
+        except Exception as e:
+            logger.warning(f"Error checking Perplexity cache: {e}")
+        
+        # Check if this is a known null result
+        try:
+            if await is_null_cached(DataSource.PERPLEXITY, cache_params):
+                logger.info("Perplexity request cached as null, skipping API call")
+                raise Exception("Cached null result - skipping API call")
+        except Exception as e:
+            logger.warning(f"Error checking null cache: {e}")
 
         payload = {
             "model": "llama-3.1-sonar-large-128k-online",
@@ -221,11 +253,46 @@ class PerplexityAfricanAIModule:
             "max_tokens": 4000
         }
 
-        async with self.session.post(f"{self.base_url}/chat/completions", json=payload) as response:
-            if response.status == 200:
-                return await response.json()
-            else:
-                raise Exception(f"Perplexity API error: {response.status}")
+        try:
+            async with self.session.post(f"{self.base_url}/chat/completions", json=payload) as response:
+                if response.status == 200:
+                    response_data = await response.json()
+                    
+                    # Check if response has meaningful content
+                    content = response_data.get('choices', [{}])[0].get('message', {}).get('content', '')
+                    
+                    if len(content.strip()) < 50:
+                        # Cache as null if content is too short
+                        await cache_null_response(DataSource.PERPLEXITY, cache_params, 
+                                                "insufficient_content", 2.0)  # 2 hour cache
+                        logger.warning("Perplexity returned insufficient content")
+                        return response_data
+                    
+                    # Cache successful response for 24 hours
+                    await cache_api_response(DataSource.PERPLEXITY, cache_params, response_data, 24.0)
+                    logger.info("Cached Perplexity response for 24 hours")
+                    
+                    return response_data
+                elif response.status == 429:
+                    # Rate limited - cache as null for shorter period
+                    await cache_null_response(DataSource.PERPLEXITY, cache_params, 
+                                            "rate_limited", 0.5)  # 30 minute cache
+                    raise Exception(f"Perplexity API rate limited: {response.status}")
+                else:
+                    # Other API errors - cache for short period
+                    await cache_null_response(DataSource.PERPLEXITY, cache_params, 
+                                            "api_error", 1.0)  # 1 hour cache
+                    raise Exception(f"Perplexity API error: {response.status}")
+                    
+        except aiohttp.ClientError as e:
+            # Network/client errors - cache for short period
+            await cache_null_response(DataSource.PERPLEXITY, cache_params, 
+                                    "network_error", 0.5)  # 30 minute cache
+            raise Exception(f"Perplexity API network error: {e}")
+        except Exception as e:
+            # Other errors - don't cache, might be temporary
+            logger.error(f"Perplexity API unexpected error: {e}")
+            raise
 
     async def _parse_intelligence_response(self,
                                          response_data: Dict[str, Any],
@@ -248,8 +315,19 @@ class PerplexityAfricanAIModule:
         funding_updates = self._extract_funding_updates(findings)
         policy_developments = self._extract_policy_developments(findings)
 
-        # Extract sources
+        # Extract sources and citations
         sources = self._extract_sources(content)
+        
+        # NEW: Extract structured citations for snowball sampling
+        try:
+            from services.citation_extractor import enhance_perplexity_response_with_citations
+            enhanced_content, extracted_citations = await enhance_perplexity_response_with_citations(
+                content, response_data.get('id', f"perplexity_{datetime.now().isoformat()}")
+            )
+            logger.info(f"Extracted {len(extracted_citations)} citations for snowball sampling")
+        except Exception as e:
+            logger.warning(f"Citation extraction failed: {e}")
+            extracted_citations = []
 
         # Calculate confidence score
         confidence_score = self._calculate_confidence_score(content, findings)
@@ -272,7 +350,8 @@ class PerplexityAfricanAIModule:
             geographic_focus=geographic_focus,
             follow_up_actions=follow_up_actions,
             generation_timestamp=datetime.now(),
-            time_period_analyzed=time_period
+            time_period_analyzed=time_period,
+            extracted_citations=extracted_citations or []
         )
 
     def _generate_follow_up_actions(self, intel_type: IntelligenceType, findings: List[Dict[str, Any]]) -> List[str]:

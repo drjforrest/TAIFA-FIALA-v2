@@ -157,7 +157,8 @@ async def trigger_enrichment_pipeline(
     intelligence_types: List[str] = ["innovation_discovery", "funding_landscape"],
     time_period: str = "last_7_days",
     geographic_focus: List[str] = None,
-    provider: str = "perplexity"
+    provider: str = "perplexity",
+    enable_snowball_sampling: bool = True
 ):
     """Trigger AI intelligence enrichment - supports multiple providers (Perplexity, OpenAI, etc.) - RATE LIMITED operation"""
     
@@ -181,7 +182,7 @@ async def trigger_enrichment_pipeline(
         intel_types = [IntelligenceType.INNOVATION_DISCOVERY, IntelligenceType.FUNDING_LANDSCAPE]
     
     # Start the background task
-    background_tasks.add_task(run_enrichment_pipeline, intel_types, time_period, geographic_focus, provider)
+    background_tasks.add_task(run_enrichment_pipeline, intel_types, time_period, geographic_focus, provider, enable_snowball_sampling)
     
     return ETLResponse(
         success=True,
@@ -192,7 +193,8 @@ async def trigger_enrichment_pipeline(
             "provider": provider,
             "intelligence_types": intelligence_types,
             "time_period": time_period,
-            "geographic_focus": geographic_focus or ["Nigeria", "Kenya", "South Africa", "Ghana", "Egypt"]
+            "geographic_focus": geographic_focus or ["Nigeria", "Kenya", "South Africa", "Ghana", "Egypt"],
+            "snowball_sampling_enabled": enable_snowball_sampling
         }
     )
 
@@ -482,7 +484,8 @@ async def run_enrichment_pipeline(
     intelligence_types: List[IntelligenceType],
     time_period: str = "last_7_days",
     geographic_focus: List[str] = None,
-    provider: str = "perplexity"
+    provider: str = "perplexity",
+    enable_snowball_sampling: bool = True
 ):
     """Background task for AI intelligence enrichment with comprehensive metrics"""
     start_time = time.time()
@@ -491,7 +494,7 @@ async def run_enrichment_pipeline(
         
         # Route to appropriate provider
         if provider == "perplexity":
-            reports_count = await run_perplexity_enrichment(intelligence_types, time_period, geographic_focus)
+            reports_count = await run_perplexity_enrichment(intelligence_types, time_period, geographic_focus, enable_snowball_sampling)
             
             # Calculate metrics
             runtime = time.time() - start_time
@@ -519,7 +522,8 @@ async def run_enrichment_pipeline(
 async def run_perplexity_enrichment(
     intelligence_types: List[IntelligenceType],
     time_period: str = "last_7_days",
-    geographic_focus: List[str] = None
+    geographic_focus: List[str] = None,
+    enable_snowball_sampling: bool = True
 ) -> int:
     """Run Perplexity-specific enrichment and return number of reports generated"""
     # Get Perplexity API key from environment
@@ -603,6 +607,28 @@ async def run_perplexity_enrichment(
                     # Continue with other reports even if one fails
         
         logger.info("Perplexity enrichment completed successfully")
+    
+    # Run snowball sampling if enabled and we have reports with citations
+    if enable_snowball_sampling and reports:
+        try:
+            from services.snowball_sampler import run_snowball_sampling
+            
+            # Check if any reports have extracted citations  
+            total_citations = sum(len(report.extracted_citations or []) for report in reports)
+            
+            if total_citations > 0:
+                logger.info(f"Starting snowball sampling with {total_citations} extracted citations")
+                
+                # Run snowball sampling with conservative parameters
+                sampling_results = await run_snowball_sampling(max_depth=2, max_citations=15)
+                
+                logger.info(f"Snowball sampling completed: {sampling_results.get('new_discoveries', 0)} new discoveries")
+                logger.info(f"Processed {sampling_results.get('citations_processed', 0)} citations in {sampling_results.get('duration', 0):.1f} seconds")
+            else:
+                logger.info("No citations found for snowball sampling")
+                
+        except Exception as e:
+            logger.warning(f"Snowball sampling failed (continuing with main pipeline): {e}")
     
     return len(reports) if reports else 0
 
@@ -706,4 +732,238 @@ async def stop_scheduler(background_tasks: BackgroundTasks):
         return ETLResponse(
             success=False,
             message=f"Error stopping scheduler: {str(e)}"
+        )
+
+@router.get("/cache/null-results/stats")
+async def get_null_cache_stats():
+    """Get null result cache statistics"""
+    try:
+        from services.null_result_cache import null_result_cache
+        
+        async with null_result_cache as cache:
+            stats = await cache.get_cache_stats()
+        
+        return ETLResponse(
+            success=True,
+            message="Null result cache stats retrieved successfully",
+            data=stats
+        )
+    except Exception as e:
+        logger.error(f"Error getting null cache stats: {e}")
+        return ETLResponse(
+            success=False,
+            message=f"Error retrieving null cache stats: {str(e)}"
+        )
+
+@router.post("/cache/null-results/clear")
+async def clear_null_cache(data_source: Optional[str] = None):
+    """Clear null result cache (optionally filtered by data source)"""
+    try:
+        from services.null_result_cache import null_result_cache, DataSource
+        
+        source_filter = None
+        if data_source:
+            try:
+                source_filter = DataSource(data_source)
+            except ValueError:
+                return ETLResponse(
+                    success=False,
+                    message=f"Invalid data source: {data_source}. Valid options: {[ds.value for ds in DataSource]}"
+                )
+        
+        async with null_result_cache as cache:
+            cleared_count = await cache.force_clear_cache(source_filter)
+        
+        return ETLResponse(
+            success=True,
+            message=f"Cleared {cleared_count} null result cache entries",
+            data={"cleared_count": cleared_count, "data_source": data_source}
+        )
+    except Exception as e:
+        logger.error(f"Error clearing null cache: {e}")
+        return ETLResponse(
+            success=False,
+            message=f"Error clearing null cache: {str(e)}"
+        )
+
+@router.post("/cache/null-results/cleanup")
+async def cleanup_expired_null_cache():
+    """Clean up expired null result cache entries"""
+    try:
+        from services.null_result_cache import null_result_cache
+        
+        async with null_result_cache as cache:
+            cleared_count = await cache.clear_expired_entries()
+        
+        return ETLResponse(
+            success=True,
+            message=f"Cleaned up {cleared_count} expired cache entries",
+            data={"cleared_count": cleared_count}
+        )
+    except Exception as e:
+        logger.error(f"Error cleaning up null cache: {e}")
+        return ETLResponse(
+            success=False,
+            message=f"Error cleaning up null cache: {str(e)}"
+        )
+
+# Unified Cache Management Endpoints
+
+@router.get("/cache/unified/stats")
+async def get_unified_cache_stats():
+    """Get comprehensive unified cache statistics"""
+    try:
+        from services.unified_cache import unified_cache
+        
+        async with unified_cache as cache:
+            stats = await cache.get_cache_stats()
+        
+        return ETLResponse(
+            success=True,
+            message="Unified cache stats retrieved successfully",
+            data=stats
+        )
+    except Exception as e:
+        logger.error(f"Error getting unified cache stats: {e}")
+        return ETLResponse(
+            success=False,
+            message=f"Error retrieving unified cache stats: {str(e)}"
+        )
+
+@router.post("/cache/unified/invalidate")
+async def invalidate_cache_pattern(pattern: str):
+    """Invalidate cache entries matching pattern"""
+    try:
+        from services.unified_cache import unified_cache
+        
+        async with unified_cache as cache:
+            invalidated_count = await cache.invalidate_pattern(pattern)
+        
+        return ETLResponse(
+            success=True,
+            message=f"Invalidated {invalidated_count} cache entries matching pattern: {pattern}",
+            data={"invalidated_count": invalidated_count, "pattern": pattern}
+        )
+    except Exception as e:
+        logger.error(f"Error invalidating cache pattern: {e}")
+        return ETLResponse(
+            success=False,
+            message=f"Error invalidating cache pattern: {str(e)}"
+        )
+
+@router.post("/cache/unified/cleanup")
+async def cleanup_unified_cache():
+    """Clean up expired unified cache entries"""
+    try:
+        from services.unified_cache import unified_cache
+        
+        async with unified_cache as cache:
+            cleaned_count = await cache.cleanup_expired()
+        
+        return ETLResponse(
+            success=True,
+            message=f"Cleaned up {cleaned_count} expired unified cache entries",
+            data={"cleaned_count": cleaned_count}
+        )
+    except Exception as e:
+        logger.error(f"Error cleaning up unified cache: {e}")
+        return ETLResponse(
+            success=False,
+            message=f"Error cleaning up unified cache: {str(e)}"
+        )
+
+@router.post("/cache/unified/warm")
+async def warm_unified_cache(background_tasks: BackgroundTasks, 
+                           warming_tasks: List[Dict[str, Any]] = None):
+    """Warm cache with frequently accessed data"""
+    try:
+        from services.unified_cache import unified_cache
+        
+        # Default warming tasks if none provided
+        if not warming_tasks:
+            warming_tasks = [
+                {
+                    "data_source": "serper",
+                    "query_params": {"query": "African AI startups", "num_results": 20},
+                    "cache_type": "positive"
+                },
+                {
+                    "data_source": "serper", 
+                    "query_params": {"query": "African fintech innovation", "num_results": 20},
+                    "cache_type": "positive"
+                },
+                {
+                    "data_source": "perplexity",
+                    "query_params": {"prompt": "Latest AI developments in Nigeria", "model": "llama-3.1-sonar-large-128k-online"},
+                    "cache_type": "positive"
+                }
+            ]
+        
+        # Start warming in background
+        async def warm_cache_task():
+            async with unified_cache as cache:
+                return await cache.warm_cache(warming_tasks)
+        
+        background_tasks.add_task(warm_cache_task)
+        
+        return ETLResponse(
+            success=True,
+            message=f"Started cache warming with {len(warming_tasks)} tasks",
+            data={"warming_tasks_count": len(warming_tasks)}
+        )
+    except Exception as e:
+        logger.error(f"Error starting cache warming: {e}")
+        return ETLResponse(
+            success=False,
+            message=f"Error starting cache warming: {str(e)}"
+        )
+
+@router.get("/cache/performance")
+async def get_cache_performance():
+    """Get cache performance metrics across all cache types"""
+    try:
+        from services.unified_cache import unified_cache
+        from services.null_result_cache import null_result_cache
+        
+        # Get unified cache stats
+        async with unified_cache as u_cache:
+            unified_stats = await u_cache.get_cache_stats()
+        
+        # Get null cache stats
+        async with null_result_cache as n_cache:
+            null_stats = await n_cache.get_cache_stats()
+        
+        performance_data = {
+            "unified_cache": {
+                "hit_rate": unified_stats.get("hit_rate", 0),
+                "total_hits": unified_stats.get("performance", {}).get("hits", 0),
+                "total_misses": unified_stats.get("performance", {}).get("misses", 0),
+                "memory_cache_hits": unified_stats.get("performance", {}).get("memory_hits", 0),
+                "redis_cache_hits": unified_stats.get("performance", {}).get("redis_hits", 0),
+                "cache_sets": unified_stats.get("performance", {}).get("sets", 0),
+                "compressions": unified_stats.get("compression_stats", {}).get("compressions", 0)
+            },
+            "null_cache": {
+                "total_items": null_stats.get("total_cached_items", 0),
+                "permanent_items": null_stats.get("permanent_cache_count", 0),
+                "retry_pending": null_stats.get("retry_pending_count", 0),
+                "by_data_source": null_stats.get("by_data_source", {}),
+                "by_reason": null_stats.get("by_reason", {})
+            },
+            "efficiency_metrics": {
+                "api_calls_saved": unified_stats.get("performance", {}).get("hits", 0) + null_stats.get("total_cached_items", 0),
+                "cost_savings_estimate": (unified_stats.get("performance", {}).get("hits", 0) * 0.02) + (null_stats.get("total_cached_items", 0) * 0.01)  # Rough estimate
+            }
+        }
+        
+        return ETLResponse(
+            success=True,
+            message="Cache performance metrics retrieved successfully",
+            data=performance_data
+        )
+    except Exception as e:
+        logger.error(f"Error getting cache performance: {e}")
+        return ETLResponse(
+            success=False,
+            message=f"Error retrieving cache performance: {str(e)}"
         )

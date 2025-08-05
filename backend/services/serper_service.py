@@ -13,6 +13,10 @@ from loguru import logger
 from pydantic import BaseModel, HttpUrl
 
 from config.settings import settings
+from services.unified_cache import (
+    cache_api_response, get_cached_response, cache_null_response, 
+    is_null_cached, DataSource
+)
 
 
 class SearchResult(BaseModel):
@@ -63,7 +67,41 @@ class SerperService:
     async def search_web(self, query: str, num_results: int = 20, 
                         country: Optional[str] = None, 
                         date_range: Optional[str] = None) -> SerperSearchResponse:
-        """Perform web search using Serper"""
+        """Perform web search using Serper (with caching)"""
+        
+        # Create cache parameters
+        cache_params = {
+            'query': query,
+            'num_results': num_results,
+            'country': country,
+            'date_range': date_range,
+            'search_type': 'web'
+        }
+        
+        # Check cache first
+        try:
+            cached_response = await get_cached_response(DataSource.SERPER, cache_params)
+            if cached_response:
+                logger.info(f"Using cached Serper web search for: {query}")
+                return SerperSearchResponse(**cached_response)
+        except Exception as e:
+            logger.warning(f"Error checking Serper cache: {e}")
+        
+        # Check if null cached
+        try:
+            if await is_null_cached(DataSource.SERPER, cache_params):
+                logger.info(f"Serper web search cached as null: {query}")
+                return SerperSearchResponse(
+                    query=query,
+                    results=[],
+                    total_results=0,
+                    search_time=0.0,
+                    timestamp=datetime.now(),
+                    search_type="web"
+                )
+        except Exception as e:
+            logger.warning(f"Error checking null cache: {e}")
+        
         try:
             payload = {
                 "q": query,
@@ -79,28 +117,58 @@ class SerperService:
             async with self.session.post(f"{self.base_url}/search", json=payload) as response:
                 if response.status == 200:
                     data = await response.json()
-                    return self.parse_web_results(query, data)
-                else:
-                    logger.error(f"Serper web search error: {response.status}")
-                    return SerperSearchResponse(
-                        query=query,
-                        results=[],
-                        total_results=0,
-                        search_time=0.0,
-                        timestamp=datetime.now(),
-                        search_type="web"
-                    )
+                    search_response = self.parse_web_results(query, data)
                     
+                    # Cache successful response
+                    if search_response.results:
+                        # Cache for 12 hours if we have results
+                        await cache_api_response(DataSource.SERPER, cache_params, 
+                                               search_response.dict(), 12.0)
+                        logger.info(f"Cached Serper web search with {len(search_response.results)} results")
+                    else:
+                        # Cache null result for 6 hours if no results
+                        await cache_null_response(DataSource.SERPER, cache_params, 
+                                                "no_results", 6.0)
+                        logger.info(f"Cached null Serper result for query: {query}")
+                    
+                    return search_response
+                elif response.status == 429:
+                    # Rate limited - cache for shorter period
+                    await cache_null_response(DataSource.SERPER, cache_params, 
+                                            "rate_limited", 0.5)  # 30 minutes
+                    logger.error(f"Serper web search rate limited: {response.status}")
+                else:
+                    # Other API errors - cache for short period
+                    await cache_null_response(DataSource.SERPER, cache_params, 
+                                            "api_error", 1.0)  # 1 hour
+                    logger.error(f"Serper web search error: {response.status}")
+                
+                return SerperSearchResponse(
+                    query=query,
+                    results=[],
+                    total_results=0,
+                    search_time=0.0,
+                    timestamp=datetime.now(),
+                    search_type="web"
+                )
+                    
+        except aiohttp.ClientError as e:
+            # Network errors - cache for short period
+            await cache_null_response(DataSource.SERPER, cache_params, 
+                                    "network_error", 0.5)  # 30 minutes
+            logger.error(f"Serper network error: {e}")
         except Exception as e:
             logger.error(f"Error in web search: {e}")
-            return SerperSearchResponse(
-                query=query,
-                results=[],
-                total_results=0,
-                search_time=0.0,
-                timestamp=datetime.now(),
-                search_type="web"
-            )
+        
+        # Return empty response
+        return SerperSearchResponse(
+            query=query,
+            results=[],
+            total_results=0,
+            search_time=0.0,
+            timestamp=datetime.now(),
+            search_type="web"
+        )
     
     async def search_news(self, query: str, num_results: int = 20,
                          days_back: int = 30) -> SerperSearchResponse:
