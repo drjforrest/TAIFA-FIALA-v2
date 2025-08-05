@@ -1,29 +1,28 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import Link from "next/link";
-import { useParams } from "next/navigation";
+import PineconeAssistantChat from "@/components/Chat/PineconeAssistantChat";
+import { Section1Text } from "@/components/ui/adaptive-text";
 import {
+  AlertCircle,
   ArrowLeft,
-  MapPin,
+  Building2,
   Calendar,
-  Users,
-  ExternalLink,
   CheckCircle,
   Clock,
-  AlertCircle,
-  Building2,
-  Tag,
-  Zap,
-  TrendingUp,
-  Globe,
   DollarSign,
-  MessageCircle,
+  ExternalLink,
   FileText,
+  Globe,
   Info,
+  MapPin,
+  MessageCircle,
+  Tag,
+  TrendingUp,
+  Users
 } from "lucide-react";
-import { Section1Text } from "@/components/ui/adaptive-text";
-import PineconeAssistantChat from "@/components/Chat/PineconeAssistantChat";
+import Link from "next/link";
+import { useParams } from "next/navigation";
+import { useEffect, useState } from "react";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 
   (process.env.NODE_ENV === 'production' 
@@ -75,7 +74,7 @@ interface Innovation {
 
 export default function InnovationDetailPage() {
   const params = useParams();
-  const id = params.id as string;
+  const id = params?.id as string;
   
   const [innovation, setInnovation] = useState<Innovation | null>(null);
   const [loading, setLoading] = useState(true);
@@ -83,7 +82,7 @@ export default function InnovationDetailPage() {
   const [activeTab, setActiveTab] = useState<'overview' | 'details' | 'chat'>('overview');
 
   useEffect(() => {
-    if (!id) return;
+    if (!params || !id) return;
 
     const fetchInnovation = async () => {
       try {
@@ -160,6 +159,38 @@ export default function InnovationDetailPage() {
     }
   };
 
+
+  // Handle case where params is null (can happen in Next.js 13+ app router)
+  if (!params || !id) {
+    return (
+      <div className="min-h-screen" style={{ backgroundColor: "var(--color-background)" }}>
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-6">
+            <div className="flex items-center">
+              <AlertCircle className="h-6 w-6 text-yellow-600 dark:text-yellow-400 mr-3" />
+              <div>
+                <h3 className="text-lg font-medium text-yellow-800 dark:text-yellow-200">
+                  Invalid Innovation ID
+                </h3>
+                <p className="text-yellow-600 dark:text-yellow-400 mt-1">
+                  The innovation ID is missing or invalid.
+                </p>
+              </div>
+            </div>
+            <div className="mt-4">
+              <Link
+                href="/innovations"
+                className="inline-flex items-center px-4 py-2 bg-yellow-600 hover:bg-yellow-700 text-white rounded-lg transition-colors"
+              >
+                <ArrowLeft className="h-4 w-4 mr-2" />
+                Back to Innovations
+              </Link>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   if (loading) {
     return (
