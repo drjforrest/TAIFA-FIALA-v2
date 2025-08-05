@@ -1207,7 +1207,8 @@ export default function DashboardStats() {
               <Section3Text
                 as="p"
                 variant="paragraph"
-                className="text-lg max-w-2xl mx-auto"
+                className="text-lg max-w-2xl mx-auto opacity-70"
+                style={{ color: "var(--color-card-foreground)" }}
               >
                 Live feed of African AI research publications and academic papers
               </Section3Text>
