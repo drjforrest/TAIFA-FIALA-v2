@@ -21,7 +21,7 @@ from dataclasses import dataclass, asdict
 from enum import Enum
 import time
 
-import aioredis
+import redis.asyncio as aioredis
 from loguru import logger
 from cachetools import TTLCache
 

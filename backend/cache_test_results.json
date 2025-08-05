@@ -1,0 +1,29 @@
+{
+  "timestamp": "2025-08-05T14:09:11.017107",
+  "total_tests": 5,
+  "passed_tests": 4,
+  "failed_tests": 1,
+  "success_rate": 80.0,
+  "results": [
+    {
+      "test": "Unified Cache",
+      "passed": true
+    },
+    {
+      "test": "Null Result Cache",
+      "passed": true
+    },
+    {
+      "test": "Cache Performance",
+      "passed": true
+    },
+    {
+      "test": "Cache Compression",
+      "passed": true
+    },
+    {
+      "test": "Cache TTL",
+      "passed": false
+    }
+  ]
+}

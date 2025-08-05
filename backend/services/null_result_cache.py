@@ -14,7 +14,7 @@ from typing import Dict, List, Any, Optional, Set, Tuple
 from dataclasses import dataclass, asdict
 from enum import Enum
 
-import aioredis
+import redis.asyncio as aioredis
 from loguru import logger
 
 from config.settings import settings

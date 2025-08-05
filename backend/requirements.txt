@@ -26,3 +26,6 @@ anthropic
 sentence-transformers
 litellm
 torch
+aioredis
+cachetools
+pickle5
