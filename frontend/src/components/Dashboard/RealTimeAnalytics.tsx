@@ -42,7 +42,6 @@ interface AnalyticsData {
     total_reports: number
     reports_this_week: number
     avg_confidence: number
-    top_insights: string[]
   }
 }
 
@@ -128,13 +127,7 @@ export default function RealTimeAnalytics() {
         enrichment_stats: {
           total_reports: 156,
           reports_this_week: 12,
-          avg_confidence: 0.87,
-          top_insights: [
-            'Healthcare AI dominates innovation pipeline',
-            'Nigeria leads in FinTech development',
-            'Cross-border collaboration increasing',
-            'Funding activity up 34% this quarter'
-          ]
+          avg_confidence: 0.87
         }
       }
       
@@ -428,27 +421,6 @@ export default function RealTimeAnalytics() {
         </div>
       </div>
 
-      {/* AI Insights Section */}
-      <div className="p-6 rounded-lg border" style={{ backgroundColor: "var(--color-card)", borderColor: "var(--color-border)" }}>
-        <div className="flex items-center justify-between mb-6">
-          <h3 className="text-lg font-semibold" style={{ color: "var(--color-card-foreground)" }}>
-            Latest AI Insights
-          </h3>
-          <Zap className="h-5 w-5" style={{ color: "var(--color-primary)" }} />
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {data.enrichment_stats.top_insights.map((insight, index) => (
-            <div key={index} className="flex items-start space-x-3 p-4 rounded-lg" style={{ backgroundColor: "var(--color-muted)" }}>
-              <div className="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold" style={{ backgroundColor: "var(--color-primary)", color: "var(--color-primary-foreground)" }}>
-                {index + 1}
-              </div>
-              <p className="text-sm" style={{ color: "var(--color-card-foreground)" }}>
-                {insight}
-              </p>
-            </div>
-          ))}
-        </div>
-      </div>
     </div>
   )
 }

@@ -858,30 +858,32 @@ export default function DashboardStats() {
                 borderColor: "var(--color-border)",
               }}
             >
-              {/* "Please Wait" HUD Overlay */}
-              <div
-                className="absolute inset-0 bg-gradient-to-br from-orange-500/10 to-yellow-500/10 rounded-lg flex items-center justify-center backdrop-blur-sm"
-                style={{
-                  backgroundColor: "rgba(251, 146, 60, 0.05)",
-                  backdropFilter: "blur(2px)",
-                }}
-              >
+              {/* "Please Wait" HUD Overlay - Only show when enrichment is active and processing */}
+              {etlStatus?.enrichment_pipeline_active && etlLoading && (
                 <div
-                  className="text-center p-4 rounded-lg border-2 border-dashed"
+                  className="absolute inset-0 bg-gradient-to-br from-orange-500/10 to-yellow-500/10 rounded-lg flex items-center justify-center backdrop-blur-sm"
                   style={{
-                    borderColor: "var(--color-orange-500)",
-                    backgroundColor: "rgba(251, 146, 60, 0.1)",
+                    backgroundColor: "rgba(251, 146, 60, 0.05)",
+                    backdropFilter: "blur(2px)",
                   }}
                 >
-                  <Clock className="h-8 w-8 mx-auto mb-2" style={{ color: "var(--color-orange-500)" }} />
-                  <p className="text-sm font-medium" style={{ color: "var(--color-orange-500)" }}>
-                    Please Wait Patiently
-                  </p>
-                  <p className="text-xs mt-1" style={{ color: "var(--color-muted-foreground)" }}>
-                    Come back later for results
-                  </p>
+                  <div
+                    className="text-center p-4 rounded-lg border-2 border-dashed"
+                    style={{
+                      borderColor: "var(--color-orange-500)",
+                      backgroundColor: "rgba(251, 146, 60, 0.1)",
+                    }}
+                  >
+                    <Clock className="h-8 w-8 mx-auto mb-2" style={{ color: "var(--color-orange-500)" }} />
+                    <p className="text-sm font-medium" style={{ color: "var(--color-orange-500)" }}>
+                      Please Wait Patiently
+                    </p>
+                    <p className="text-xs mt-1" style={{ color: "var(--color-muted-foreground)" }}>
+                      Processing enrichment...
+                    </p>
+                  </div>
                 </div>
-              </div>
+              )}
 
               <div className="flex items-center justify-between mb-4">
                 <h3
