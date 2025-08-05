@@ -38,6 +38,10 @@ interface Innovation {
   verification_status: "verified" | "pending" | "community";
   visibility: "public" | "private";
   country?: string;
+  website_url?: string;
+  github_url?: string;
+  demo_url?: string;
+  source_url?: string;
   organizations?: Array<{
     id: string;
     name: string;
@@ -754,15 +758,15 @@ export default function ExploreDataPage() {
                         </div>
                         <div 
                           className="flex items-center space-x-4 text-sm mb-3"
-                          style={{ color: "var(--color-muted-foreground)" }}
+                          style={{ color: "var(--color-card-foreground)" }}
                         >
                           {innovation.country && (
-                            <span className="flex items-center">
+                            <span className="flex items-center" style={{ color: "var(--color-muted-foreground)" }}>
                               <MapPin className="h-4 w-4 mr-1" />
                               {innovation.country}
                             </span>
                           )}
-                          <span className="flex items-center">
+                          <span className="flex items-center" style={{ color: "var(--color-muted-foreground)" }}>
                             <Calendar className="h-4 w-4 mr-1" />
                             {new Date(
                               innovation.creation_date,
@@ -855,17 +859,84 @@ export default function ExploreDataPage() {
                       </div>
                     )}
 
+                    {/* Links Section */}
+                    {(innovation.website_url || innovation.github_url || innovation.demo_url || innovation.source_url || (innovation.publications && innovation.publications.length > 0)) && (
+                      <div className="flex flex-wrap gap-2 mb-4">
+                        {innovation.website_url && (
+                          <a 
+                            href={innovation.website_url} 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center px-2 py-1 text-xs bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400 rounded-md hover:opacity-80 transition-opacity"
+                          >
+                            <Globe className="h-3 w-3 mr-1" />
+                            Website
+                          </a>
+                        )}
+                        {innovation.github_url && (
+                          <a 
+                            href={innovation.github_url} 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center px-2 py-1 text-xs bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400 rounded-md hover:opacity-80 transition-opacity"
+                          >
+                            <ExternalLink className="h-3 w-3 mr-1" />
+                            GitHub
+                          </a>
+                        )}
+                        {innovation.demo_url && (
+                          <a 
+                            href={innovation.demo_url} 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center px-2 py-1 text-xs bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400 rounded-md hover:opacity-80 transition-opacity"
+                          >
+                            <ExternalLink className="h-3 w-3 mr-1" />
+                            Demo
+                          </a>
+                        )}
+                        {innovation.publications && innovation.publications.length > 0 && (
+                          <div className="flex items-center space-x-1">
+                            {innovation.publications.slice(0, 2).map((pub, pubIndex) => (
+                              <a
+                                key={pubIndex}
+                                href={pub.url || '#'}
+                                target={pub.url ? "_blank" : undefined}
+                                rel={pub.url ? "noopener noreferrer" : undefined}
+                                className={`inline-flex items-center px-2 py-1 text-xs rounded-md transition-opacity ${
+                                  pub.url 
+                                    ? 'bg-purple-100 text-purple-800 dark:bg-purple-900/20 dark:text-purple-400 hover:opacity-80 cursor-pointer'
+                                    : 'bg-gray-100 text-gray-600 dark:bg-gray-900/20 dark:text-gray-500 cursor-default'
+                                }`}
+                              >
+                                <ExternalLink className="h-3 w-3 mr-1" />
+                                {pub.publication_type}
+                              </a>
+                            ))}
+                            {innovation.publications.length > 2 && (
+                              <span className="text-xs text-gray-500 dark:text-gray-400">
+                                +{innovation.publications.length - 2} more
+                              </span>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    )}
+
                     {/* Footer with CTA */}
                     <div className="flex items-center justify-between pt-4 border-t border-gray-200 dark:border-gray-700">
                       <div className="flex items-center space-x-2">
-                        {innovation.publications &&
-                          innovation.publications.length > 0 && (
-                            <span className="flex items-center text-xs text-gray-500 dark:text-gray-400">
-                              <ExternalLink className="h-3 w-3 mr-1" />
-                              {innovation.publications.length} publication
-                              {innovation.publications.length !== 1 ? "s" : ""}
-                            </span>
-                          )}
+                        {innovation.source_url && (
+                          <a 
+                            href={innovation.source_url} 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className="flex items-center text-xs text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
+                          >
+                            <ExternalLink className="h-3 w-3 mr-1" />
+                            Source
+                          </a>
+                        )}
                       </div>
                       <Link
                         href={`/innovations/${innovation.id}`}

@@ -1,11 +1,9 @@
 import {
   Section1Text,
   Section2Text,
-  Section3Text,
   Section4Text,
 } from "@/components/ui/adaptive-text";
 import {
-  Button,
   Card,
   CardContent,
   CardHeader,
@@ -113,7 +111,7 @@ export default function AboutPage() {
             <div className="flex flex-wrap justify-center gap-6 md:gap-8">
               <div className="text-center">
                 <div
-                  className="w-12 h-12 rounded-2xl flex items-center justify-center mx-auto mb-3"
+                  className="w-12 h-12 rounded-4xl flex items-center justify-center mx-auto mb-3"
                   style={{
                     backgroundColor: "var(--color-accent)",
                     color: "var(--color-accent-foreground)",
@@ -127,7 +125,7 @@ export default function AboutPage() {
               </div>
               <div className="text-center">
                 <div
-                  className="w-12 h-12 rounded-2xl flex items-center justify-center mx-auto mb-3"
+                  className="w-12 h-12 rounded-4xl flex items-center justify-center mx-auto mb-3"
                   style={{
                     backgroundColor: "var(--color-info)",
                     color: "var(--color-info-foreground)",
@@ -141,10 +139,10 @@ export default function AboutPage() {
               </div>
               <div className="text-center">
                 <div
-                  className="w-12 h-12 rounded-2xl flex items-center justify-center mx-auto mb-3"
+                  className="w-12 h-12 rounded-4xl flex items-center justify-center mx-auto mb-3"
                   style={{
-                    backgroundColor: "var(--color-secondary)",
-                    color: "var(--color-secondary-foreground)",
+                    backgroundColor: "var(--color-primary)",
+                    color: "var(--color-primary-foreground)",
                   }}
                 >
                   <Award className="h-6 w-6" />

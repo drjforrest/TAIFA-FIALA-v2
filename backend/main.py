@@ -31,6 +31,8 @@ except ImportError:
         return []
 from etl.academic.arxiv_scraper import scrape_arxiv_papers
 from etl.news.rss_monitor import monitor_rss_feeds
+from services.ai_backfill_service import ai_backfill_service, create_backfill_jobs_for_innovations
+from services.integration_guide import backfill_integration
 
 
 # Initialize limiter
@@ -204,7 +206,7 @@ async def test_database_connection():
 
 # Innovation Endpoints
 @app.get("/api/innovations")
-@limiter.limit("30/minute")
+@limiter.limit("120/minute")
 async def get_innovations(
     request: Request,
     query: Optional[str] = None,
@@ -410,7 +412,11 @@ async def get_innovations(
                 "fundings": innovation_data.get("fundings", []),
                 "publications": innovation_data.get("publications", []),
                 "tags": innovation_data.get("tags", []),
-                "impact_metrics": innovation_data.get("impact_metrics", {})
+                "impact_metrics": innovation_data.get("impact_metrics", {}),
+                "website_url": innovation_data.get("website_url"),
+                "github_url": innovation_data.get("github_url"),
+                "demo_url": innovation_data.get("demo_url"),
+                "source_url": innovation_data.get("source_url")
             }
             
             # Add search-specific metadata for search results
@@ -473,7 +479,11 @@ async def get_innovation(request: Request, innovation_id: UUID):
             "fundings": innovation_data.get("fundings", []),
             "publications": innovation_data.get("publications", []),
             "tags": innovation_data.get("tags", []),
-            "impact_metrics": innovation_data.get("impact_metrics", {})
+            "impact_metrics": innovation_data.get("impact_metrics", {}),
+            "website_url": innovation_data.get("website_url"),
+            "github_url": innovation_data.get("github_url"),
+            "demo_url": innovation_data.get("demo_url"),
+            "source_url": innovation_data.get("source_url")
         }
         
     except HTTPException:
@@ -1130,6 +1140,148 @@ async def test_search_quality(
         raise HTTPException(status_code=500, detail="Failed to test search quality")
 
 
+# AI Backfill Endpoints
+@app.post("/api/ai-backfill/trigger")
+@limiter.limit("5/minute")
+async def trigger_ai_backfill(
+    request: Request,
+    background_tasks: BackgroundTasks,
+    innovation_ids: Optional[List[str]] = None,
+    max_jobs: int = Query(10, ge=1, le=50, description="Maximum number of jobs to process")
+):
+    """Manually trigger AI backfill for specific innovations or all pending"""
+    try:
+        job_id = str(uuid4())
+        
+        # Add background task
+        background_tasks.add_task(
+            run_ai_backfill_job,
+            job_id,
+            innovation_ids,
+            max_jobs
+        )
+        
+        logger.info(f"AI backfill triggered: job_id={job_id}, max_jobs={max_jobs}")
+        
+        return {
+            "job_id": job_id,
+            "status": "started",
+            "message": f"AI backfill started for up to {max_jobs} innovations",
+            "innovation_ids": innovation_ids
+        }
+        
+    except Exception as e:
+        logger.error(f"Error triggering AI backfill: {e}")
+        raise HTTPException(status_code=500, detail="Failed to trigger AI backfill")
+
+
+@app.post("/api/ai-backfill/innovation/{innovation_id}")
+@limiter.limit("10/minute")
+async def backfill_single_innovation(
+    innovation_id: str,
+    request: Request,
+    background_tasks: BackgroundTasks
+):
+    """Trigger AI backfill for a specific innovation"""
+    try:
+        # Get innovation from database
+        from config.database import get_supabase
+        supabase = get_supabase()
+        
+        response = supabase.table('innovations').select('*').eq('id', innovation_id).execute()
+        
+        if not response.data:
+            raise HTTPException(status_code=404, detail="Innovation not found")
+        
+        innovation = response.data[0]
+        job_id = str(uuid4())
+        
+        # Add background task for single innovation
+        background_tasks.add_task(
+            run_single_innovation_backfill,
+            job_id,
+            innovation
+        )
+        
+        logger.info(f"Single innovation backfill triggered: job_id={job_id}, innovation_id={innovation_id}")
+        
+        return {
+            "job_id": job_id,
+            "status": "started",
+            "innovation_id": innovation_id,
+            "innovation_title": innovation.get('title'),
+            "message": "AI backfill started for innovation"
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error triggering single innovation backfill: {e}")
+        raise HTTPException(status_code=500, detail="Failed to trigger innovation backfill")
+
+
+@app.get("/api/ai-backfill/status")
+@limiter.limit("30/minute")
+async def get_backfill_status(request: Request):
+    """Get current AI backfill system status"""
+    try:
+        from services.integration_guide import get_ai_backfill_system_status
+        
+        status = get_ai_backfill_system_status()
+        
+        return {
+            "status": "operational",
+            "backfill_system": status,
+            "timestamp": datetime.now().isoformat()
+        }
+        
+    except Exception as e:
+        logger.error(f"Error getting backfill status: {e}")
+        raise HTTPException(status_code=500, detail="Failed to get backfill status")
+
+
+@app.get("/api/ai-backfill/stats")
+@limiter.limit("20/minute")  
+async def get_backfill_stats(request: Request):
+    """Get AI backfill service statistics"""
+    try:
+        stats = ai_backfill_service.get_backfill_stats()
+        
+        return {
+            "service_stats": stats,
+            "timestamp": datetime.now().isoformat()
+        }
+        
+    except Exception as e:
+        logger.error(f"Error getting backfill stats: {e}")
+        raise HTTPException(status_code=500, detail="Failed to get backfill stats")
+
+
+@app.post("/api/ai-backfill/schedule")
+@limiter.limit("2/minute")
+async def update_backfill_schedule(
+    request: Request,
+    interval_hours: int = Query(3, ge=1, le=24, description="Backfill interval in hours")
+):
+    """Update the AI backfill schedule interval"""
+    try:
+        from datetime import timedelta
+        
+        backfill_integration.backfill_interval = timedelta(hours=interval_hours)
+        
+        logger.info(f"Updated AI backfill interval to {interval_hours} hours")
+        
+        return {
+            "status": "updated",
+            "interval_hours": interval_hours,
+            "message": f"AI backfill will now run every {interval_hours} hours"
+        }
+        
+    except Exception as e:
+        logger.error(f"Error updating backfill schedule: {e}")
+        raise HTTPException(status_code=500, detail="Failed to update backfill schedule")
+
+
 @app.post("/api/vector/rebuild")
 @limiter.limit("2/hour")  # Very limited - this is an expensive operation
 async def trigger_vector_rebuild(
@@ -1159,6 +1311,157 @@ async def trigger_vector_rebuild(
     except Exception as e:
         logger.error(f"Error triggering vector rebuild: {e}")
         raise HTTPException(status_code=500, detail="Failed to trigger vector rebuild")
+
+
+async def run_ai_backfill_job(job_id: str, innovation_ids: Optional[List[str]], max_jobs: int):
+    """Run AI backfill job in background"""
+    try:
+        logger.info(f"Starting AI backfill job {job_id}, max_jobs={max_jobs}")
+        
+        if innovation_ids:
+            # Backfill specific innovations
+            from config.database import get_supabase
+            supabase = get_supabase()
+            
+            innovations = []
+            for innovation_id in innovation_ids:
+                response = supabase.table('innovations').select('*').eq('id', innovation_id).execute()
+                if response.data:
+                    innovations.extend(response.data)
+            
+            if innovations:
+                jobs = await create_backfill_jobs_for_innovations(innovations)
+                processed_jobs = await ai_backfill_service.run_scheduled_backfill(max_jobs=min(max_jobs, len(jobs)))
+                
+                # Apply results to database
+                await apply_backfill_results_to_database(processed_jobs)
+                
+                logger.info(f"AI backfill job {job_id} completed: {len(processed_jobs)} jobs processed")
+            else:
+                logger.warning(f"AI backfill job {job_id}: No innovations found for specified IDs")
+        else:
+            # Run scheduled backfill
+            result = await backfill_integration.run_scheduled_backfill()
+            logger.info(f"AI backfill job {job_id} completed: {result}")
+        
+    except Exception as e:
+        logger.error(f"AI backfill job {job_id} failed: {e}")
+
+
+async def run_single_innovation_backfill(job_id: str, innovation: dict):
+    """Run AI backfill for a single innovation"""
+    try:
+        logger.info(f"Starting single innovation backfill job {job_id} for {innovation.get('title')}")
+        
+        # Create backfill job for single innovation
+        job = await ai_backfill_service.create_backfill_job(innovation)
+        
+        if job:
+            # Process the job
+            processed_job = await ai_backfill_service.process_backfill_job(job)
+            
+            # Apply results to database
+            if processed_job.status.value == 'completed':
+                await apply_single_backfill_result_to_database(processed_job)
+                logger.info(f"Single innovation backfill job {job_id} completed successfully")
+            else:
+                logger.warning(f"Single innovation backfill job {job_id} failed: {processed_job.error_message}")
+        else:
+            logger.info(f"Single innovation backfill job {job_id}: No backfill needed for {innovation.get('title')}")
+        
+    except Exception as e:
+        logger.error(f"Single innovation backfill job {job_id} failed: {e}")
+
+
+async def apply_backfill_results_to_database(processed_jobs):
+    """Apply multiple backfill results to database"""
+    from config.database import get_supabase
+    supabase = get_supabase()
+    
+    for job in processed_jobs:
+        if job.status.value == 'completed' and job.results:
+            try:
+                updates = await create_database_updates_from_backfill_job(job)
+                if updates:
+                    response = supabase.table('innovations').update(updates).eq('id', job.innovation_id).execute()
+                    if response.data:
+                        logger.info(f"Applied backfill updates for innovation {job.innovation_id}")
+            except Exception as e:
+                logger.error(f"Error applying backfill for {job.innovation_id}: {e}")
+
+
+async def apply_single_backfill_result_to_database(job):
+    """Apply single backfill result to database"""
+    from config.database import get_supabase
+    supabase = get_supabase()
+    
+    try:
+        updates = await create_database_updates_from_backfill_job(job)
+        if updates:
+            response = supabase.table('innovations').update(updates).eq('id', job.innovation_id).execute()
+            if response.data:
+                logger.info(f"Applied single backfill updates for innovation {job.innovation_id}")
+    except Exception as e:
+        logger.error(f"Error applying single backfill for {job.innovation_id}: {e}")
+
+
+async def create_database_updates_from_backfill_job(job) -> dict:
+    """Convert backfill job results to database update format"""
+    updates = {}
+    
+    for field_name, result in job.results.items():
+        if isinstance(result, dict) and 'error' not in result:
+            confidence = result.get('confidence_score', 0.0)
+            if confidence < 0.6:
+                continue
+            
+            value = result.get('new_value')
+            if not value:
+                continue
+            
+            # Map field names to database columns
+            if field_name == 'funding_amount' and isinstance(value, dict):
+                # Add to existing fundings array or create new one
+                funding_data = {
+                    'amount': value.get('amount'),
+                    'currency': value.get('currency', 'USD'),
+                    'funding_type': 'ai_backfilled',
+                    'funder_name': 'AI Discovered',
+                    'verified': False
+                }
+                updates['fundings'] = [funding_data]
+            
+            elif field_name == 'website_url':
+                updates['website_url'] = value
+            
+            elif field_name == 'github_url':
+                updates['github_url'] = value
+            
+            elif field_name == 'demo_url':
+                updates['demo_url'] = value
+            
+            elif field_name == 'key_team_members' and isinstance(value, dict):
+                team_data = []
+                for member in value.get('team_members', []):
+                    team_data.append({
+                        'name': member,
+                        'role': 'ai_discovered',
+                        'country': None
+                    })
+                updates['individuals'] = team_data
+            
+            elif field_name == 'user_metrics' and isinstance(value, dict):
+                updates['impact_metrics'] = value
+    
+    # Add metadata about the AI backfill
+    if updates:
+        updates['ai_backfill_metadata'] = {
+            'last_backfill': datetime.now().isoformat(),
+            'backfill_version': '1.0',
+            'requires_human_review': True
+        }
+    
+    return updates
 
 
 async def run_vector_rebuild(job_id: str, document_types: List[str]):

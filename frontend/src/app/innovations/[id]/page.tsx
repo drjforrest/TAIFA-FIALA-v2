@@ -36,6 +36,10 @@ interface Innovation {
   verification_status: "verified" | "pending" | "community";
   visibility: "public" | "private";
   country?: string;
+  website_url?: string;
+  github_url?: string;
+  demo_url?: string;
+  source_url?: string;
   organizations?: Array<{
     id: string;
     name: string;
@@ -290,6 +294,79 @@ export default function InnovationDetailPage() {
               </div>
             </div>
 
+            {/* Links & Resources */}
+            {(innovation.website_url || innovation.github_url || innovation.demo_url || innovation.source_url) && (
+              <div 
+                className="rounded-lg border p-6"
+                style={{ 
+                  backgroundColor: "var(--color-card)",
+                  borderColor: "var(--color-border)"
+                }}
+              >
+                <h2 className="text-xl font-semibold mb-4" style={{ color: "var(--color-card-foreground)" }}>
+                  Links & Resources
+                </h2>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {innovation.website_url && (
+                    <a 
+                      href={innovation.website_url} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="flex items-center p-3 rounded-lg border border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-900/10 hover:bg-blue-100 dark:hover:bg-blue-900/20 transition-colors"
+                    >
+                      <Globe className="h-5 w-5 text-blue-600 dark:text-blue-400 mr-3" />
+                      <div>
+                        <div className="font-medium text-blue-800 dark:text-blue-300">Website</div>
+                        <div className="text-sm text-blue-600 dark:text-blue-400">Visit project website</div>
+                      </div>
+                    </a>
+                  )}
+                  {innovation.github_url && (
+                    <a 
+                      href={innovation.github_url} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="flex items-center p-3 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/10 hover:bg-gray-100 dark:hover:bg-gray-900/20 transition-colors"
+                    >
+                      <ExternalLink className="h-5 w-5 text-gray-600 dark:text-gray-400 mr-3" />
+                      <div>
+                        <div className="font-medium text-gray-800 dark:text-gray-300">GitHub</div>
+                        <div className="text-sm text-gray-600 dark:text-gray-400">View source code</div>
+                      </div>
+                    </a>
+                  )}
+                  {innovation.demo_url && (
+                    <a 
+                      href={innovation.demo_url} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="flex items-center p-3 rounded-lg border border-green-200 dark:border-green-800 bg-green-50 dark:bg-green-900/10 hover:bg-green-100 dark:hover:bg-green-900/20 transition-colors"
+                    >
+                      <ExternalLink className="h-5 w-5 text-green-600 dark:text-green-400 mr-3" />
+                      <div>
+                        <div className="font-medium text-green-800 dark:text-green-300">Live Demo</div>
+                        <div className="text-sm text-green-600 dark:text-green-400">Try the application</div>
+                      </div>
+                    </a>
+                  )}
+                  {innovation.source_url && (
+                    <a 
+                      href={innovation.source_url} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="flex items-center p-3 rounded-lg border border-purple-200 dark:border-purple-800 bg-purple-50 dark:bg-purple-900/10 hover:bg-purple-100 dark:hover:bg-purple-900/20 transition-colors"
+                    >
+                      <ExternalLink className="h-5 w-5 text-purple-600 dark:text-purple-400 mr-3" />
+                      <div>
+                        <div className="font-medium text-purple-800 dark:text-purple-300">Original Source</div>
+                        <div className="text-sm text-purple-600 dark:text-purple-400">View original article</div>
+                      </div>
+                    </a>
+                  )}
+                </div>
+              </div>
+            )}
+
             {/* Publications */}
             {innovation.publications && innovation.publications.length > 0 && (
               <div 
@@ -306,13 +383,31 @@ export default function InnovationDetailPage() {
                   {innovation.publications.map((publication, index) => (
                     <div key={index} className="flex items-start space-x-3">
                       <ExternalLink className="h-4 w-4 mt-1 text-blue-600" />
-                      <div>
-                        <h3 className="font-medium" style={{ color: "var(--color-card-foreground)" }}>
-                          {publication.title}
-                        </h3>
-                        <p className="text-sm" style={{ color: "var(--color-muted-foreground)" }}>
-                          {publication.publication_type}
-                        </p>
+                      <div className="flex-1">
+                        {publication.url ? (
+                          <a
+                            href={publication.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="block hover:opacity-80 transition-opacity"
+                          >
+                            <h3 className="font-medium text-blue-600 dark:text-blue-400 hover:underline" style={{ color: "var(--color-primary)" }}>
+                              {publication.title}
+                            </h3>
+                            <p className="text-sm" style={{ color: "var(--color-muted-foreground)" }}>
+                              {publication.publication_type}
+                            </p>
+                          </a>
+                        ) : (
+                          <div>
+                            <h3 className="font-medium" style={{ color: "var(--color-card-foreground)" }}>
+                              {publication.title}
+                            </h3>
+                            <p className="text-sm" style={{ color: "var(--color-muted-foreground)" }}>
+                              {publication.publication_type}
+                            </p>
+                          </div>
+                        )}
                       </div>
                     </div>
                   ))}
