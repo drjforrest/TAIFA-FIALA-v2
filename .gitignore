@@ -60,6 +60,8 @@ coverage.xml
 .mypy_cache/
 .dmypy.json
 dmypy.json
+.ropeproject
+tests/
 
 # Virtual environments
 venv/
@@ -116,7 +118,6 @@ database.sqlite
 *.accdb
 
 # Logs
-logs/
 *.log
 npm-debug.log*
 yarn-debug.log*
@@ -200,3 +201,8 @@ Dockerfile.prod
 .AppleDouble
 .LSOverride
 Icon
+
+# Personal proferences
+tests/
+logs/
+replacements.txt
