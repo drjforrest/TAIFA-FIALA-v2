@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts'
 import { TrendingUp, FileText, Users, Globe, Lightbulb, Zap, RefreshCw, Activity } from 'lucide-react'
 import { Section3Text } from '@/components/ui/adaptive-text'
-import PublicationsTable from '@/components/Dashboard/PublicationsTable'
+import EnrichmentResultsTable from '@/components/Dashboard/EnrichmentResultsTable'
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
 
@@ -221,7 +221,7 @@ export default function RealTimeAnalytics() {
           <Section3Text as="h2" className="text-2xl font-bold">
             Real-time Innovation Analytics
           </Section3Text>
-          <p style={{ color: "var(--color-muted-foreground)" }} className="text-sm">
+          <p style={{ color: "var(--color-card-foreground)" }} className="text-sm opacity-70">
             Live insights into African AI innovation ecosystem
           </p>
         </div>
@@ -290,9 +290,9 @@ export default function RealTimeAnalytics() {
         </div>
       </div>
 
-      {/* Publications Table Section */}
+      {/* Enrichment Results Section */}
       <div className="mb-8">
-        <PublicationsTable />
+        <EnrichmentResultsTable />
       </div>
 
       {/* Charts Grid */}

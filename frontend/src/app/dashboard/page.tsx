@@ -1,6 +1,7 @@
 "use client";
 
 import RealTimeAnalytics from "@/components/Dashboard/RealTimeAnalytics";
+import PublicationsTable from "@/components/Dashboard/PublicationsTable";
 import {
   Section1Text,
   Section2Text,
@@ -13,12 +14,14 @@ import {
   BarChart3,
   Building2,
   CheckCircle,
+  Clock,
   Database,
   FileText,
   Globe,
   Hash,
   Play,
   RefreshCw,
+  Rss,
   TrendingUp,
   Users,
   XCircle,
@@ -27,7 +30,7 @@ import {
 import { useState } from "react";
 
 export default function DashboardStats() {
-  const [activeTab, setActiveTab] = useState<'monitoring' | 'analytics'>('monitoring');
+  const [activeTab, setActiveTab] = useState<'monitoring' | 'analytics' | 'rss'>('monitoring');
   const [feedbackMessage, setFeedbackMessage] = useState<{
     type: 'success' | 'error' | null;
     message: string;
@@ -355,17 +358,35 @@ export default function DashboardStats() {
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="border-b" style={{ borderColor: "var(--color-border)" }}>
-            <nav className="flex space-x-8">
+            <nav className="flex space-x-4">
               <button
                 onClick={() => setActiveTab('monitoring')}
-                className={`flex items-center py-4 px-1 border-b-2 font-medium text-sm transition-colors ${
-                  activeTab === 'monitoring'
-                    ? 'text-primary'
-                    : 'text-muted-foreground hover:text-foreground'
-                }`}
+                className="flex items-center transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-lg"
                 style={{
-                  borderBottomColor: activeTab === 'monitoring' ? 'var(--color-primary)' : 'transparent',
-                  color: activeTab === 'monitoring' ? 'var(--color-primary)' : 'var(--color-muted-foreground)',
+                  padding: "12px 20px",
+                  backgroundColor: activeTab === 'monitoring' ? 'var(--color-primary)' : 'var(--color-background)',
+                  color: activeTab === 'monitoring' ? 'var(--color-primary-foreground)' : '#9ca3af',
+                  border: `1px solid ${activeTab === 'monitoring' ? 'var(--color-primary)' : 'var(--color-border)'}`,
+                  borderRadius: "8px",
+                  fontSize: "14px",
+                  fontWeight: "500",
+                  boxShadow: activeTab === 'monitoring' ? "0 2px 6px rgba(0, 0, 0, 0.12)" : "0 1px 3px rgba(0, 0, 0, 0.1)",
+                  cursor: "pointer",
+                  outline: "none",
+                }}
+                onMouseEnter={(e) => {
+                  if (activeTab !== 'monitoring') {
+                    e.currentTarget.style.backgroundColor = 'var(--color-primary)';
+                    e.currentTarget.style.color = 'var(--color-primary-foreground)';
+                    e.currentTarget.style.borderColor = 'var(--color-primary)';
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (activeTab !== 'monitoring') {
+                    e.currentTarget.style.backgroundColor = 'var(--color-background)';
+                    e.currentTarget.style.color = '#9ca3af';
+                    e.currentTarget.style.borderColor = 'var(--color-border)';
+                  }
                 }}
               >
                 <Activity className="h-4 w-4 mr-2" />
@@ -373,18 +394,69 @@ export default function DashboardStats() {
               </button>
               <button
                 onClick={() => setActiveTab('analytics')}
-                className={`flex items-center py-4 px-1 border-b-2 font-medium text-sm transition-colors ${
-                  activeTab === 'analytics'
-                    ? 'text-primary'
-                    : 'text-muted-foreground hover:text-foreground'
-                }`}
+                className="flex items-center transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-lg"
                 style={{
-                  borderBottomColor: activeTab === 'analytics' ? 'var(--color-primary)' : 'transparent',
-                  color: activeTab === 'analytics' ? 'var(--color-primary)' : 'var(--color-muted-foreground)',
+                  padding: "12px 20px",
+                  backgroundColor: activeTab === 'analytics' ? 'var(--color-primary)' : 'var(--color-background)',
+                  color: activeTab === 'analytics' ? 'var(--color-primary-foreground)' : '#9ca3af',
+                  border: `1px solid ${activeTab === 'analytics' ? 'var(--color-primary)' : 'var(--color-border)'}`,
+                  borderRadius: "8px",
+                  fontSize: "14px",
+                  fontWeight: "500",
+                  boxShadow: activeTab === 'analytics' ? "0 2px 6px rgba(0, 0, 0, 0.12)" : "0 1px 3px rgba(0, 0, 0, 0.1)",
+                  cursor: "pointer",
+                  outline: "none",
+                }}
+                onMouseEnter={(e) => {
+                  if (activeTab !== 'analytics') {
+                    e.currentTarget.style.backgroundColor = 'var(--color-primary)';
+                    e.currentTarget.style.color = 'var(--color-primary-foreground)';
+                    e.currentTarget.style.borderColor = 'var(--color-primary)';
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (activeTab !== 'analytics') {
+                    e.currentTarget.style.backgroundColor = 'var(--color-background)';
+                    e.currentTarget.style.color = '#9ca3af';
+                    e.currentTarget.style.borderColor = 'var(--color-border)';
+                  }
                 }}
               >
                 <BarChart3 className="h-4 w-4 mr-2" />
                 Real-time Analytics
+              </button>
+              <button
+                onClick={() => setActiveTab('rss')}
+                className="flex items-center transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-lg"
+                style={{
+                  padding: "12px 20px",
+                  backgroundColor: activeTab === 'rss' ? 'var(--color-primary)' : 'var(--color-background)',
+                  color: activeTab === 'rss' ? 'var(--color-primary-foreground)' : '#9ca3af',
+                  border: `1px solid ${activeTab === 'rss' ? 'var(--color-primary)' : 'var(--color-border)'}`,
+                  borderRadius: "8px",
+                  fontSize: "14px",
+                  fontWeight: "500",
+                  boxShadow: activeTab === 'rss' ? "0 2px 6px rgba(0, 0, 0, 0.12)" : "0 1px 3px rgba(0, 0, 0, 0.1)",
+                  cursor: "pointer",
+                  outline: "none",
+                }}
+                onMouseEnter={(e) => {
+                  if (activeTab !== 'rss') {
+                    e.currentTarget.style.backgroundColor = 'var(--color-primary)';
+                    e.currentTarget.style.color = 'var(--color-primary-foreground)';
+                    e.currentTarget.style.borderColor = 'var(--color-primary)';
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (activeTab !== 'rss') {
+                    e.currentTarget.style.backgroundColor = 'var(--color-background)';
+                    e.currentTarget.style.color = '#9ca3af';
+                    e.currentTarget.style.borderColor = 'var(--color-border)';
+                  }
+                }}
+              >
+                <Rss className="h-4 w-4 mr-2" />
+                RSS Feed
               </button>
             </nav>
           </div>
@@ -780,12 +852,37 @@ export default function DashboardStats() {
 
             {/* AI Enrichment Pipeline */}
             <div
-              className="rounded-lg border p-6 hover:shadow-lg transition-all duration-300 ease-in-out"
+              className="rounded-lg border p-6 hover:shadow-lg transition-all duration-300 ease-in-out relative"
               style={{
                 backgroundColor: "var(--color-card)",
                 borderColor: "var(--color-border)",
               }}
             >
+              {/* "Please Wait" HUD Overlay */}
+              <div
+                className="absolute inset-0 bg-gradient-to-br from-orange-500/10 to-yellow-500/10 rounded-lg flex items-center justify-center backdrop-blur-sm"
+                style={{
+                  backgroundColor: "rgba(251, 146, 60, 0.05)",
+                  backdropFilter: "blur(2px)",
+                }}
+              >
+                <div
+                  className="text-center p-4 rounded-lg border-2 border-dashed"
+                  style={{
+                    borderColor: "var(--color-orange-500)",
+                    backgroundColor: "rgba(251, 146, 60, 0.1)",
+                  }}
+                >
+                  <Clock className="h-8 w-8 mx-auto mb-2" style={{ color: "var(--color-orange-500)" }} />
+                  <p className="text-sm font-medium" style={{ color: "var(--color-orange-500)" }}>
+                    Please Wait Patiently
+                  </p>
+                  <p className="text-xs mt-1" style={{ color: "var(--color-muted-foreground)" }}>
+                    Come back later for results
+                  </p>
+                </div>
+              </div>
+
               <div className="flex items-center justify-between mb-4">
                 <h3
                   className="text-lg font-semibold flex items-center"
@@ -1092,6 +1189,30 @@ export default function DashboardStats() {
         >
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <RealTimeAnalytics />
+          </div>
+        </section>
+      )}
+
+      {/* Tab Content - RSS Feed */}
+      {activeTab === 'rss' && (
+        <section
+          className="py-16"
+          style={{ backgroundColor: "var(--color-background-section-3)" }}
+        >
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-8">
+              <Section3Text as="h2" className="text-3xl font-bold mb-4">
+                Research Publications Feed
+              </Section3Text>
+              <Section3Text
+                as="p"
+                variant="paragraph"
+                className="text-lg max-w-2xl mx-auto"
+              >
+                Live feed of African AI research publications and academic papers
+              </Section3Text>
+            </div>
+            <PublicationsTable />
           </div>
         </section>
       )}
