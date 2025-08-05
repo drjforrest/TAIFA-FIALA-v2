@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { usePublications, PublicationFilters } from '@/hooks/usePublications'
 import { Search, Filter, ExternalLink, Calendar, Star, Globe, Cpu } from 'lucide-react'
+import DataProvenance from '@/components/ui/DataProvenance'
 
 export default function PublicationsTable() {
   const [filters, setFilters] = useState<PublicationFilters>({
@@ -207,6 +208,17 @@ export default function PublicationsTable() {
                         {publication.project_domain}
                       </span>
                     )}
+                  </div>
+
+                  {/* Data Provenance */}
+                  <div className="mb-4">
+                    <DataProvenance
+                      dataSource={publication.data_source}
+                      enrichmentConfidence={publication.enrichment_confidence}
+                      enrichmentCitations={publication.enrichment_citations}
+                      originalDiscoveryMethod={publication.original_discovery_method}
+                      size="sm"
+                    />
                   </div>
 
                   <div className="flex items-center space-x-4">

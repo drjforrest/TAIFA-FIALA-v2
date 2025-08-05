@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { Section3Text } from '@/components/ui/adaptive-text'
 import { TrendingUp, FileText, Lightbulb, Zap, Clock, CheckCircle, AlertCircle, Globe, Cpu } from 'lucide-react'
+import DataProvenance from '@/components/ui/DataProvenance'
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
 
@@ -20,6 +21,17 @@ interface EnrichmentResult {
   country?: string
   status: 'completed' | 'processing' | 'failed'
   processing_time_ms?: number
+  data_source?: 'primary' | 'enriched' | 'systematic_review'
+  enrichment_citations?: Array<{
+    id: string
+    title: string
+    url?: string
+    confidence_score: number
+    citation_text: string
+    discovered_at: string
+    processed: boolean
+  }>
+  original_discovery_method?: string
 }
 
 export default function EnrichmentResultsTable() {
@@ -169,6 +181,9 @@ export default function EnrichmentResultsTable() {
                   Title
                 </th>
                 <th className="text-left py-3 px-4 text-sm font-semibold" style={{ color: "var(--color-card-foreground)" }}>
+                  Data Source
+                </th>
+                <th className="text-left py-3 px-4 text-sm font-semibold" style={{ color: "var(--color-card-foreground)" }}>
                   African Score
                 </th>
                 <th className="text-left py-3 px-4 text-sm font-semibold" style={{ color: "var(--color-card-foreground)" }}>
@@ -233,6 +248,17 @@ export default function EnrichmentResultsTable() {
                         {result.enrichment_summary}
                       </p>
                     </div>
+                  </td>
+
+                  {/* Data Source */}
+                  <td className="py-3 px-4">
+                    <DataProvenance
+                      dataSource={result.data_source}
+                      enrichmentConfidence={result.enrichment_confidence}
+                      enrichmentCitations={result.enrichment_citations}
+                      originalDiscoveryMethod={result.original_discovery_method}
+                      size="sm"
+                    />
                   </td>
 
                   {/* African Score */}
@@ -316,7 +342,29 @@ const mockEnrichmentResults: EnrichmentResult[] = [
     domain: 'HealthTech',
     country: 'Nigeria',
     status: 'completed',
-    processing_time_ms: 1450
+    processing_time_ms: 1450,
+    data_source: 'enriched',
+    enrichment_citations: [
+      {
+        id: 'c1',
+        title: 'Telemedicine and AI diagnostics in rural Africa: A systematic review',
+        url: 'https://doi.org/10.1234/example1',
+        confidence_score: 0.95,
+        citation_text: 'Evidence from 12 studies shows AI diagnostic tools can achieve 87% accuracy in resource-limited settings...',
+        discovered_at: '2024-08-05T09:10:00Z',
+        processed: true
+      },
+      {
+        id: 'c2',
+        title: 'Edge computing for healthcare applications in developing countries',
+        url: 'https://arxiv.org/abs/example2',
+        confidence_score: 0.88,
+        citation_text: 'Deployment of edge computing infrastructure reduces latency and improves reliability...',
+        discovered_at: '2024-08-05T09:12:00Z',
+        processed: false
+      }
+    ],
+    original_discovery_method: 'Perplexity AI triangulation from healthcare tech reports'
   },
   {
     id: '2',
@@ -331,7 +379,9 @@ const mockEnrichmentResults: EnrichmentResult[] = [
     domain: 'AgriTech',
     country: 'Kenya',
     status: 'completed',
-    processing_time_ms: 2100
+    processing_time_ms: 2100,
+    data_source: 'systematic_review',
+    original_discovery_method: 'Extracted from "AI in African Agriculture: A Systematic Review 2024"'
   },
   {
     id: '3',
@@ -346,7 +396,9 @@ const mockEnrichmentResults: EnrichmentResult[] = [
     domain: 'AgriTech',
     country: 'Ghana',
     status: 'completed',
-    processing_time_ms: 1800
+    processing_time_ms: 1800,
+    data_source: 'primary',
+    original_discovery_method: 'Direct submission via platform'
   },
   {
     id: '4',
@@ -361,7 +413,9 @@ const mockEnrichmentResults: EnrichmentResult[] = [
     domain: 'AI Research',
     country: 'South Africa',
     status: 'completed',
-    processing_time_ms: 3200
+    processing_time_ms: 3200,
+    data_source: 'primary',
+    original_discovery_method: 'Direct from arXiv API'
   },
   {
     id: '5',
@@ -376,7 +430,19 @@ const mockEnrichmentResults: EnrichmentResult[] = [
     domain: 'FinTech',
     country: 'Rwanda',
     status: 'processing',
-    processing_time_ms: 950
+    processing_time_ms: 950,
+    data_source: 'enriched',
+    enrichment_citations: [
+      {
+        id: 'c3',
+        title: 'Biometric authentication in developing economies',
+        confidence_score: 0.82,
+        citation_text: 'Mobile biometric systems show 95% accuracy in rural deployment scenarios...',
+        discovered_at: '2024-08-05T06:05:00Z',
+        processed: false
+      }
+    ],
+    original_discovery_method: 'Perplexity discovery from FinTech news analysis'
   },
   {
     id: '6',
@@ -391,6 +457,8 @@ const mockEnrichmentResults: EnrichmentResult[] = [
     domain: 'ClimateReach',
     country: 'Morocco',
     status: 'completed',
-    processing_time_ms: 2750
+    processing_time_ms: 2750,
+    data_source: 'systematic_review',
+    original_discovery_method: 'From "Renewable Energy AI Applications in Africa" systematic review'
   }
 ]
