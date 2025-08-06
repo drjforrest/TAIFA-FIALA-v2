@@ -122,8 +122,13 @@ class SerperService:
                     # Cache successful response
                     if search_response.results:
                         # Cache for 12 hours if we have results
+                        # Convert HttpUrl to string for JSON serialization
+                        response_dict = search_response.dict()
+                        for result in response_dict['results']:
+                            if 'link' in result and hasattr(result['link'], '__str__'):
+                                result['link'] = str(result['link'])
                         await cache_api_response(DataSource.SERPER, cache_params, 
-                                               search_response.dict(), 12.0)
+                                               response_dict, 12.0)
                         logger.info(f"Cached Serper web search with {len(search_response.results)} results")
                     else:
                         # Cache null result for 6 hours if no results

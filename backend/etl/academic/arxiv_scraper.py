@@ -392,12 +392,8 @@ class ArxivScraper:
                 }
                 
                 # Store in database with deduplication
-                success, stored_record, action = await check_and_handle_publication_duplicates(
-                    publication_data,
-                    self.db_service,
-                    self.dedup_service,
-                    action='reject'  # Can be configured: reject, merge, update, link
-                )
+                success, stored_record = await check_and_handle_publication_duplicates(publication_data)
+                action = 'processed'
                 
                 if success and stored_record:
                     stored_records.append(stored_record)

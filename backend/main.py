@@ -70,7 +70,11 @@ app.add_middleware(
 )
 
 # Include routers
+from api.analytics import router as analytics_router
+from api.data_intelligence import router as data_intelligence_router
 app.include_router(etl_live_router)
+app.include_router(analytics_router)
+app.include_router(data_intelligence_router)
 
 
 @app.on_event("startup")
