@@ -4,48 +4,84 @@ export async function POST(request: NextRequest) {
   try {
     const { assistant_name, message, context_filter, innovation_context } = await request.json()
 
-    // For now, return a mock response since Pinecone Assistant integration
-    // will be implemented based on your specific setup
+    // Get backend URL from environment  
+    const backendUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
     
-    // In production, this would integrate with Pinecone Assistant API:
-    // const pc = new Pinecone({ apiKey: process.env.PINECONE_API_KEY })
-    // const assistant = pc.assistant(assistant_name)
-    // const response = await assistant.chat({
-    //   messages: [
-    //     {
-    //       role: 'system',
-    //       content: innovation_context 
-    //         ? `You're helping analyze "${innovation_context.title}". Context: ${innovation_context.description}. Related documents are in the knowledge base.`
-    //         : 'You are an AI assistant for the African AI innovation ecosystem. Use the knowledge base to provide helpful, accurate information.'
-    //     },
-    //     { role: 'user', content: message }
-    //   ],
-    //   filter: context_filter,
-    //   stream: false
-    // })
-
-    // Mock response for development
-    const mockResponse = {
-      id: Date.now().toString(),
-      object: 'chat.completion',
-      created: Math.floor(Date.now() / 1000),
-      model: assistant_name,
-      choices: [{
-        index: 0,
-        message: {
-          role: 'assistant',
-          content: generateMockResponse(message, innovation_context)
-        },
-        finish_reason: 'stop'
-      }],
-      usage: {
-        prompt_tokens: 0,
-        completion_tokens: 0,
-        total_tokens: 0
+    try {
+      // Call the backend AI assistant API with innovation context
+      const requestBody: any = {
+        message: message,
+        conversation_id: `frontend-${Date.now()}`
       }
-    }
+      
+      // Add innovation_id if innovation context is provided
+      if (innovation_context && innovation_context.id) {
+        requestBody.innovation_id = innovation_context.id
+      }
+      
+      const backendResponse = await fetch(`${backendUrl}/api/ai-assistant/chat`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(requestBody)
+      })
 
-    return NextResponse.json(mockResponse)
+      if (backendResponse.ok) {
+        const backendData = await backendResponse.json()
+        
+        // Return in expected format for frontend
+        return NextResponse.json({
+          id: Date.now().toString(),
+          object: 'chat.completion',
+          created: Math.floor(Date.now() / 1000),
+          model: assistant_name,
+          choices: [{
+            index: 0,
+            message: {
+              role: 'assistant',
+              content: backendData.response || backendData.answer || 'No response from assistant'
+            },
+            finish_reason: 'stop'
+          }],
+          usage: {
+            prompt_tokens: 0,
+            completion_tokens: 0,
+            total_tokens: 0
+          }
+        })
+      } else {
+        console.log('Backend AI assistant not available, using mock response')
+        // Fallback to mock response
+        throw new Error('Backend not available')
+      }
+      
+    } catch (backendError) {
+      console.log('Using mock response due to backend error:', backendError)
+      
+      // Fallback to mock response for development
+      const mockResponse = {
+        id: Date.now().toString(),
+        object: 'chat.completion',
+        created: Math.floor(Date.now() / 1000),
+        model: assistant_name,
+        choices: [{
+          index: 0,
+          message: {
+            role: 'assistant',
+            content: generateMockResponse(message, innovation_context)
+          },
+          finish_reason: 'stop'
+        }],
+        usage: {
+          prompt_tokens: 0,
+          completion_tokens: 0,
+          total_tokens: 0
+        }
+      }
+
+      return NextResponse.json(mockResponse)
+    }
 
   } catch (error) {
     console.error('Chat API error:', error)

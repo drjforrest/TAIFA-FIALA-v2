@@ -1,0 +1,3 @@
+# Pinecone Assistant Plugin
+# Add this to your main requirements.txt or install separately
+pinecone-plugins==0.7.0
