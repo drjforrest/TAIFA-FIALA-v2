@@ -11,7 +11,6 @@ from pathlib import Path
 from uuid import uuid4
 
 from pinecone import Pinecone
-from pinecone_plugins.assistant.models.chat import Message
 from loguru import logger
 
 from config.settings import settings
@@ -89,7 +88,8 @@ class PineconeAssistantService:
     async def chat(self, message: str, conversation_id: Optional[str] = None) -> Dict[str, Any]:
         """Send a chat message to the assistant"""
         try:
-            msg = Message(content=message)
+            # Modern Pinecone API uses simple message format
+            msg = {"role": "user", "content": message}
             
             response = self.assistant.chat(messages=[msg])
             
@@ -106,7 +106,8 @@ class PineconeAssistantService:
     async def chat_stream(self, message: str, conversation_id: Optional[str] = None) -> AsyncGenerator[str, None]:
         """Send a chat message with streaming response"""
         try:
-            msg = Message(content=message)
+            # Modern Pinecone API uses simple message format
+            msg = {"role": "user", "content": message}
             
             chunks = self.assistant.chat(messages=[msg], stream=True)
             

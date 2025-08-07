@@ -157,12 +157,23 @@ make_api_call() {
     sleep 2
 }
 
-# Trigger ETL jobs
-make_api_call "http://localhost:$API_PORT/api/etl/academic?days_back=7&max_results=50" "Academic paper collection"
-make_api_call "http://localhost:$API_PORT/api/etl/news?hours_back=24" "News monitoring"
-make_api_call "http://localhost:$API_PORT/api/etl/serper-search?num_results=25" "Innovation search"
+# Check if we should trigger ETL jobs in development
+echo "🔍 Checking development configuration..."
+DEV_CONFIG_RESPONSE=$(curl -s --max-time 5 http://localhost:$API_PORT/api/etl/dev-config 2>/dev/null)
 
-echo "✅ Initial ETL jobs triggered successfully!"
+if echo "$DEV_CONFIG_RESPONSE" | grep -q '"skip_expensive_ops": true'; then
+    echo "🏗️  Development mode detected - skipping expensive ETL operations"
+    echo "💰 This saves money by not calling external APIs in development"
+    echo "📊 Using existing data in database for frontend testing"
+else
+    echo "🚀 Production/full mode - triggering all ETL jobs..."
+    # Trigger ETL jobs
+    make_api_call "http://localhost:$API_PORT/api/etl/academic?days_back=7&max_results=5" "Academic paper collection (limited)"
+    make_api_call "http://localhost:$API_PORT/api/etl/news?hours_back=24" "News monitoring"
+    make_api_call "http://localhost:$API_PORT/api/etl/serper-search?num_results=10" "Innovation search (limited)"
+fi
+
+echo "✅ ETL configuration complete!"
 echo ""
 echo "🎯 System Status:"
 echo "- FastAPI Server: ✅ Running on http://localhost:$API_PORT"

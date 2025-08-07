@@ -11,6 +11,7 @@ from typing import Any, Dict, List, Optional
 from uuid import uuid4
 
 from config.database import get_supabase
+from config.settings import settings
 from etl.academic.arxiv_scraper import scrape_arxiv_papers
 from etl.intelligence.perplexity_african_ai import (
     IntelligenceType,
@@ -91,9 +92,48 @@ async def get_etl_status():
             }
         }
 
+@router.get("/dev-config")
+async def get_development_configuration():
+    """Get development configuration to determine if expensive operations should be skipped"""
+    try:
+        return {
+            "success": True,
+            "skip_expensive_ops": (
+                settings.DISABLE_AI_ENRICHMENT or 
+                settings.DISABLE_EXTERNAL_SEARCH or 
+                settings.DISABLE_RSS_MONITORING or 
+                settings.DISABLE_ACADEMIC_SCRAPING
+            ),
+            "development_mode": settings.DEBUG,
+            "flags": {
+                "disable_ai_enrichment": settings.DISABLE_AI_ENRICHMENT,
+                "disable_external_search": settings.DISABLE_EXTERNAL_SEARCH,
+                "disable_rss_monitoring": settings.DISABLE_RSS_MONITORING,
+                "disable_academic_scraping": settings.DISABLE_ACADEMIC_SCRAPING,
+                "enable_mock_data": settings.ENABLE_MOCK_DATA,
+            },
+            "limits": {
+                "max_etl_batch_size": settings.MAX_ETL_BATCH_SIZE,
+                "max_ai_calls_per_minute": settings.MAX_AI_CALLS_PER_MINUTE,
+            }
+        }
+    except Exception as e:
+        return {
+            "success": False,
+            "message": f"Error getting development configuration: {str(e)}",
+            "skip_expensive_ops": True  # Default to safe mode on error
+        }
+
 @router.post("/trigger/news")
 async def trigger_news_pipeline(background_tasks: BackgroundTasks):
     """Trigger RSS news monitoring pipeline - FREE operation"""
+    
+    # Check development flags first
+    if settings.DISABLE_RSS_MONITORING:
+        return ETLResponse(
+            success=True,
+            message="RSS monitoring disabled in development mode - using existing data"
+        )
     
     # Check if pipeline is already running using enhanced monitor
     if not etl_monitor.start_job("news_pipeline"):
@@ -115,6 +155,17 @@ async def trigger_news_pipeline(background_tasks: BackgroundTasks):
 async def trigger_academic_pipeline(background_tasks: BackgroundTasks, days_back: int = 3, max_results: int = 10):
     """Trigger academic paper scraping pipeline - FREE operation"""
     
+    # Check development flags first
+    if settings.DISABLE_ACADEMIC_SCRAPING:
+        return ETLResponse(
+            success=True,
+            message="Academic scraping disabled in development mode - using existing data"
+        )
+    
+    # Limit batch size in development
+    if settings.DEBUG:
+        max_results = min(max_results, settings.MAX_ETL_BATCH_SIZE)
+    
     # Check if pipeline is already running using enhanced monitor
     if not etl_monitor.start_job("academic_pipeline"):
         return ETLResponse(
@@ -134,6 +185,13 @@ async def trigger_academic_pipeline(background_tasks: BackgroundTasks, days_back
 @router.post("/trigger/discovery")
 async def trigger_discovery_pipeline(background_tasks: BackgroundTasks, query: str = "African AI innovation"):
     """Trigger innovation discovery pipeline - RATE LIMITED operation"""
+    
+    # Check development flags first - this can be expensive
+    if settings.DISABLE_EXTERNAL_SEARCH:
+        return ETLResponse(
+            success=True,
+            message="External search disabled in development mode - using existing data"
+        )
     
     # Check if pipeline is already running using enhanced monitor
     if not etl_monitor.start_job("serper_pipeline"):
@@ -161,6 +219,13 @@ async def trigger_enrichment_pipeline(
     enable_snowball_sampling: bool = True
 ):
     """Trigger AI intelligence enrichment - supports multiple providers (Perplexity, OpenAI, etc.) - RATE LIMITED operation"""
+    
+    # Check development flags first - this is the most expensive operation!
+    if settings.DISABLE_AI_ENRICHMENT:
+        return ETLResponse(
+            success=True,
+            message="AI enrichment disabled in development mode - using existing data to save costs"
+        )
     
     # Check if pipeline is already running using enhanced monitor
     if not etl_monitor.start_job("enrichment_pipeline"):

@@ -6,18 +6,18 @@ Medical and health AI research scraper
 import asyncio
 import re
 from datetime import datetime, timedelta
-from typing import List, Dict, Any, Optional
+from typing import Any, Dict, List, Optional
 from urllib.parse import quote_plus
 
 import aiohttp
 import xmltodict
+from config.settings import settings
 from loguru import logger
 from pydantic import BaseModel
-
-from config.settings import settings
 from services.database_service import DatabaseService
 from services.deduplication_service import DeduplicationService
-from utils.etl_deduplication import check_and_handle_publication_duplicates
+
+from services.etl_deduplication import check_and_handle_publication_duplicates
 
 
 class PubMedPaper(BaseModel):

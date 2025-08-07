@@ -3,7 +3,7 @@ Supabase Database Service for TAIFA-FIALA
 Provides reusable database operations using Supabase client for Row Level Security
 """
 
-from datetime import datetime
+from datetime import datetime, date
 from typing import List, Dict, Any, Optional, Union
 from uuid import uuid4
 from loguru import logger
@@ -20,19 +20,33 @@ class DatabaseService:
     
     def __init__(self):
         self.client = supabase
+    
+    def serialize_date(self, date_obj):
+        """Helper function to serialize dates for JSON compatibility"""
+        if date_obj is None:
+            return None
+        elif isinstance(date_obj, datetime):
+            return date_obj.isoformat()
+        elif isinstance(date_obj, date):
+            return date_obj.isoformat()
+        elif isinstance(date_obj, str):
+            return date_obj
+        else:
+            return str(date_obj)
         
     # PUBLICATIONS
     async def create_publication(self, publication_data: Dict[str, Any]) -> Optional[Dict[str, Any]]:
         """Create a new publication record"""
         try:
             # Prepare publication data according to current schema
+            publication_date = publication_data.get('publication_date')
             pub_record = {
                 'id': str(uuid4()),
                 'title': publication_data.get('title', ''),
                 'abstract': publication_data.get('abstract'),
                 'publication_type': publication_data.get('publication_type', 'journal_paper'),
-                'publication_date': publication_data.get('publication_date'),
-                'year': publication_data.get('year') or (publication_data.get('publication_date').year if publication_data.get('publication_date') else None),
+                'publication_date': self.serialize_date(publication_date),
+                'year': publication_data.get('year') or (publication_date.year if hasattr(publication_date, 'year') else None),
                 'doi': publication_data.get('doi'),
                 'url': publication_data.get('url'),
                 'pdf_url': publication_data.get('pdf_url'),
@@ -114,8 +128,8 @@ class DatabaseService:
                 'documentation_url': innovation_data.get('documentation_url') or innovation_data.get('website_url'),
                 'video_url': innovation_data.get('video_url'),
                 'image_urls': innovation_data.get('image_urls', []),
-                'creation_date': innovation_data.get('creation_date'),
-                'last_updated_date': innovation_data.get('last_updated_date'),
+                'creation_date': self.serialize_date(innovation_data.get('creation_date')),
+                'last_updated_date': self.serialize_date(innovation_data.get('last_updated_date')),
                 'created_at': datetime.utcnow().isoformat(),
                 'updated_at': datetime.utcnow().isoformat()
             }
@@ -147,7 +161,7 @@ class DatabaseService:
                 'country': org_data.get('country', ''),
                 'website': org_data.get('website'),
                 'description': org_data.get('description'),
-                'founded_date': org_data.get('founded_date'),
+                'founded_date': self.serialize_date(org_data.get('founded_date')),
                 'contact_email': org_data.get('contact_email'),
                 'logo_url': org_data.get('logo_url'),
                 'verification_status': org_data.get('verification_status', 'pending'),

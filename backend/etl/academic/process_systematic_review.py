@@ -4,16 +4,17 @@ Systematic Review Data Processor for TAIFA-FIALA
 Process existing systematic review of AI R&D in Africa from CSV data
 """
 
-import pandas as pd
-import re
 import asyncio
+import re
 from datetime import datetime
-from typing import List, Dict, Any, Optional
-from loguru import logger
+from typing import Any, Dict, List, Optional
 
+import pandas as pd
+from loguru import logger
 from services.database_service import DatabaseService
 from services.deduplication_service import DeduplicationService
-from utils.etl_deduplication import check_and_handle_publication_duplicates
+
+from services.etl_deduplication import check_and_handle_publication_duplicates
 
 
 class SystematicReviewProcessor:

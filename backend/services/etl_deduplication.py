@@ -66,7 +66,7 @@ class ETLDeduplicationManager:
             logger.info(f"📋 Duplicate publication detected: {', '.join([match.reason for match in duplicate_matches])}")
             
             # Use the highest confidence match
-            best_match = max(duplicate_matches, key=lambda x: x.confidence)
+            best_match = max(duplicate_matches, key=lambda x: x.similarity_score)
             
             # Handle based on action
             if best_match.action == DuplicateAction.REJECT:
@@ -132,8 +132,8 @@ class ETLDeduplicationManager:
             logger.info(f"📋 Duplicate innovation detected: {', '.join([match.reason for match in duplicate_matches])}")
             
             # Use the highest confidence match
-            best_match = max(duplicate_matches, key=lambda x: x.confidence)
-            logger.debug(f"🎯 Best match selected with confidence: {best_match.confidence}")
+            best_match = max(duplicate_matches, key=lambda x: x.similarity_score)
+            logger.debug(f"🎯 Best match selected with confidence: {best_match.similarity_score}")
             
             # Handle based on action
             if best_match.action == DuplicateAction.REJECT:
@@ -311,7 +311,7 @@ async def check_and_handle_publication_duplicates(publication_data: Dict[str, An
         return True, record
     elif duplicate_matches:
         # Return the best match if duplicates were found
-        best_match = max(duplicate_matches, key=lambda x: x.confidence)
+        best_match = max(duplicate_matches, key=lambda x: x.similarity_score)
         return False, best_match.existing_record
     else:
         return False, None
@@ -331,7 +331,7 @@ async def check_and_handle_innovation_duplicates(innovation_data: Dict[str, Any]
         return True, record
     elif duplicate_matches:
         # Return the best match if duplicates were found
-        best_match = max(duplicate_matches, key=lambda x: x.confidence)
+        best_match = max(duplicate_matches, key=lambda x: x.similarity_score)
         return False, best_match.existing_record
     else:
         return False, None

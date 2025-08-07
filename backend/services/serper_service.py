@@ -83,6 +83,10 @@ class SerperService:
             cached_response = await get_cached_response(DataSource.SERPER, cache_params)
             if cached_response:
                 logger.info(f"Using cached Serper web search for: {query}")
+                # Convert timestamp string back to datetime if needed
+                if 'timestamp' in cached_response and isinstance(cached_response['timestamp'], str):
+                    from datetime import datetime
+                    cached_response['timestamp'] = datetime.fromisoformat(cached_response['timestamp'])
                 return SerperSearchResponse(**cached_response)
         except Exception as e:
             logger.warning(f"Error checking Serper cache: {e}")
@@ -122,11 +126,14 @@ class SerperService:
                     # Cache successful response
                     if search_response.results:
                         # Cache for 12 hours if we have results
-                        # Convert HttpUrl to string for JSON serialization
+                        # Convert HttpUrl and datetime objects to strings for JSON serialization
                         response_dict = search_response.dict()
                         for result in response_dict['results']:
                             if 'link' in result and hasattr(result['link'], '__str__'):
                                 result['link'] = str(result['link'])
+                        # Convert timestamp to string
+                        if 'timestamp' in response_dict and hasattr(response_dict['timestamp'], 'isoformat'):
+                            response_dict['timestamp'] = response_dict['timestamp'].isoformat()
                         await cache_api_response(DataSource.SERPER, cache_params, 
                                                response_dict, 12.0)
                         logger.info(f"Cached Serper web search with {len(search_response.results)} results")

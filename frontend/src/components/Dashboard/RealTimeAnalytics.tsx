@@ -214,11 +214,11 @@ export default function RealTimeAnalytics() {
           <Section3Text as="h2" className="text-2xl font-bold">
             Real-time Innovation Analytics
           </Section3Text>
-          <p style={{ color: "var(--color-card-foreground)" }} className="text-sm opacity-70">
+          <p style={{ color: "var(--color-text-section-subheading)" }} className="text-sm opacity-70">
             Live insights into African AI innovation ecosystem
           </p>
         </div>
-        <div className="flex items-center space-x-2 text-sm" style={{ color: "var(--color-muted-foreground)" }}>
+        <div className="flex items-center space-x-2 text-sm" style={{ color: "var(--color-text-section-subheading)" }}>
           <RefreshCw className="h-4 w-4" />
           <span>Updated: {lastUpdated.toLocaleTimeString()}</span>
         </div>

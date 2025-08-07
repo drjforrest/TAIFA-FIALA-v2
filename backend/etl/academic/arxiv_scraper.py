@@ -5,18 +5,18 @@ Specialized ETL for academic publications related to African AI research
 
 import asyncio
 from datetime import datetime, timedelta
-from typing import List, Dict, Any, Optional
+from typing import Any, Dict, List, Optional
 from urllib.parse import quote
 
 import aiohttp
 import feedparser
+from config.settings import settings
 from loguru import logger
 from pydantic import BaseModel
-
-from config.settings import settings
 from services.database_service import DatabaseService
 from services.deduplication_service import DeduplicationService
-from utils.etl_deduplication import check_and_handle_publication_duplicates
+
+from services.etl_deduplication import check_and_handle_publication_duplicates
 
 
 class ArxivPaper(BaseModel):

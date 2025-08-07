@@ -84,6 +84,16 @@ class Settings(BaseSettings):
     # Background Tasks
     CELERY_BROKER_URL: str = "redis://localhost:6379/1"
     CELERY_RESULT_BACKEND: str = "redis://localhost:6379/2"
+    
+    # Development control flags (overridden in DevelopmentSettings)
+    DISABLE_AI_ENRICHMENT: bool = False
+    DISABLE_EXTERNAL_SEARCH: bool = False
+    DISABLE_RSS_MONITORING: bool = False
+    DISABLE_ACADEMIC_SCRAPING: bool = False
+    ENABLE_MOCK_DATA: bool = False
+    REDIS_REQUIRED: bool = True
+    MAX_ETL_BATCH_SIZE: int = 50
+    MAX_AI_CALLS_PER_MINUTE: int = 60
 
     # Academic Sources
     ARXIV_BASE_URL: str = "http://export.arxiv.org/api/query"
@@ -162,6 +172,30 @@ class DevelopmentSettings(Settings):
     """Development environment settings"""
     DEBUG: bool = True
     LOG_LEVEL: str = "DEBUG"
+    
+    # More permissive CORS for development
+    ALLOWED_ORIGINS: List[str] = [
+        "http://localhost:3000",
+        "http://localhost:3001", 
+        "http://127.0.0.1:3000",
+        "http://127.0.0.1:3001",
+        "https://taifa-fiala.vercel.app"
+    ]
+    
+    # Redis Configuration for development (use in-memory fallback if not available)
+    REDIS_URL: str = "redis://localhost:6379/0"
+    REDIS_REQUIRED: bool = False
+    
+    # Development flags to disable expensive operations
+    DISABLE_AI_ENRICHMENT: bool = True
+    DISABLE_EXTERNAL_SEARCH: bool = True
+    DISABLE_RSS_MONITORING: bool = True
+    DISABLE_ACADEMIC_SCRAPING: bool = True
+    ENABLE_MOCK_DATA: bool = True
+    
+    # Limit batch sizes in development
+    MAX_ETL_BATCH_SIZE: int = 5
+    MAX_AI_CALLS_PER_MINUTE: int = 2
 
 
 class ProductionSettings(Settings):

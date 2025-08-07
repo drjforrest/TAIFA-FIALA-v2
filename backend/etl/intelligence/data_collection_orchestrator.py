@@ -10,18 +10,27 @@ synthesis through deep extraction to database population.
 """
 
 import asyncio
-import logging
-from typing import Dict, List, Optional, Any
-from dataclasses import dataclass, asdict
-from enum import Enum
-from datetime import datetime
 import json
+import logging
+from dataclasses import asdict, dataclass
+from datetime import datetime
+from enum import Enum
+from typing import Any, Dict, List, Optional
 
-from .perplexity_african_ai import PerplexityAfricanAIModule, IntelligenceType
-from .enhanced_crawl4ai import IntelligentCrawl4AIOrchestrator, ContentType, InnovationExtractionResult
 from services.database_service import DatabaseService
 from services.deduplication_service import DeduplicationService
-from utils.etl_deduplication import check_and_handle_publication_duplicates, check_and_handle_innovation_duplicates
+
+from services.etl_deduplication import (
+    check_and_handle_innovation_duplicates,
+    check_and_handle_publication_duplicates,
+)
+
+from .enhanced_crawl4ai import (
+    ContentType,
+    InnovationExtractionResult,
+    IntelligentCrawl4AIOrchestrator,
+)
+from .perplexity_african_ai import IntelligenceType, PerplexityAfricanAIModule
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)

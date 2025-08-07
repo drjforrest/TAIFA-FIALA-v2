@@ -163,47 +163,53 @@ class DeduplicationService:
         
         # Method 1: DOI exact match
         if publication_data.get('doi'):
-            existing = await self.db_service.query_publications(
+            existing = await self.db_service.get_publications(
                 filters={'doi': publication_data['doi']}
             )
             if existing:
                 duplicates.extend([
                     DuplicateMatch(
-                        existing_id=pub['id'],
-                        match_type='doi_exact',
-                        confidence=1.0,
-                        existing_record=pub
+                        is_duplicate=True,
+                        match_type=DuplicateType.DOI_MATCH,
+                        similarity_score=1.0,
+                        existing_record_id=pub['id'],
+                        existing_record=pub,
+                        reason=f"DOI match: {publication_data['doi']}"
                     ) for pub in existing
                 ])
         
         # Method 2: Source ID exact match (ArXiv, PubMed, etc.)
         if publication_data.get('source_id'):
-            existing = await self.db_service.query_publications(
+            existing = await self.db_service.get_publications(
                 filters={'source_id': publication_data['source_id']}
             )
             if existing:
                 duplicates.extend([
                     DuplicateMatch(
-                        existing_id=pub['id'],
-                        match_type='source_id_exact',
-                        confidence=1.0,
-                        existing_record=pub
+                        is_duplicate=True,
+                        match_type=DuplicateType.ARXIV_ID_MATCH,
+                        similarity_score=1.0,
+                        existing_record_id=pub['id'],
+                        existing_record=pub,
+                        reason=f"Source ID match: {publication_data['source_id']}"
                     ) for pub in existing
                 ])
         
         # Method 3: URL exact match
         if publication_data.get('url'):
             normalized_url = self.url_normalizer.normalize(publication_data['url'])
-            existing = await self.db_service.query_publications(
+            existing = await self.db_service.get_publications(
                 filters={'url': normalized_url}
             )
             if existing:
                 duplicates.extend([
                     DuplicateMatch(
-                        existing_id=pub['id'],
-                        match_type='url_exact',
-                        confidence=0.95,
-                        existing_record=pub
+                        is_duplicate=True,
+                        match_type=DuplicateType.URL_MATCH,
+                        similarity_score=0.95,
+                        existing_record_id=pub['id'],
+                        existing_record=pub,
+                        reason=f"URL match: {normalized_url}"
                     ) for pub in existing
                 ])
         
@@ -229,6 +235,37 @@ class DeduplicationService:
         return duplicates
     
     # INNOVATION DEDUPLICATION
+    async def check_innovation_duplicates(self, innovation_data: Dict[str, Any]) -> List[DuplicateMatch]:
+        """Check for duplicate innovations using multiple detection methods"""
+        duplicates = []
+        
+        # Method 1: URL exact match
+        if innovation_data.get('source_url'):
+            url_match = await self._check_url_duplicate(innovation_data['source_url'], 'innovations')
+            if url_match.is_duplicate:
+                duplicates.append(url_match)
+        
+        # Method 2: Title similarity
+        if innovation_data.get('title'):
+            title_match = await self._check_title_similarity(
+                innovation_data['title'],
+                'innovations',
+                threshold=0.80
+            )
+            if title_match.is_duplicate:
+                duplicates.append(title_match)
+        
+        # Method 3: Content similarity
+        content_match = await self._check_content_similarity(
+            innovation_data.get('title', ''),
+            innovation_data.get('description', ''),
+            'innovations'
+        )
+        if content_match.is_duplicate:
+            duplicates.append(content_match)
+        
+        return duplicates
+    
     async def check_innovation_duplicate(self, innovation_data: Dict[str, Any]) -> DuplicateMatch:
         """Check if an innovation is a duplicate"""
         

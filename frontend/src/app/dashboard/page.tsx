@@ -3,6 +3,11 @@
 import RealTimeAnalytics from "@/components/Dashboard/RealTimeAnalytics";
 import PublicationsTable from "@/components/Dashboard/PublicationsTable";
 import {
+  ResearchToInnovationPipeline,
+  CollaborationHeatMap,
+  TechnologyAdoptionCurves
+} from "@/components/Dashboard/DataInsights";
+import {
   Section1Text,
   Section2Text,
   Section3Text
@@ -26,11 +31,14 @@ import {
   Users,
   XCircle,
   Zap,
+  Network,
+  Brain,
+  Target
 } from "lucide-react";
 import { useState } from "react";
 
 export default function DashboardStats() {
-  const [activeTab, setActiveTab] = useState<'monitoring' | 'analytics' | 'rss'>('monitoring');
+  const [activeTab, setActiveTab] = useState<'monitoring' | 'analytics' | 'pipeline' | 'collaboration' | 'technology' | 'rss'>('monitoring');
   const [feedbackMessage, setFeedbackMessage] = useState<{
     type: 'success' | 'error' | null;
     message: string;
@@ -257,22 +265,21 @@ export default function DashboardStats() {
               Innovation Discovery Dashboard
             </Section1Text>
 
-            <Section1Text
-              as="p"
-              variant="paragraph"
+            <p 
               className="text-xl max-w-3xl mx-auto mb-8"
+              style={{ color: "var(--color-text-section-subheading)" }}
             >
               Monitoring systematic documentation of African AI excellence
-            </Section1Text>
+            </p>
 
             <div className="flex items-center justify-center space-x-2 text-sm">
               <Activity
                 className="h-4 w-4"
                 style={{ color: "var(--color-success)" }}
               />
-              <Section1Text as="span" variant="paragraph">
+              <span style={{ color: "var(--color-text-section-subheading)" }}>
                 Last updated: {new Date().toLocaleTimeString()}
-              </Section1Text>
+              </span>
             </div>
           </div>
         </div>
@@ -288,13 +295,12 @@ export default function DashboardStats() {
             <Section2Text as="h2" className="text-3xl font-bold mb-4">
               Platform Statistics
             </Section2Text>
-            <Section2Text
-              as="p"
-              variant="paragraph"
+            <p 
               className="text-lg max-w-2xl mx-auto"
+              style={{ color: "var(--color-text-section-subheading)" }}
             >
               Real-time metrics tracking African AI innovation documentation
-            </Section2Text>
+            </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -327,7 +333,7 @@ export default function DashboardStats() {
                       </p>
                       <p
                         className="text-xs"
-                        style={{ color: "var(--color-muted-foreground)" }}
+                        style={{ color: "var(--color-text-card-paragraph)" }}
                       >
                         {stat.description}
                       </p>
@@ -365,7 +371,7 @@ export default function DashboardStats() {
                 style={{
                   padding: "12px 20px",
                   backgroundColor: activeTab === 'monitoring' ? 'var(--color-primary)' : 'var(--color-background)',
-                  color: activeTab === 'monitoring' ? 'var(--color-primary-foreground)' : '#9ca3af',
+                  color: activeTab === 'monitoring' ? 'var(--color-primary-foreground)' : 'var(--color-muted-foreground)',
                   border: `1px solid ${activeTab === 'monitoring' ? 'var(--color-primary)' : 'var(--color-border)'}`,
                   borderRadius: "8px",
                   fontSize: "14px",
@@ -384,7 +390,7 @@ export default function DashboardStats() {
                 onMouseLeave={(e) => {
                   if (activeTab !== 'monitoring') {
                     e.currentTarget.style.backgroundColor = 'var(--color-background)';
-                    e.currentTarget.style.color = '#9ca3af';
+                    e.currentTarget.style.color = 'var(--color-muted-foreground)';
                     e.currentTarget.style.borderColor = 'var(--color-border)';
                   }
                 }}
@@ -393,12 +399,111 @@ export default function DashboardStats() {
                 ETL Monitoring
               </button>
               <button
+                onClick={() => setActiveTab('pipeline')}
+                className="flex items-center transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-lg"
+                style={{
+                  padding: "12px 20px",
+                  backgroundColor: activeTab === 'pipeline' ? 'var(--color-primary)' : 'var(--color-background)',
+                  color: activeTab === 'pipeline' ? 'var(--color-primary-foreground)' : 'var(--color-muted-foreground)',
+                  border: `1px solid ${activeTab === 'pipeline' ? 'var(--color-primary)' : 'var(--color-border)'}`,
+                  borderRadius: "8px",
+                  fontSize: "14px",
+                  fontWeight: "500",
+                  boxShadow: activeTab === 'pipeline' ? "0 2px 6px rgba(0, 0, 0, 0.12)" : "0 1px 3px rgba(0, 0, 0, 0.1)",
+                  cursor: "pointer",
+                  outline: "none",
+                }}
+                onMouseEnter={(e) => {
+                  if (activeTab !== 'pipeline') {
+                    e.currentTarget.style.backgroundColor = 'var(--color-primary)';
+                    e.currentTarget.style.color = 'var(--color-primary-foreground)';
+                    e.currentTarget.style.borderColor = 'var(--color-primary)';
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (activeTab !== 'pipeline') {
+                    e.currentTarget.style.backgroundColor = 'var(--color-background)';
+                    e.currentTarget.style.color = 'var(--color-muted-foreground)';
+                    e.currentTarget.style.borderColor = 'var(--color-border)';
+                  }
+                }}
+              >
+                <TrendingUp className="h-4 w-4 mr-2" />
+                Research Pipeline
+              </button>
+              <button
+                onClick={() => setActiveTab('collaboration')}
+                className="flex items-center transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-lg"
+                style={{
+                  padding: "12px 20px",
+                  backgroundColor: activeTab === 'collaboration' ? 'var(--color-primary)' : 'var(--color-background)',
+                  color: activeTab === 'collaboration' ? 'var(--color-primary-foreground)' : 'var(--color-muted-foreground)',
+                  border: `1px solid ${activeTab === 'collaboration' ? 'var(--color-primary)' : 'var(--color-border)'}`,
+                  borderRadius: "8px",
+                  fontSize: "14px",
+                  fontWeight: "500",
+                  boxShadow: activeTab === 'collaboration' ? "0 2px 6px rgba(0, 0, 0, 0.12)" : "0 1px 3px rgba(0, 0, 0, 0.1)",
+                  cursor: "pointer",
+                  outline: "none",
+                }}
+                onMouseEnter={(e) => {
+                  if (activeTab !== 'collaboration') {
+                    e.currentTarget.style.backgroundColor = 'var(--color-primary)';
+                    e.currentTarget.style.color = 'var(--color-primary-foreground)';
+                    e.currentTarget.style.borderColor = 'var(--color-primary)';
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (activeTab !== 'collaboration') {
+                    e.currentTarget.style.backgroundColor = 'var(--color-background)';
+                    e.currentTarget.style.color = 'var(--color-muted-foreground)';
+                    e.currentTarget.style.borderColor = 'var(--color-border)';
+                  }
+                }}
+              >
+                <Network className="h-4 w-4 mr-2" />
+                Collaboration
+              </button>
+              <button
+                onClick={() => setActiveTab('technology')}
+                className="flex items-center transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-lg"
+                style={{
+                  padding: "12px 20px",
+                  backgroundColor: activeTab === 'technology' ? 'var(--color-primary)' : 'var(--color-background)',
+                  color: activeTab === 'technology' ? 'var(--color-primary-foreground)' : 'var(--color-muted-foreground)',
+                  border: `1px solid ${activeTab === 'technology' ? 'var(--color-primary)' : 'var(--color-border)'}`,
+                  borderRadius: "8px",
+                  fontSize: "14px",
+                  fontWeight: "500",
+                  boxShadow: activeTab === 'technology' ? "0 2px 6px rgba(0, 0, 0, 0.12)" : "0 1px 3px rgba(0, 0, 0, 0.1)",
+                  cursor: "pointer",
+                  outline: "none",
+                }}
+                onMouseEnter={(e) => {
+                  if (activeTab !== 'technology') {
+                    e.currentTarget.style.backgroundColor = 'var(--color-primary)';
+                    e.currentTarget.style.color = 'var(--color-primary-foreground)';
+                    e.currentTarget.style.borderColor = 'var(--color-primary)';
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (activeTab !== 'technology') {
+                    e.currentTarget.style.backgroundColor = 'var(--color-background)';
+                    e.currentTarget.style.color = 'var(--color-muted-foreground)';
+                    e.currentTarget.style.borderColor = 'var(--color-border)';
+                  }
+                }}
+              >
+                <Target className="h-4 w-4 mr-2" />
+                Technology Trends
+              </button>
+              <button
                 onClick={() => setActiveTab('analytics')}
                 className="flex items-center transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-lg"
                 style={{
                   padding: "12px 20px",
                   backgroundColor: activeTab === 'analytics' ? 'var(--color-primary)' : 'var(--color-background)',
-                  color: activeTab === 'analytics' ? 'var(--color-primary-foreground)' : '#9ca3af',
+                  color: activeTab === 'analytics' ? 'var(--color-primary-foreground)' : 'var(--color-muted-foreground)',
                   border: `1px solid ${activeTab === 'analytics' ? 'var(--color-primary)' : 'var(--color-border)'}`,
                   borderRadius: "8px",
                   fontSize: "14px",
@@ -417,7 +522,7 @@ export default function DashboardStats() {
                 onMouseLeave={(e) => {
                   if (activeTab !== 'analytics') {
                     e.currentTarget.style.backgroundColor = 'var(--color-background)';
-                    e.currentTarget.style.color = '#9ca3af';
+                    e.currentTarget.style.color = 'var(--color-muted-foreground)';
                     e.currentTarget.style.borderColor = 'var(--color-border)';
                   }
                 }}
@@ -431,7 +536,7 @@ export default function DashboardStats() {
                 style={{
                   padding: "12px 20px",
                   backgroundColor: activeTab === 'rss' ? 'var(--color-primary)' : 'var(--color-background)',
-                  color: activeTab === 'rss' ? 'var(--color-primary-foreground)' : '#9ca3af',
+                  color: activeTab === 'rss' ? 'var(--color-primary-foreground)' : 'var(--color-muted-foreground)',
                   border: `1px solid ${activeTab === 'rss' ? 'var(--color-primary)' : 'var(--color-border)'}`,
                   borderRadius: "8px",
                   fontSize: "14px",
@@ -450,7 +555,7 @@ export default function DashboardStats() {
                 onMouseLeave={(e) => {
                   if (activeTab !== 'rss') {
                     e.currentTarget.style.backgroundColor = 'var(--color-background)';
-                    e.currentTarget.style.color = '#9ca3af';
+                    e.currentTarget.style.color = 'var(--color-muted-foreground)';
                     e.currentTarget.style.borderColor = 'var(--color-border)';
                   }
                 }}
@@ -476,13 +581,12 @@ export default function DashboardStats() {
             <Section3Text as="h2" className="text-3xl font-bold mb-4">
               Data Processing Pipelines
             </Section3Text>
-            <Section3Text
-              as="p"
-              variant="paragraph"
+            <p 
               className="text-lg max-w-2xl mx-auto"
+              style={{ color: "var(--color-text-section-subheading)" }}
             >
               Monitor and control automated data collection systems
-            </Section3Text>
+            </p>
             
             {/* Feedback Message */}
             {feedbackMessage.type && (
@@ -550,7 +654,7 @@ export default function DashboardStats() {
                 <div className="flex items-center justify-between">
                   <span
                     className="text-sm"
-                    style={{ color: "var(--color-muted-foreground)" }}
+                    style={{ color: "var(--color-text-card-paragraph)" }}
                   >
                     Status
                   </span>
@@ -587,7 +691,7 @@ export default function DashboardStats() {
                 <div className="flex items-center justify-between">
                   <span
                     className="text-sm"
-                    style={{ color: "var(--color-muted-foreground)" }}
+                    style={{ color: "var(--color-text-card-paragraph)" }}
                   >
                     Last Run
                   </span>
@@ -604,19 +708,19 @@ export default function DashboardStats() {
                 {etlStatus?.academic_pipeline_active && (
                   <div className="space-y-2 pt-2 border-t" style={{ borderColor: "var(--color-border)" }}>
                     <div className="flex items-center justify-between text-xs">
-                      <span style={{ color: "var(--color-muted-foreground)" }}>Batch Size</span>
+                      <span style={{ color: "var(--color-text-card-paragraph)" }}>Batch Size</span>
                       <span style={{ color: "var(--color-card-foreground)" }}>
                         {etlStatus?.metrics?.batch_size || 0}
                       </span>
                     </div>
                     <div className="flex items-center justify-between text-xs">
-                      <span style={{ color: "var(--color-muted-foreground)" }}>Duplicates Removed</span>
+                      <span style={{ color: "var(--color-text-card-paragraph)" }}>Duplicates Removed</span>
                       <span style={{ color: "var(--color-card-foreground)" }}>
                         {etlStatus?.metrics?.duplicates_removed || 0}
                       </span>
                     </div>
                     <div className="flex items-center justify-between text-xs">
-                      <span style={{ color: "var(--color-muted-foreground)" }}>Processing Time</span>
+                      <span style={{ color: "var(--color-text-card-paragraph)" }}>Processing Time</span>
                       <span style={{ color: "var(--color-card-foreground)" }}>
                         {etlStatus?.metrics?.processing_time_ms ? `${etlStatus.metrics.processing_time_ms}ms` : '0ms'}
                       </span>
@@ -629,7 +733,7 @@ export default function DashboardStats() {
                 >
                   <div
                     className="text-xs"
-                    style={{ color: "var(--color-muted-foreground)" }}
+                    style={{ color: "var(--color-text-card-paragraph)" }}
                   >
                     Discovers AI research from academic papers, arxiv, and
                     institutional repositories
@@ -678,7 +782,7 @@ export default function DashboardStats() {
                 <div className="flex items-center justify-between">
                   <span
                     className="text-sm"
-                    style={{ color: "var(--color-muted-foreground)" }}
+                    style={{ color: "var(--color-text-card-paragraph)" }}
                   >
                     Status
                   </span>
@@ -715,7 +819,7 @@ export default function DashboardStats() {
                 <div className="flex items-center justify-between">
                   <span
                     className="text-sm"
-                    style={{ color: "var(--color-muted-foreground)" }}
+                    style={{ color: "var(--color-text-card-paragraph)" }}
                   >
                     Last Run
                   </span>
@@ -734,7 +838,7 @@ export default function DashboardStats() {
                 >
                   <div
                     className="text-xs"
-                    style={{ color: "var(--color-muted-foreground)" }}
+                    style={{ color: "var(--color-text-card-paragraph)" }}
                   >
                     Monitors RSS feeds and news sources for innovation
                     announcements and project launches
@@ -783,7 +887,7 @@ export default function DashboardStats() {
                 <div className="flex items-center justify-between">
                   <span
                     className="text-sm"
-                    style={{ color: "var(--color-muted-foreground)" }}
+                    style={{ color: "var(--color-text-card-paragraph)" }}
                   >
                     Status
                   </span>
@@ -822,7 +926,7 @@ export default function DashboardStats() {
                 <div className="flex items-center justify-between">
                   <span
                     className="text-sm"
-                    style={{ color: "var(--color-muted-foreground)" }}
+                    style={{ color: "var(--color-text-card-paragraph)" }}
                   >
                     Last Run
                   </span>
@@ -841,7 +945,7 @@ export default function DashboardStats() {
                 >
                   <div
                     className="text-xs"
-                    style={{ color: "var(--color-muted-foreground)" }}
+                    style={{ color: "var(--color-text-card-paragraph)" }}
                   >
                     Uses Serper.dev for precision searches and Crawl4AI for
                     project site extraction
@@ -917,7 +1021,7 @@ export default function DashboardStats() {
                 <div className="flex items-center justify-between">
                   <span
                     className="text-sm"
-                    style={{ color: "var(--color-muted-foreground)" }}
+                    style={{ color: "var(--color-text-card-paragraph)" }}
                   >
                     Status
                   </span>
@@ -954,7 +1058,7 @@ export default function DashboardStats() {
                 <div className="flex items-center justify-between">
                   <span
                     className="text-sm"
-                    style={{ color: "var(--color-muted-foreground)" }}
+                    style={{ color: "var(--color-text-card-paragraph)" }}
                   >
                     Last Run
                   </span>
@@ -971,25 +1075,25 @@ export default function DashboardStats() {
                 {etlStatus?.pipeline_metrics?.enrichment_pipeline && (
                   <div className="space-y-2 pt-2 border-t" style={{ borderColor: "var(--color-border)" }}>
                     <div className="flex items-center justify-between text-xs">
-                      <span style={{ color: "var(--color-muted-foreground)" }}>Batch Size</span>
+                      <span style={{ color: "var(--color-text-card-paragraph)" }}>Batch Size</span>
                       <span style={{ color: "var(--color-card-foreground)" }}>
                         {etlStatus.pipeline_metrics.enrichment_pipeline.batch_size}
                       </span>
                     </div>
                     <div className="flex items-center justify-between text-xs">
-                      <span style={{ color: "var(--color-muted-foreground)" }}>Duplicates Removed</span>
+                      <span style={{ color: "var(--color-text-card-paragraph)" }}>Duplicates Removed</span>
                       <span style={{ color: "var(--color-card-foreground)" }}>
                         {etlStatus.pipeline_metrics.enrichment_pipeline.duplicates_removed}
                       </span>
                     </div>
                     <div className="flex items-center justify-between text-xs">
-                      <span style={{ color: "var(--color-muted-foreground)" }}>Processing Time</span>
+                      <span style={{ color: "var(--color-text-card-paragraph)" }}>Processing Time</span>
                       <span style={{ color: "var(--color-card-foreground)" }}>
                         {etlStatus.pipeline_metrics.enrichment_pipeline.processing_time_ms}ms
                       </span>
                     </div>
                     <div className="flex items-center justify-between text-xs">
-                      <span style={{ color: "var(--color-muted-foreground)" }}>Success Rate</span>
+                      <span style={{ color: "var(--color-text-card-paragraph)" }}>Success Rate</span>
                       <span style={{ color: "var(--color-card-foreground)" }}>
                         {etlStatus.pipeline_metrics.enrichment_pipeline.success_rate.toFixed(1)}%
                       </span>
@@ -1002,7 +1106,7 @@ export default function DashboardStats() {
                 >
                   <div
                     className="text-xs"
-                    style={{ color: "var(--color-muted-foreground)" }}
+                    style={{ color: "var(--color-text-card-paragraph)" }}
                   >
                     Uses AI (Perplexity, OpenAI, etc.) for intelligent analysis and
                     comprehensive insights on African AI ecosystem
@@ -1042,7 +1146,7 @@ export default function DashboardStats() {
               </h3>
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <span style={{ color: "var(--color-muted-foreground)" }}>
+                  <span style={{ color: "var(--color-text-card-paragraph)" }}>
                     Projects Processed
                   </span>
                   <span
@@ -1053,7 +1157,7 @@ export default function DashboardStats() {
                   </span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span style={{ color: "var(--color-muted-foreground)" }}>
+                  <span style={{ color: "var(--color-text-card-paragraph)" }}>
                     Processing Errors
                   </span>
                   <div className="flex items-center">
@@ -1082,7 +1186,7 @@ export default function DashboardStats() {
                 >
                   <div
                     className="text-xs"
-                    style={{ color: "var(--color-muted-foreground)" }}
+                    style={{ color: "var(--color-text-card-paragraph)" }}
                   >
                     Real-time processing statistics reset daily at midnight UTC
                   </div>
@@ -1111,7 +1215,7 @@ export default function DashboardStats() {
               </h3>
               <p
                 className="mb-4 text-sm"
-                style={{ color: "var(--color-muted-foreground)" }}
+                style={{ color: "var(--color-text-card-paragraph)" }}
               >
                 Systematic documentation transforming{" "}
                 {african_countries_covered} countries' AI landscape from
@@ -1127,7 +1231,7 @@ export default function DashboardStats() {
                   </div>
                   <div
                     className="text-xs"
-                    style={{ color: "var(--color-muted-foreground)" }}
+                    style={{ color: "var(--color-text-card-paragraph)" }}
                   >
                     Innovations
                   </div>
@@ -1141,7 +1245,7 @@ export default function DashboardStats() {
                   </div>
                   <div
                     className="text-xs"
-                    style={{ color: "var(--color-muted-foreground)" }}
+                    style={{ color: "var(--color-text-card-paragraph)" }}
                   >
                     Publications
                   </div>
@@ -1155,7 +1259,7 @@ export default function DashboardStats() {
                   </div>
                   <div
                     className="text-xs"
-                    style={{ color: "var(--color-muted-foreground)" }}
+                    style={{ color: "var(--color-text-card-paragraph)" }}
                   >
                     Countries
                   </div>
@@ -1167,7 +1271,7 @@ export default function DashboardStats() {
               >
                 <div
                   className="flex justify-between text-xs"
-                  style={{ color: "var(--color-muted-foreground)" }}
+                  style={{ color: "var(--color-text-card-paragraph)" }}
                 >
                   <span>
                     African Relevance:{" "}
@@ -1195,6 +1299,75 @@ export default function DashboardStats() {
         </section>
       )}
 
+      {/* Tab Content - Research Pipeline */}
+      {activeTab === 'pipeline' && (
+        <section
+          className="py-16"
+          style={{ backgroundColor: "var(--color-background-section-3)" }}
+        >
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-8">
+              <Section3Text as="h2" className="text-3xl font-bold mb-4">
+                Research to Innovation Pipeline
+              </Section3Text>
+              <p 
+                className="text-lg max-w-2xl mx-auto opacity-70"
+                style={{ color: "var(--color-text-section-subheading)" }}
+              >
+                Tracking knowledge flows from academic research to commercial innovations across Africa
+              </p>
+            </div>
+            <ResearchToInnovationPipeline />
+          </div>
+        </section>
+      )}
+
+      {/* Tab Content - Collaboration HeatMap */}
+      {activeTab === 'collaboration' && (
+        <section
+          className="py-16"
+          style={{ backgroundColor: "var(--color-background-section-3)" }}
+        >
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-8">
+              <Section3Text as="h2" className="text-3xl font-bold mb-4">
+                African AI Collaboration Network
+              </Section3Text>
+              <p 
+                className="text-lg max-w-2xl mx-auto opacity-70"
+                style={{ color: "var(--color-text-section-subheading)" }}
+              >
+                Institutional connections and collaboration patterns across African research institutes
+              </p>
+            </div>
+            <CollaborationHeatMap />
+          </div>
+        </section>
+      )}
+
+      {/* Tab Content - Technology Trends */}
+      {activeTab === 'technology' && (
+        <section
+          className="py-16"
+          style={{ backgroundColor: "var(--color-background-section-3)" }}
+        >
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-8">
+              <Section3Text as="h2" className="text-3xl font-bold mb-4">
+                AI Technology Adoption Trends
+              </Section3Text>
+              <p 
+                className="text-lg max-w-2xl mx-auto opacity-70"
+                style={{ color: "var(--color-text-section-subheading)" }}
+              >
+                Technology lifecycle analysis and adoption patterns across African AI ecosystem
+              </p>
+            </div>
+            <TechnologyAdoptionCurves />
+          </div>
+        </section>
+      )}
+
       {/* Tab Content - RSS Feed */}
       {activeTab === 'rss' && (
         <section
@@ -1206,14 +1379,12 @@ export default function DashboardStats() {
               <Section3Text as="h2" className="text-3xl font-bold mb-4">
                 Research Publications Feed
               </Section3Text>
-              <Section3Text
-                as="p"
-                variant="paragraph"
+              <p 
                 className="text-lg max-w-2xl mx-auto opacity-70"
-                style={{ color: "var(--color-card-foreground)" }}
+                style={{ color: "var(--color-text-section-subheading)" }}
               >
                 Live feed of African AI research publications and academic papers
-              </Section3Text>
+              </p>
             </div>
             <PublicationsTable />
           </div>

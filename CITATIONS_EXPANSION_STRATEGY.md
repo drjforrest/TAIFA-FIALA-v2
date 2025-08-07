@@ -68,9 +68,8 @@ This Week - Quick Wins:
 
 1. Enhanced Publication Analysis
 
-
-    - Extract author affiliations and track institutional connections
-    - Mine abstracts for specific technologies, datasets, African countries
+   - Extract author affiliations and track institutional connections
+   - Mine abstracts for specific technologies, datasets, African countries
 
 mentioned - Identify most-cited authors and track their collaboration networks 2. Innovation Metadata Extraction - Parse descriptions for development stage indicators (prototype, pilot,
 scaling) - Extract business model information (B2B, B2C, government, NGO) - Identify specific African use cases and target beneficiaries 3. Cross-Reference Intelligence - Link publications to related innovations automatically - Identify researchers who became entrepreneurs - Track ideas moving from academic papers to commercial implementations
@@ -79,19 +78,17 @@ Enhanced Dashboard Features:
 
 4. "Data Insights" Tab (replace analytics)
 
-
-    - Research-to-Innovation Pipeline - papers becoming products
-    - Collaboration Heat Map - most connected researchers/institutions
-    - Technology Adoption Curves - AI method popularity over time
-    - Geographic Innovation Density - innovation activity per capita by country
+   - Research-to-Innovation Pipeline - papers becoming products
+   - Collaboration Heat Map - most connected researchers/institutions
+   - Technology Adoption Curves - AI method popularity over time
+   - Geographic Innovation Density - innovation activity per capita by country
 
 5. Smart Filtering & Discovery
 
-
-    - "First Movers" - earliest innovations in emerging domains
-    - "Research Leaders" - most prolific and cited researchers
-    - "Collaboration Opportunities" - complementary innovations across countries
-    - "Commercialization Ready" - research with high market potential
+   - "First Movers" - earliest innovations in emerging domains
+   - "Research Leaders" - most prolific and cited researchers
+   - "Collaboration Opportunities" - complementary innovations across countries
+   - "Commercialization Ready" - research with high market potential
 
 🚀 Technical Approach
 

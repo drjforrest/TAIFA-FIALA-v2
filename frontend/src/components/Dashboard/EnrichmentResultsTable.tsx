@@ -144,11 +144,11 @@ export default function EnrichmentResultsTable() {
           <Section3Text as="h3" className="text-xl font-semibold">
             Recent AI Enrichment Results
           </Section3Text>
-          <p style={{ color: "var(--color-card-foreground)" }} className="text-sm mt-1 opacity-70">
+          <p style={{ color: "var(--color-text-section-subheading)" }} className="text-sm mt-1 opacity-70">
             Latest entries processed through AI intelligence pipelines
           </p>
         </div>
-        <div className="flex items-center space-x-2 text-sm" style={{ color: "var(--color-muted-foreground)" }}>
+        <div className="flex items-center space-x-2 text-sm" style={{ color: "var(--color-text-section-subheading)" }}>
           <Zap className="h-4 w-4" />
           <span>Auto-refreshing</span>
         </div>

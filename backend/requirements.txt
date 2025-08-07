@@ -15,7 +15,7 @@ pypdf2
 sqlalchemy
 serpapi
 bs4
-pinecone
+pinecone>=7.0.0
 supabase
 psycopg2-binary
 asyncpg
@@ -28,4 +28,3 @@ litellm
 torch
 aioredis
 cachetools
-pickle5

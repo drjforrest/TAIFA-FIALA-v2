@@ -90,6 +90,11 @@
     --color-orange-800: #9a3412;
     --color-orange-900: #7c2d12;
 
+    /* Text Colors for Cards and Dark Backgrounds */
+    --color-text-card-paragraph: #374151; /* Dark charcoal for paragraph text on white cards */
+    --color-text-section-heading: #c0c7d1; /* Silver for section headings on dark backgrounds */
+    --color-text-section-subheading: #f8fafc; /* Off-white for subheadings on dark backgrounds */
+
     /* Semantic Colors - Dark Background with Light Cards */
     --color-background: var(--color-gray-900);
     --color-background-section-1: var(--color-gray-800);
@@ -115,14 +120,14 @@
     --color-text-section-4: var(--color-gray-700); /* Light bg = dark text */
 
     --color-text-paragraph-section-1: var(
-        --color-gray-300
-    ); /* Paragraph text on darkest bg (gray-800) */
+        --color-gray-100
+    ); /* Paragraph text on darkest bg (gray-800) - much lighter for visibility */
     --color-text-paragraph-section-2: var(
-        --color-gray-300
-    ); /* Paragraph text on dark bg (gray-700) */
+        --color-gray-100
+    ); /* Paragraph text on dark bg (gray-700) - much lighter for visibility */
     --color-text-paragraph-section-3: var(
-        --color-gray-200
-    ); /* Paragraph text on medium bg (gray-600) - needs to be lighter */
+        --color-gray-50
+    ); /* Paragraph text on medium bg (gray-600) - lightest for maximum contrast */
     --color-text-paragraph-section-4: var(
         --color-gray-700
     ); /* Paragraph text on lightest bg (gray-500) */
@@ -263,6 +268,11 @@
         --color-adaptive-primary-on-dark: var(--color-cyan-400);
         --color-adaptive-secondary-on-dark: var(--color-cyan-300);
         --color-adaptive-tertiary-on-dark: var(--color-green-400);
+
+        /* Text Colors for Cards and Dark Backgrounds (same in light mode) */
+        --color-text-card-paragraph: #374151; /* Dark charcoal for paragraph text on white cards */
+        --color-text-section-heading: #c0c7d1; /* Silver for section headings on dark backgrounds */
+        --color-text-section-subheading: #f8fafc; /* Off-white for subheadings on dark backgrounds */
     }
 }
 
