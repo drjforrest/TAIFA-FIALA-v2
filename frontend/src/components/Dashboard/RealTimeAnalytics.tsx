@@ -6,7 +6,7 @@ import { TrendingUp, FileText, Users, Globe, Lightbulb, Zap, RefreshCw, Activity
 import { Section3Text } from '@/components/ui/adaptive-text'
 import EnrichmentResultsTable from '@/components/Dashboard/EnrichmentResultsTable'
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8030'
 
 interface AnalyticsData {
   monthly_innovations: Array<{

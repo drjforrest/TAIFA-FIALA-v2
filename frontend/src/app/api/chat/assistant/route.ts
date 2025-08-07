@@ -5,7 +5,7 @@ export async function POST(request: NextRequest) {
     const { assistant_name, message, context_filter, innovation_context } = await request.json()
 
     // Get backend URL from environment  
-    const backendUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
+    const backendUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8030'
     
     try {
       // Call the backend AI assistant API with innovation context

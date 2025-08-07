@@ -21,7 +21,7 @@ import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 
 // API URL from environment variables
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8030";
 
 interface Innovation {
   id: string;
@@ -177,7 +177,7 @@ export default function ExploreDataPage() {
         // Provide specific error messages based on status codes
         if (response.status === 502) {
           throw new Error(
-            "Backend service is temporarily unavailable. Please check if the backend server is running on localhost:8000."
+            "Backend service is temporarily unavailable. Please check if the backend server is running on localhost:8030."
           );
         } else if (response.status === 500) {
           throw new Error(
@@ -238,7 +238,7 @@ export default function ExploreDataPage() {
       } else if (err instanceof TypeError) {
         if (err.message.includes('fetch') || err.message.includes('Failed to fetch')) {
           setError(
-            "Network error: Unable to connect to the backend server. Please ensure the backend is running on localhost:8000 and try again."
+            "Network error: Unable to connect to the backend server. Please ensure the backend is running on localhost:8030 and try again."
           );
         } else if (err.message.includes('NetworkError') || err.message.includes('CORS')) {
           setError(

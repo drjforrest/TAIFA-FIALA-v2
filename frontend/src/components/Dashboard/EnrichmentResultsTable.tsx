@@ -5,7 +5,7 @@ import { Section3Text } from '@/components/ui/adaptive-text'
 import { TrendingUp, FileText, Lightbulb, Zap, Clock, CheckCircle, AlertCircle, Globe, Cpu } from 'lucide-react'
 import DataProvenance from '@/components/ui/DataProvenance'
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8030'
 
 interface EnrichmentResult {
   id: string

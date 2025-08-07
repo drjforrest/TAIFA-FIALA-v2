@@ -16,7 +16,7 @@ const getApiBaseUrl = () => {
       return 'https://api.taifa-fiala.net';
     }
   }
-  return 'http://localhost:8000';
+  return 'http://localhost:8030';
 };
 
 const API_BASE_URL = getApiBaseUrl()
